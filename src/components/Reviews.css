@@ -1,0 +1,35 @@
+.reviews-teaser {
+  background-color: #232323;
+  color: #F5F3EF;
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.reviews-teaser h2 {
+  font-size: 1.6rem;
+  margin-bottom: 12px;
+  font-weight: 700;
+}
+
+.reviews-teaser p {
+  color: #CFCBC2;
+  margin-bottom: 24px;
+  font-size: 1rem;
+}
+
+.cta-button-outline {
+  display: inline-block;
+  border: 2px solid #C9A15A;
+  color: #C9A15A;
+  padding: 12px 24px;
+  border-radius: 4px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.2s ease-in-out; /* Smooth transition effect */
+}
+
+/* Fills the outline button with color on user mouse hover */
+.cta-button-outline:hover {
+  background-color: #C9A15A;
+  color: #1A1A1A;
+}

@@ -1,0 +1,55 @@
+.faq {
+  background-color: #1A1A1A;
+  color: #F5F3EF;
+  padding: 60px 20px;
+}
+
+.faq h2 {
+  text-align: center;
+  font-size: 1.6rem;
+  margin-bottom: 32px;
+  font-weight: 700;
+}
+
+.faq-list {
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.faq-item {
+  border-bottom: 1px solid #2A2A2A;
+}
+
+.faq-question {
+  width: 100%;
+  background: none;
+  border: none;
+  color: #F5F3EF;
+  font-size: 1rem;
+  font-weight: 600;
+  text-align: left;
+  padding: 16px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  outline: none;
+  transition: color 0.2s ease; /* Smooth transition when user hovers */
+}
+
+/* Turns the question gold when hovered to give elite premium feedback */
+.faq-question:hover {
+  color: #C9A15A;
+}
+
+.faq-question span {
+  font-size: 1.2rem;
+  color: #C9A15A; /* Always keeps the plus/minus indicators gold */
+}
+
+.faq-answer {
+  color: #CFCBC2;
+  padding-bottom: 16px;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}

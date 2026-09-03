@@ -1,0 +1,25 @@
+.video-intro {
+  background-color: #1A1A1A;
+  color: #F5F3EF;
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.video-intro h2 {
+  font-size: 1.6rem;
+  margin-bottom: 24px;
+  font-weight: 700;
+}
+
+.video-wrapper {
+  max-width: 500px;
+  margin: 0 auto;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4); /* Adds a premium subtle depth shadow */
+  border-radius: 8px;
+}
+
+.video-wrapper video {
+  width: 100%;
+  display: block;
+  border-radius: 8px;
+}
