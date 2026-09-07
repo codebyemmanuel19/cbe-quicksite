@@ -10,7 +10,7 @@ function ContactCTA() {
         we'll get you set up fast.
       </p>
       <a
-        href="https://wa.me/YOURNUMBER"
+        href="https://wa.me/2349027090880"
         target="_blank"
         rel="noopener noreferrer"
         className="cta-button"
@@ -19,9 +19,10 @@ function ContactCTA() {
       </a>
 
       <div className="social-links">
-        <a href="https://instagram.com/YOURUSERNAME" target="_blank" rel="noopener noreferrer">Instagram</a>
-        <a href="https://twitter.com/YOURUSERNAME" target="_blank" rel="noopener noreferrer">X (Twitter)</a>
-        <a href="https://facebook.com/YOURUSERNAME" target="_blank" rel="noopener noreferrer">Facebook</a>
+        <a href="https://www.instagram.com/codebyemmanuel091" target="_blank" rel="noopener noreferrer">Instagram</a>
+        <a href="https://www.tiktok.com/@codebyemmal" target="_blank" rel="noopener noreferrer">TikTok</a>
+        <a href="https://www.facebook.com/Codebyemmanuel" target="_blank" rel="noopener noreferrer">Facebook</a>
+        <a href="https://x.com/emmadkenny" target="_blank" rel="noopener noreferrer">X (Twitter)</a>
       </div>
 
       <footer className="footer">

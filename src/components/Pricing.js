@@ -3,7 +3,7 @@ import "./Pricing.css";
 
 function Pricing() {
   // Encoded URL string for smooth international WhatsApp onboarding
-  const whatsappUrl = "https://wa.me";
+  const whatsappUrl = "https://wa.me/2349027090880";
 
   return (
     <section id="pricing" className="pricing">
