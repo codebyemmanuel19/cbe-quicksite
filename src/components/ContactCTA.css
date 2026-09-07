@@ -1,6 +1,6 @@
 .contact-cta {
-  background-color: #1A1A1A;
-  color: #F5F3EF;
+  background: linear-gradient(180deg, #F1F5F9 0%, #94A3B8 100%);
+  color: #1E3A8A;
   text-align: center;
   padding: 80px 20px;
 }
@@ -9,20 +9,20 @@
   font-size: 1.8rem;
   margin-bottom: 12px;
   font-weight: 700;
+  color: #1E3A8A;
 }
 
 .contact-cta p {
-  color: #CFCBC2;
+  color: #475569;
   max-width: 400px;
   margin: 0 auto 24px auto;
   font-size: 1rem;
 }
 
-/* Styled to match your primary high-converting landing elements */
 .contact-cta .cta-button {
   display: inline-block;
-  background-color: #C9A15A;
-  color: #1A1A1A;
+  background-color: #3B82F6;
+  color: #FFFFFF;
   padding: 14px 28px;
   border-radius: 4px;
   font-weight: 700;
@@ -32,7 +32,7 @@
 }
 
 .contact-cta .cta-button:hover {
-  background-color: #b58f4e;
+  background-color: #1E3A8A;
 }
 
 .social-links {
@@ -43,7 +43,7 @@
 }
 
 .social-links a {
-  color: #C9A15A;
+  color: #1E3A8A;
   text-decoration: none;
   font-weight: 600;
   font-size: 0.95rem;
@@ -51,13 +51,13 @@
 }
 
 .social-links a:hover {
-  opacity: 0.8;
+  opacity: 0.7;
 }
 
 .footer {
   margin-top: 48px;
   padding-top: 24px;
-  border-top: 1px solid #2A2A2A;
-  color: #6B6862;
+  border-top: 1px solid #CBD5E1;
+  color: #64748B;
   font-size: 0.85rem;
 }

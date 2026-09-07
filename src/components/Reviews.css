@@ -1,6 +1,6 @@
 .reviews-teaser {
-  background-color: #232323;
-  color: #F5F3EF;
+  background: linear-gradient(180deg, #F1F5F9 0%, #94A3B8 100%);
+  color: #1E3A8A;
   text-align: center;
   padding: 60px 20px;
 }
@@ -9,27 +9,27 @@
   font-size: 1.6rem;
   margin-bottom: 12px;
   font-weight: 700;
+  color: #1E3A8A;
 }
 
 .reviews-teaser p {
-  color: #CFCBC2;
+  color: #64748B;
   margin-bottom: 24px;
   font-size: 1rem;
 }
 
 .cta-button-outline {
   display: inline-block;
-  border: 2px solid #C9A15A;
-  color: #C9A15A;
+  border: 2px solid #3B82F6;
+  color: #3B82F6;
   padding: 12px 24px;
   border-radius: 4px;
   font-weight: 700;
   text-decoration: none;
-  transition: all 0.2s ease-in-out; /* Smooth transition effect */
+  transition: all 0.2s ease-in-out;
 }
 
-/* Fills the outline button with color on user mouse hover */
 .cta-button-outline:hover {
-  background-color: #C9A15A;
-  color: #1A1A1A;
+  background-color: #3B82F6;
+  color: #FFFFFF;
 }

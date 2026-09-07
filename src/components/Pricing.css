@@ -1,30 +1,29 @@
 .pricing {
-  background-color: #1A1A1A;
+  background: linear-gradient(180deg, #F1F5F9 0%, #94A3B8 100%);
   padding: 60px 20px;
   display: flex;
   justify-content: center;
 }
 
 .pricing-card {
-  background-color: #232323;
-  color: #F5F3EF;
+  background-color: #FFFFFF;
+  color: #1E3A8A;
   max-width: 340px;
   width: 100%;
   padding: 32px 24px;
   border-radius: 12px;
   text-align: left;
-  border: 1px solid #2A2A2A;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); /* Adds an enterprise premium card lift shadow */
+  border: 1px solid #E2E8F0;
+  box-shadow: 0 10px 30px rgba(30, 58, 138, 0.15);
   transition: transform 0.2s ease;
 }
 
-/* Gives an elite active bounce when clicked or hovered on your laptop screen */
 .pricing-card:hover {
   transform: translateY(-4px);
 }
 
 .plan-name {
-  color: #C9A15A;
+  color: #3B82F6;
   font-weight: 700;
   font-size: 1rem;
   margin-bottom: 16px;
@@ -35,34 +34,34 @@
   font-size: 2.5rem;
   font-weight: 800;
   margin: 8px 0;
-  color: #F5F3EF;
+  color: #1E3A8A;
 }
 
 .price span {
   font-size: 1rem;
   font-weight: 400;
-  color: #CFCBC2;
+  color: #64748B;
 }
 
 .billed-note {
-  color: #CFCBC2;
+  color: #64748B;
   font-size: 0.9rem;
   margin-bottom: 8px;
 }
 
 .plan-for {
-  color: #CFCBC2;
+  color: #64748B;
   font-size: 0.9rem;
   margin-bottom: 24px;
   padding-bottom: 24px;
-  border-bottom: 1px solid #2A2A2A;
+  border-bottom: 1px solid #E2E8F0;
 }
 
 .cta-button {
   display: block;
   text-align: center;
-  background-color: #C9A15A;
-  color: #1A1A1A;
+  background-color: #3B82F6;
+  color: #FFFFFF;
   padding: 14px;
   border-radius: 6px;
   font-weight: 700;
@@ -72,7 +71,7 @@
 }
 
 .cta-button:hover {
-  background-color: #b58f4e; /* Clean darkening shift on user hover */
+  background-color: #1E3A8A;
 }
 
 .features-list {
@@ -81,7 +80,7 @@
 }
 
 .features-list li {
-  color: #CFCBC2;
+  color: #475569;
   padding: 6px 0;
   font-size: 0.95rem;
   display: flex;

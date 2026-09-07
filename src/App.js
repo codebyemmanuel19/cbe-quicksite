@@ -1,4 +1,5 @@
 import React from "react";
+import Navbar from "./components/Navbar";
 import Home from "./components/Home";
 import VideoIntro from "./components/VideoIntro";
 import Pricing from "./components/Pricing";
@@ -10,6 +11,7 @@ import "./App.css";
 function App() {
   return (
     <div className="App">
+      <Navbar/>
       <Home />
       <VideoIntro/>
       <Pricing/>
