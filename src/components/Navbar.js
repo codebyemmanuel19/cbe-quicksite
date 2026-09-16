@@ -42,7 +42,6 @@ function Navbar() {
 
       <ul className={isOpen ? "nav-links active" : "nav-links"}>
         <li><a href="/#home" onClick={goToSection("home")}>Home</a></li>
-        <li><a href="/#video-intro" onClick={goToSection("video-intro")}>Demo</a></li>
         <li><a href="/#pricing" onClick={goToSection("pricing")}>Pricing</a></li>
         <li><a href="/#reviews" onClick={goToSection("reviews")}>Reviews</a></li>
         <li><a href="/#faq" onClick={goToSection("faq")}>FAQ</a></li>

@@ -28,7 +28,7 @@ function FAQ() {
   };
 
   return (
-    <section className="faq">
+    <section id="faq" className="faq">
       <h2>Frequently Asked Questions</h2>
       <div className="faq-list">
         {faqs.map((item, index) => (

@@ -3,7 +3,7 @@ import "./Home.css";
 
 function Home() {
   return (
-    <section className="home">
+    <section id="home" className="home">
       <h1>Get a Professional Website for Your Business, Fast.</h1>
       <p>
         Message us, tell us about your business, and get your own website
