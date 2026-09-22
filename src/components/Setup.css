@@ -1,0 +1,210 @@
+.setup-page {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  padding: 24px 16px;
+  background: #f7f7f8;
+}
+
+.setup-card {
+  width: 100%;
+  max-width: 560px;
+  background: #fff;
+  padding: 28px 24px;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+  display: flex;
+  flex-direction: column;
+}
+
+.setup-card h1 { margin: 0 0 6px; font-size: 24px; }
+.setup-sub { margin: 0 0 8px; color: #666; }
+.setup-step { font-size: 17px; margin: 24px 0 12px; }
+
+.type-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.type-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 14px;
+  text-align: left;
+  background: #fff;
+  border: 2px solid #eee;
+  border-radius: 12px;
+  cursor: pointer;
+  font: inherit;
+}
+
+.type-card.selected { border-color: #2563eb; background: #eff6ff; }
+.type-card:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.type-icon { font-size: 26px; }
+.type-name { font-weight: 700; }
+.type-desc { font-size: 13px; color: #666; }
+
+.soon {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #92400e;
+  background: #fef3c7;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+.setup-card label { font-size: 14px; font-weight: 600; margin: 14px 0 6px; }
+
+.setup-card input {
+  width: 100%;
+  padding: 12px 14px;
+  font-size: 16px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+}
+
+.setup-card input:focus { outline: none; border-color: #2563eb; }
+
+.slug-row {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.slug-row:focus-within { border-color: #2563eb; }
+
+.slug-row input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  border-radius: 0;
+}
+
+.slug-domain {
+  padding: 0 12px;
+  color: #666;
+  white-space: nowrap;
+  font-size: 14px;
+}
+
+.slug-preview { font-size: 14px; color: #15803d; margin: 8px 0 0; }
+.slug-error { font-size: 14px; color: #dc2626; margin: 8px 0 0; }
+.hint { font-size: 13px; color: #888; margin: 6px 0 0; }
+.setup-error { color: #dc2626; font-size: 14px; margin: 16px 0 0; }
+
+.setup-btn {
+  margin-top: 24px;
+  padding: 14px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+  background: #2563eb;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.forgot-link {
+  align-self: flex-end;
+  margin-top: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #2563eb;
+  text-decoration: none;
+}
+
+.auth-help { text-align: center; margin: 14px 0 0; font-size: 14px; color: #666; }
+.auth-help a { color: #16a34a; font-weight: 600; }
+@media (min-width: 600px) {
+  .type-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+.setup-card select {
+  width: 100%;
+  padding: 12px 14px;
+  font-size: 16px;
+  font-family: inherit;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+}
+
+.phone-row {
+  display: flex;
+  align-items: stretch;
+  overflow: hidden;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+}
+
+.phone-row:focus-within { border-color: #2563eb; }
+
+.phone-code {
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  font-weight: 600;
+  color: #444;
+  background: #f8fafc;
+  border-right: 1px solid #eee;
+}
+
+.phone-row input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  border-radius: 0;
+}
+
+.setup-help { text-align: center; margin: 14px 0 0; font-size: 14px; color: #666; }
+.setup-help a { color: #16a34a; font-weight: 600; }
+
+.setup-card select {
+  width: 100%;
+  padding: 12px 14px;
+  font-size: 16px;
+  font-family: inherit;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+}
+
+.phone-row {
+  display: flex;
+  align-items: stretch;
+  overflow: hidden;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+}
+
+.phone-row:focus-within { border-color: #2563eb; }
+
+.phone-code {
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  font-weight: 600;
+  color: #444;
+  background: #f8fafc;
+  border-right: 1px solid #eee;
+}
+
+.phone-row input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  border-radius: 0;
+}
+
+.setup-help { text-align: center; margin: 14px 0 0; font-size: 14px; color: #666; }
+.setup-help a { color: #16a34a; font-weight: 600; }

@@ -1,0 +1,103 @@
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  background: #f7f7f8;
+  color: #222;
+}
+
+/* Top bar */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 60px;
+  padding: 0 16px;
+  background: #fff;
+  border-bottom: 1px solid #eee;
+}
+
+.menu-btn,
+.close-btn {
+  font-size: 24px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+}
+
+.brand { font-weight: 700; font-size: 18px; }
+
+/* Sidebar: hidden off-screen until opened */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 30;
+  width: 280px;
+  height: 100vh;
+  overflow-y: auto;
+  background: #fff;
+  padding: 16px;
+  transform: translateX(-100%);
+  transition: transform 0.25s ease;
+}
+
+.sidebar.open { transform: translateX(0); }
+
+.sidebar-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.menu-group { margin-top: 20px; }
+
+.menu-label {
+  font-size: 12px;
+  color: #888;
+  letter-spacing: 0.05em;
+  margin: 0 0 8px;
+}
+
+.menu-link {
+  display: block;
+  padding: 12px 14px;
+  border-radius: 10px;
+  text-decoration: none;
+  color: #222;
+  font-size: 16px;
+}
+
+.menu-link.active { background: #2563eb; color: #fff; }
+
+.content { padding: 16px; }
+.page-title { margin: 8px 0; }
+
+/* Laptop: sidebar always open, no ☰ button */
+@media (min-width: 900px) {
+  .topbar,
+  .close-btn,
+  .overlay { display: none; }
+
+  .sidebar {
+    transform: none;
+    border-right: 1px solid #eee;
+  }
+
+  .content {
+    margin-left: 280px;
+    padding: 24px;
+  }
+}
