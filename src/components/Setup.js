@@ -5,12 +5,12 @@ import { COUNTRIES } from "./countries";
 import "./Setup.css";
 
 const TYPES = [
-  { id: "clothing", icon: "👗", name: "Clothing Brand", desc: "Fashion, shoes, bags, accessories", ready: true },
-  { id: "skincare", icon: "🧴", name: "Skincare & Beauty", desc: "Skincare, hair, cosmetics", ready: true },
-  { id: "realestate", icon: "🏠", name: "Real Estate", desc: "Houses, land, rentals", ready: true },
-  { id: "food", icon: "🍲", name: "Food", desc: "Restaurants, cakes, small chops", ready: false },
-  { id: "services", icon: "✂️", name: "Services", desc: "Salons, barbers, logistics", ready: false },
-  { id: "organization", icon: "🤝", name: "Organization", desc: "NGOs, churches, foundations", ready: false },
+  { id: "clothing", icon: "👗", name: "Clothing & Fashion", desc: "Dresses, thrift, bags, shoes", ready: true },
+  { id: "hair", icon: "💇", name: "Hair & Wigs", desc: "Wigs, bundles, frontals", ready: false },
+  { id: "skincare", icon: "🧴", name: "Skincare & Body Care", desc: "Creams, serums, soaps, oils", ready: false },
+  { id: "perfume", icon: "🌸", name: "Perfume & Fragrance", desc: "Perfumes, oils, body mists", ready: false },
+  { id: "jewellery", icon: "💍", name: "Jewellery & Accessories", desc: "Watches, bracelets, glasses", ready: false },
+  { id: "gadgets", icon: "🎧", name: "Gadgets & Accessories", desc: "Earbuds, chargers, phone cases", ready: false },
 ];
 
 // Addresses no customer can take, because you need them

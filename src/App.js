@@ -10,6 +10,7 @@ import Orders from "./components/Orders";
 import OrderSettings from "./components/OrderSettings";
 import Billing from "./components/Billing";
 import Support from "./components/Support";
+import ClothingSite from "./ClothingSite/ClothingSite";
 import "./App.css";
 
 const Page = ({ title }) => <h1 className="page-title">{title}</h1>;
@@ -87,6 +88,10 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/forgot-password" element={<Page title="Reset password" />} />
         <Route path="/setup" element={<Setup />} />
+
+        {/* Preview of the Clothing template with fake data */}
+        <Route path="/preview/clothing/*" element={<ClothingSite basePath="/preview/clothing" />} />
+
         <Route path="/dashboard" element={<DashboardLayout />}>
           <Route index element={<DashboardHome />} />
           <Route path="business" element={<BusinessInfo />} />
