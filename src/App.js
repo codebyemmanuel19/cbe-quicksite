@@ -80,7 +80,8 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Page title="Landing page" />} />
+        {/* For testing: the main link opens the dashboard. Switch back when the landing page is built. */}
+        <Route path="/" element={<Navigate to="/dashboard" />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
         <Route path="/forgot-password" element={<Page title="Reset password" />} />
@@ -94,7 +95,7 @@ export default function App() {
           <Route path="billing" element={<Page title="Plans & Billing" />} />
           <Route path="support" element={<Support />} />
         </Route>
-        <Route path="/" element={<Navigate to="/dashboard" />} />
+        <Route path="*" element={<Navigate to="/dashboard" />} />
       </Routes>
     </BrowserRouter>
   );
