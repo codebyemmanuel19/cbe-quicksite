@@ -15,7 +15,7 @@ const FAQS = [
   },
   {
     q: "How do I get paid?",
-    a: "Customers pay you directly, either by bank transfer before delivery or when the order arrives, depending on what you turn on in Order Settings. The money goes straight to you. CBE QuickSite never holds it.",
+    a: "Go to Plans & Billing and choose 1, 3, 6 or 12 months, starting from ₦10,000 a month. Pay by card or bank transfer, and editing unlocks immediately.",
   },
   {
     q: "What happens after my free trial?",

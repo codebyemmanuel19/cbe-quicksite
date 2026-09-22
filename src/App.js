@@ -8,6 +8,7 @@ import BusinessInfo from "./components/BusinessInfo";
 import Products from "./components/Products";
 import Orders from "./components/Orders";
 import OrderSettings from "./components/OrderSettings";
+import Billing from "./components/Billing";
 import Support from "./components/Support";
 import "./App.css";
 
@@ -92,7 +93,7 @@ export default function App() {
           <Route path="products" element={<Products />} />
           <Route path="orders" element={<Orders />} />
           <Route path="order-settings" element={<OrderSettings />} />
-          <Route path="billing" element={<Page title="Plans & Billing" />} />
+          <Route path="billing" element={<Billing />} />
           <Route path="support" element={<Support />} />
         </Route>
         <Route path="*" element={<Navigate to="/dashboard" />} />
