@@ -5,7 +5,8 @@ import { COUNTRIES } from "./countries";
 import "./Setup.css";
 
 const TYPES = [
-  { id: "shop", icon: "🛍️", name: "Shop", desc: "Clothes, beauty, gadgets", ready: true },
+  { id: "clothing", icon: "👗", name: "Clothing Brand", desc: "Fashion, shoes, bags, accessories", ready: true },
+  { id: "skincare", icon: "🧴", name: "Skincare & Beauty", desc: "Skincare, hair, cosmetics", ready: true },
   { id: "realestate", icon: "🏠", name: "Real Estate", desc: "Houses, land, rentals", ready: true },
   { id: "food", icon: "🍲", name: "Food", desc: "Restaurants, cakes, small chops", ready: false },
   { id: "services", icon: "✂️", name: "Services", desc: "Salons, barbers, logistics", ready: false },
