@@ -94,7 +94,7 @@ export default function App() {
           <Route path="billing" element={<Page title="Plans & Billing" />} />
           <Route path="support" element={<Support />} />
         </Route>
-        <Route path="*" element={<Navigate to="/" />} />
+        <Route path="/" element={<Navigate to="/dashboard" />} />
       </Routes>
     </BrowserRouter>
   );
