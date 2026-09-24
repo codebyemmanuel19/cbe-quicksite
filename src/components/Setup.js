@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { api } from "../api";
 
 import { COUNTRIES } from "./countries";
 import "./Setup.css";
@@ -38,8 +39,39 @@ export default function Setup() {
   const [slugEdited, setSlugEdited] = useState(false);
   const [whatsapp, setWhatsapp] = useState("");
   const [error, setError] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  // What the server says about this link: null while we haven't asked
+  const [slugCheck, setSlugCheck] = useState(null);
+  const [checking, setChecking] = useState(false);
 
   const selectedCountry = COUNTRIES.find((c) => c.code === country);
+  const slugError = slug ? checkSlug(slug) : "";
+
+  // Ask the server if the link is free, but only after they stop typing
+  useEffect(() => {
+    setSlugCheck(null);
+    if (!slug || checkSlug(slug)) return;
+
+    let cancelled = false;
+    setChecking(true);
+
+    const timer = setTimeout(async () => {
+      try {
+        const res = await api.get(`/sites/check-slug?slug=${encodeURIComponent(slug)}`);
+        if (!cancelled) setSlugCheck(res);
+      } catch (err) {
+        if (!cancelled) setSlugCheck(null);
+      } finally {
+        if (!cancelled) setChecking(false);
+      }
+    }, 500);
+
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, [slug]);
 
   function handleName(e) {
     setName(e.target.value);
@@ -52,15 +84,16 @@ export default function Setup() {
     setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, "").slice(0, 30));
   }
 
-  const slugError = slug ? checkSlug(slug) : "";
-
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
     setError("");
 
     if (!type) return setError("Choose your business type.");
     if (!name.trim()) return setError("Enter your business name.");
     if (!slug || slugError) return setError(slugError || "Choose your website address.");
+    if (slugCheck && slugCheck.available === false) {
+      return setError(slugCheck.reason || "That website address is taken.");
+    }
 
     // Accepts "0801 234 5678" or "+234 801 234 5678", keeps only the local part
     let digits = whatsapp.replace(/\D/g, "");
@@ -73,18 +106,22 @@ export default function Setup() {
       return setError("Enter a valid WhatsApp number.");
     }
 
-    // No backend yet: this is exactly what we'll send to the server later
-    const site = {
-      country,
-      currency: selectedCountry.currency,
-      type,
-      name: name.trim(),
-      slug,
-      whatsapp: selectedCountry.phoneCode + digits, // e.g. 2348012345678
-    };
-    console.log("New site:", site);
-
-    navigate("/dashboard");
+    setSaving(true);
+    try {
+      await api.post("/sites", {
+        country,
+        businessType: type,
+        businessName: name.trim(),
+        slug,
+        whatsapp: selectedCountry.phoneCode + digits,
+      });
+      navigate("/dashboard");
+    } catch (err) {
+      // They already made a shop on another tab or an earlier visit
+      if (err.message === "You already have a site") return navigate("/dashboard");
+      setError(err.message);
+      setSaving(false);
+    }
   }
 
   return (
@@ -131,8 +168,13 @@ export default function Setup() {
         </div>
         {slugError ? (
           <p className="slug-error">{slugError}</p>
+        ) : checking ? (
+          <p className="hint">Checking if it's free...</p>
+        ) : slugCheck && slugCheck.available === false ? (
+          <p className="slug-error">{slugCheck.reason}</p>
         ) : slug ? (
           <p className="slug-preview">
+            {slugCheck && slugCheck.available ? "Available. " : ""}
             Your website: <strong>{slug}.cbequicksite.com</strong>
           </p>
         ) : null}
@@ -152,7 +194,9 @@ export default function Setup() {
 
         {error && <p className="setup-error">{error}</p>}
 
-        <button type="submit" className="setup-btn">Create my website</button>
+        <button type="submit" className="setup-btn" disabled={saving}>
+          {saving ? "Creating your website..." : "Create my website"}
+        </button>
 
         <p className="setup-help">
           Don't understand something?{" "}

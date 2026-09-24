@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { api } from "../api";
 import "./Auth.css";
 
 export default function Signup() {
@@ -7,12 +8,13 @@ export default function Signup() {
   const [form, setForm] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const [saving, setSaving] = useState(false);
 
   function handleChange(e) {
     setForm({ ...form, [e.target.name]: e.target.value });
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
     setError("");
 
@@ -23,8 +25,18 @@ export default function Signup() {
       return setError("Password must be at least 8 characters.");
     }
 
-    // No backend yet: pretend the account was created
-    navigate("/setup");
+    setSaving(true);
+    try {
+      // Creates the account and sets the login cookie
+      await api.post("/auth/signup", {
+        email: form.email.trim().toLowerCase(),
+        password: form.password,
+      });
+      navigate("/setup");
+    } catch (err) {
+      setError(err.message);
+      setSaving(false);
+    }
   }
 
   return (
@@ -50,7 +62,9 @@ export default function Signup() {
 
         {error && <p className="auth-error">{error}</p>}
 
-        <button type="submit" className="auth-btn">Create account</button>
+        <button type="submit" className="auth-btn" disabled={saving}>
+          {saving ? "Creating your account..." : "Create account"}
+        </button>
 
         <p className="auth-help">
           Don't understand something?{" "}

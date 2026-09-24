@@ -1,12 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { api, uploadPhoto } from "../api";
 import "./BusinessInfo.css";
 
-// Fake starting data until the backend is connected
-const initialInfo = {
-  businessName: "Kemi's Boutique",
-  heroLabel: "New collection",
+const emptyInfo = {
+  businessName: "",
+  heroLabel: "",
   heroHeadline: "",
-  whatsapp: "08012345678",
+  whatsapp: "",
   phone: "",
   email: "",
   address: "",
@@ -17,29 +18,83 @@ const initialInfo = {
 };
 
 export default function BusinessInfo() {
-  const [info, setInfo] = useState(initialInfo);
-  const [logo, setLogo] = useState(null);
-  const [cover, setCover] = useState(null);
+  const navigate = useNavigate();
+  const [info, setInfo] = useState(emptyInfo);
+  const [logo, setLogo] = useState("");
+  const [cover, setCover] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [locked, setLocked] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function load() {
+      try {
+        const mine = await api.get("/sites/me");
+        if (cancelled) return;
+        const b = mine.site.business;
+        setInfo({
+          businessName: b.businessName || "",
+          heroLabel: b.heroLabel || "",
+          heroHeadline: b.heroHeadline || "",
+          whatsapp: b.whatsapp || "",
+          phone: b.phone || "",
+          email: b.email || "",
+          address: b.address || "",
+          about: b.about || "",
+          tiktok: b.tiktok || "",
+          facebook: b.facebook || "",
+          instagram: b.instagram || "",
+        });
+        setLogo(b.logo || "");
+        setCover(b.cover || "");
+      } catch (err) {
+        if (cancelled) return;
+        if (err.status === 401) return navigate("/login");
+        if (err.status === 404) return navigate("/setup");
+        setError(err.message);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, [navigate]);
 
   function handleChange(e) {
     setInfo({ ...info, [e.target.name]: e.target.value });
     setSaved(false);
   }
 
-  // Shows a preview of the picked image (real upload comes with Cloudinary later)
-  function handleImage(e, setImage) {
+  // Goes straight to Cloudinary. The server refuses any link that didn't come from there.
+  async function handleImage(e, setImage) {
     const file = e.target.files[0];
+    e.target.value = "";
     if (!file) return;
     if (!file.type.startsWith("image/")) return setError("Please pick an image file.");
     if (file.size > 5 * 1024 * 1024) return setError("Image must be smaller than 5MB.");
+
     setError("");
-    setImage(URL.createObjectURL(file));
-    setSaved(false);
+    setUploading(true);
+    try {
+      const url = await uploadPhoto(file);
+      setImage(url);
+      setSaved(false);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setUploading(false);
+    }
   }
 
-  function handleSave(e) {
+  async function handleSave(e) {
     e.preventDefault();
     setError("");
 
@@ -48,14 +103,58 @@ export default function BusinessInfo() {
       return setError("Enter a valid WhatsApp number.");
     }
 
-    // No backend yet: pretend it saved
-    setSaved(true);
+    setSaving(true);
+    try {
+      const res = await api.put("/sites/business", { ...info, logo, cover });
+      // Show exactly what the server stored, not what we typed
+      const b = res.site.business;
+      setInfo({
+        businessName: b.businessName || "",
+        heroLabel: b.heroLabel || "",
+        heroHeadline: b.heroHeadline || "",
+        whatsapp: b.whatsapp || "",
+        phone: b.phone || "",
+        email: b.email || "",
+        address: b.address || "",
+        about: b.about || "",
+        tiktok: b.tiktok || "",
+        facebook: b.facebook || "",
+        instagram: b.instagram || "",
+      });
+      setLogo(b.logo || "");
+      setCover(b.cover || "");
+      setSaved(true);
+    } catch (err) {
+      if (err.status === 401) return navigate("/login");
+      if (err.locked) {
+        setLocked(true);
+        setError("Your trial has ended. Pay to keep editing your website.");
+      } else {
+        setError(err.message);
+      }
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="biz">
+        <p>Loading your business info...</p>
+      </div>
+    );
   }
 
   return (
     <form className="biz" onSubmit={handleSave}>
       <h1 className="biz-title">Business Info</h1>
       <p className="biz-sub">This is what customers see on your website.</p>
+
+      {locked && (
+        <p className="biz-error">
+          Your trial has ended. <Link to="/dashboard/billing">Pay to keep editing</Link>.
+        </p>
+      )}
 
       <section className="biz-card">
         <h2>Homepage</h2>
@@ -73,7 +172,7 @@ export default function BusinessInfo() {
             <p className="hp-btn">Shop now</p>
           </div>
           <label className="img-btn hero-btn-change">
-            {cover ? "Change photo" : "Add photo"}
+            {uploading ? "Uploading..." : cover ? "Change photo" : "Add photo"}
             <input type="file" accept="image/*" hidden onChange={(e) => handleImage(e, setCover)} />
           </label>
         </div>
@@ -102,7 +201,7 @@ export default function BusinessInfo() {
             {logo ? <img src={logo} alt="Logo" /> : <span>Logo</span>}
           </div>
           <label className="img-btn">
-            {logo ? "Change logo" : "Add logo"}
+            {uploading ? "Uploading..." : logo ? "Change logo" : "Add logo"}
             <input type="file" accept="image/*" hidden onChange={(e) => handleImage(e, setLogo)} />
           </label>
         </div>
@@ -166,7 +265,9 @@ export default function BusinessInfo() {
 
       <div className="save-bar">
         {saved && <span className="saved">Saved ✓</span>}
-        <button type="submit" className="save-btn">Save changes</button>
+        <button type="submit" className="save-btn" disabled={saving || uploading}>
+          {saving ? "Saving..." : "Save changes"}
+        </button>
       </div>
     </form>
   );

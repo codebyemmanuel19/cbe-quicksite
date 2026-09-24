@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { api, uploadPhoto } from "../api";
 import "./Products.css";
 
 const MAX_PHOTOS = 4;
@@ -13,14 +15,10 @@ const SIZE_PRESETS = [
   { label: "Shoes 38 – 45", values: ["38", "39", "40", "41", "42", "43", "44", "45"] },
 ];
 
-// Starts empty, like a brand-new vendor. Add products to test the list.
-const startingCategories = [];
-const startingProducts = [];
-
 const emptyForm = {
   name: "",
   price: "",
-  category: "",
+  categoryId: "",
   tag: "",
   description: "",
   photos: [],
@@ -31,6 +29,14 @@ const emptyForm = {
 
 function formatNaira(amount) {
   return "₦" + Number(amount).toLocaleString("en-NG");
+}
+
+function formatDay(value) {
+  return new Date(value).toLocaleDateString("en-NG", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
 }
 
 // Type a value and press Enter or Add. Tap × to remove. Presets add a whole set at once.
@@ -113,18 +119,67 @@ function ChipInput({ label, values, onChange, placeholder, presets = [] }) {
 }
 
 export default function Products() {
-  const [products, setProducts] = useState(startingProducts);
-  const [categories, setCategories] = useState(startingCategories);
+  const navigate = useNavigate();
+  const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [pageError, setPageError] = useState("");
+  const [locked, setLocked] = useState(false);
+  const [notice, setNotice] = useState("");
+
   const [filter, setFilter] = useState("All");
   const [search, setSearch] = useState("");
   const [editingId, setEditingId] = useState(null); // null = closed, "new" = adding
   const [form, setForm] = useState(emptyForm);
   const [newCategory, setNewCategory] = useState("");
   const [error, setError] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
-  // Category filter + search together
+  useEffect(() => {
+    let cancelled = false;
+
+    async function load() {
+      try {
+        const [p, c] = await Promise.all([api.get("/products"), api.get("/categories")]);
+        if (cancelled) return;
+        setProducts(p.products);
+        setCategories(c.categories);
+      } catch (err) {
+        if (cancelled) return;
+        if (err.status === 401) return navigate("/login");
+        if (err.status === 400) return navigate("/setup"); // no shop yet
+        setPageError(err.message);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, [navigate]);
+
+  // The server returns a saved product without its category name, so we fill it in
+  function withCategoryName(product) {
+    const cat = categories.find((c) => c.id === product.categoryId);
+    return { ...product, category: cat ? cat.name : "" };
+  }
+
+  // Every write goes through the same check, so a locked account always says the same thing
+  function handleWriteError(err, setMessage) {
+    if (err.status === 401) return navigate("/login");
+    if (err.locked) {
+      setLocked(true);
+      setMessage("Your trial has ended. Pay to keep editing your website.");
+      return;
+    }
+    setMessage(err.message);
+  }
+
   const shown = products.filter((p) => {
-    const inCategory = filter === "All" || p.category === filter;
+    const inCategory = filter === "All" || p.categoryId === filter;
     const matchesSearch = p.name.toLowerCase().includes(search.trim().toLowerCase());
     return inCategory && matchesSearch;
   });
@@ -136,12 +191,23 @@ export default function Products() {
   }
 
   function openEdit(product) {
-    setForm({ ...emptyForm, ...product, price: String(product.price) });
+    setForm({
+      name: product.name,
+      price: String(product.price),
+      categoryId: product.categoryId || "",
+      tag: product.tag || "",
+      description: product.description || "",
+      photos: product.photos || [],
+      sizes: product.sizes || [],
+      colors: product.colors || [],
+      soldOut: product.soldOut,
+    });
     setError("");
     setEditingId(product.id);
   }
 
   function closeForm() {
+    if (saving || uploading) return;
     setEditingId(null);
   }
 
@@ -150,25 +216,39 @@ export default function Products() {
     setForm({ ...form, [name]: type === "checkbox" ? checked : value });
   }
 
-  // Previews only for now; real upload comes with Cloudinary later
-  function handlePhotos(e) {
+  // Photos go straight to Cloudinary. We only ever save the link they come back with.
+  async function handlePhotos(e) {
     const files = Array.from(e.target.files);
+    e.target.value = ""; // lets them pick the same file again
+    setError("");
+
     const room = MAX_PHOTOS - form.photos.length;
     if (files.length > room) setError(`You can add up to ${MAX_PHOTOS} photos.`);
 
     const good = files
       .filter((f) => f.type.startsWith("image/") && f.size <= 5 * 1024 * 1024)
       .slice(0, room);
+    if (!good.length) return;
 
-    setForm({ ...form, photos: [...form.photos, ...good.map((f) => URL.createObjectURL(f))] });
-    e.target.value = ""; // lets them pick the same file again
+    setUploading(true);
+    try {
+      const links = [];
+      for (const file of good) {
+        links.push(await uploadPhoto(file));
+      }
+      setForm((current) => ({ ...current, photos: [...current.photos, ...links] }));
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setUploading(false);
+    }
   }
 
   function removePhoto(index) {
     setForm({ ...form, photos: form.photos.filter((_, i) => i !== index) });
   }
 
-  function handleSave(e) {
+  async function handleSave(e) {
     e.preventDefault();
     setError("");
 
@@ -177,41 +257,86 @@ export default function Products() {
 
     const price = Number(form.price);
     if (!form.price || Number.isNaN(price) || price <= 0) return setError("Enter a valid price.");
+    if (!Number.isInteger(price)) return setError("Enter the price in whole naira, no kobo.");
     if (price > 100000000) return setError("That price looks too high. Check it again.");
 
-    const product = {
-      ...form,
+    const payload = {
       name,
       price,
+      categoryId: form.categoryId || null,
+      tag: form.tag,
       description: form.description.trim().slice(0, 1000),
+      photos: form.photos,
+      sizes: form.sizes,
+      colors: form.colors,
+      soldOut: form.soldOut,
     };
 
-    if (editingId === "new") {
-      setProducts([{ ...product, id: Date.now() }, ...products]);
-    } else {
-      setProducts(products.map((p) => (p.id === editingId ? { ...product, id: editingId } : p)));
+    setSaving(true);
+    try {
+      if (editingId === "new") {
+        const res = await api.post("/products", payload);
+        setProducts([withCategoryName(res.product), ...products]);
+        // The 7 free days begin on the very first product
+        if (res.trialStartedAt) {
+          setNotice(`Your 7 free days have started. They end on ${formatDay(res.trialStartedAt)}.`);
+        }
+      } else {
+        const res = await api.put(`/products/${editingId}`, payload);
+        setProducts(products.map((p) => (p.id === editingId ? withCategoryName(res.product) : p)));
+      }
+      setEditingId(null);
+    } catch (err) {
+      handleWriteError(err, setError);
+    } finally {
+      setSaving(false);
     }
-    closeForm();
   }
 
-  function handleDelete(id) {
-    if (window.confirm("Delete this product?")) {
+  async function handleDelete(id) {
+    if (!window.confirm("Delete this product?")) return;
+    try {
+      await api.del(`/products/${id}`);
       setProducts(products.filter((p) => p.id !== id));
+    } catch (err) {
+      handleWriteError(err, setPageError);
     }
   }
 
-  function addCategory() {
+  async function addCategory() {
     const name = newCategory.trim().slice(0, 30);
-    if (!name || categories.includes(name)) return;
-    setCategories([...categories, name]);
-    setNewCategory("");
+    if (!name) return;
+    setPageError("");
+    try {
+      const res = await api.post("/categories", { name });
+      setCategories([...categories, res.category]);
+      setNewCategory("");
+    } catch (err) {
+      handleWriteError(err, setPageError);
+    }
   }
 
-  function removeCategory(name) {
-    if (!window.confirm(`Delete "${name}"? Its products stay, just without a category.`)) return;
-    setCategories(categories.filter((c) => c !== name));
-    setProducts(products.map((p) => (p.category === name ? { ...p, category: "" } : p)));
-    if (filter === name) setFilter("All");
+  async function removeCategory(category) {
+    if (!window.confirm(`Delete "${category.name}"? Its products stay, just without a category.`)) return;
+    setPageError("");
+    try {
+      await api.del(`/categories/${category.id}`);
+      setCategories(categories.filter((c) => c.id !== category.id));
+      setProducts(
+        products.map((p) => (p.categoryId === category.id ? { ...p, categoryId: null, category: "" } : p))
+      );
+      if (filter === category.id) setFilter("All");
+    } catch (err) {
+      handleWriteError(err, setPageError);
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="prod">
+        <p>Loading your products...</p>
+      </div>
+    );
   }
 
   return (
@@ -225,6 +350,16 @@ export default function Products() {
         </div>
         <button className="add-btn" onClick={openAdd}>+ Add product</button>
       </div>
+
+      {notice && <p className="prod-sub">{notice}</p>}
+
+      {locked && (
+        <p className="prod-error">
+          Your trial has ended. <Link to="/dashboard/billing">Pay to keep editing</Link>.
+        </p>
+      )}
+
+      {pageError && !locked && <p className="prod-error">{pageError}</p>}
 
       {/* Search */}
       {products.length > 0 && (
@@ -240,9 +375,16 @@ export default function Products() {
       {/* Category filter */}
       {categories.length > 0 && (
         <div className="chips">
-          {["All", ...categories].map((c) => (
-            <button key={c} className={filter === c ? "chip active" : "chip"} onClick={() => setFilter(c)}>
-              {c}
+          <button className={filter === "All" ? "chip active" : "chip"} onClick={() => setFilter("All")}>
+            All
+          </button>
+          {categories.map((c) => (
+            <button
+              key={c.id}
+              className={filter === c.id ? "chip active" : "chip"}
+              onClick={() => setFilter(c.id)}
+            >
+              {c.name}
             </button>
           ))}
         </div>
@@ -292,9 +434,9 @@ export default function Products() {
         <p className="prod-sub">Group your products so customers find things faster. Optional.</p>
         <div className="cat-list">
           {categories.map((c) => (
-            <span key={c} className="cat-pill">
-              {c}
-              <button onClick={() => removeCategory(c)} aria-label={`Delete ${c}`}>×</button>
+            <span key={c.id} className="cat-pill">
+              {c.name}
+              <button onClick={() => removeCategory(c)} aria-label={`Delete ${c.name}`}>×</button>
             </span>
           ))}
         </div>
@@ -319,7 +461,9 @@ export default function Products() {
               <button type="button" className="x-btn" onClick={closeForm}>✕</button>
             </div>
 
-            <label>Photos ({form.photos.length}/{MAX_PHOTOS})</label>
+            <label>
+              Photos ({form.photos.length}/{MAX_PHOTOS}){uploading ? " · uploading..." : ""}
+            </label>
             <div className="photo-row">
               {form.photos.map((src, i) => (
                 <div key={src} className="photo-thumb">
@@ -344,10 +488,10 @@ export default function Products() {
               onChange={handleChange} placeholder="15000" />
 
             <label>Category (optional)</label>
-            <select name="category" value={form.category} onChange={handleChange}>
+            <select name="categoryId" value={form.categoryId} onChange={handleChange}>
               <option value="">No category</option>
               {categories.map((c) => (
-                <option key={c} value={c}>{c}</option>
+                <option key={c.id} value={c.id}>{c.name}</option>
               ))}
             </select>
 
@@ -385,8 +529,8 @@ export default function Products() {
 
             {error && <p className="prod-error">{error}</p>}
 
-            <button type="submit" className="add-btn full">
-              {editingId === "new" ? "Add product" : "Save changes"}
+            <button type="submit" className="add-btn full" disabled={saving || uploading}>
+              {saving ? "Saving..." : editingId === "new" ? "Add product" : "Save changes"}
             </button>
           </form>
         </div>

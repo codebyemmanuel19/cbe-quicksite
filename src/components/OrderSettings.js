@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { api } from "../api";
 import { formatPrice } from "./countries";
 import "./OrderSettings.css";
 
-// Fake starting data until the backend is connected
-const initialSettings = {
+const emptySettings = {
   payOnDelivery: true,
   deliveryFeeFirst: false,
   payBeforeDelivery: false,
@@ -16,6 +17,22 @@ const initialSettings = {
   pickupAddress: "",
   alertEmail: "",
 };
+
+function fromServer(o) {
+  return {
+    payOnDelivery: o.payOnDelivery,
+    deliveryFeeFirst: o.deliveryFeeFirst,
+    payBeforeDelivery: o.payBeforeDelivery,
+    bankName: o.bankName || "",
+    accountNumber: o.accountNumber || "",
+    accountName: o.accountName || "",
+    offersDelivery: o.offersDelivery,
+    areas: o.areas || [],
+    offersPickup: o.offersPickup,
+    pickupAddress: o.pickupAddress || "",
+    alertEmail: o.alertEmail || "",
+  };
+}
 
 function Switch({ checked, onChange, label, hint }) {
   return (
@@ -38,10 +55,38 @@ function Switch({ checked, onChange, label, hint }) {
 }
 
 export default function OrderSettings() {
-  const [s, setS] = useState(initialSettings);
+  const navigate = useNavigate();
+  const [s, setS] = useState(emptySettings);
   const [newArea, setNewArea] = useState({ name: "", fee: "" });
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [locked, setLocked] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function load() {
+      try {
+        const mine = await api.get("/sites/me");
+        if (cancelled) return;
+        setS(fromServer(mine.site.orderSettings));
+      } catch (err) {
+        if (cancelled) return;
+        if (err.status === 401) return navigate("/login");
+        if (err.status === 404) return navigate("/setup");
+        setError(err.message);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, [navigate]);
 
   function update(field, value) {
     setS({ ...s, [field]: value });
@@ -78,7 +123,7 @@ export default function OrderSettings() {
     }
   }
 
-  function handleSave(e) {
+  async function handleSave(e) {
     e.preventDefault();
     setError("");
 
@@ -103,14 +148,43 @@ export default function OrderSettings() {
       return setError("Add your pickup address.");
     }
 
-    // No backend yet: pretend it saved
-    setSaved(true);
+    setSaving(true);
+    try {
+      const res = await api.put("/sites/order-settings", s);
+      // Show what the server actually stored
+      setS(fromServer(res.site.orderSettings));
+      setSaved(true);
+    } catch (err) {
+      if (err.status === 401) return navigate("/login");
+      if (err.locked) {
+        setLocked(true);
+        setError("Your trial has ended. Pay to keep editing your website.");
+      } else {
+        setError(err.message);
+      }
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="os">
+        <p>Loading your order settings...</p>
+      </div>
+    );
   }
 
   return (
     <form className="os" onSubmit={handleSave}>
       <h1 className="os-title">Order Settings</h1>
       <p className="os-sub">Choose how customers pay and how they get their orders.</p>
+
+      {locked && (
+        <p className="os-error">
+          Your trial has ended. <Link to="/dashboard/billing">Pay to keep editing</Link>.
+        </p>
+      )}
 
       {/* Payment */}
       <section className="os-card">
@@ -267,7 +341,9 @@ export default function OrderSettings() {
 
       <div className="save-bar">
         {saved && <span className="saved">Saved ✓</span>}
-        <button type="submit" className="save-btn">Save changes</button>
+        <button type="submit" className="save-btn" disabled={saving}>
+          {saving ? "Saving..." : "Save changes"}
+        </button>
       </div>
     </form>
   );

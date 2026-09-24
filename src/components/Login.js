@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { api } from "../api";
 import "./Auth.css";
 
 export default function Login() {
@@ -7,12 +8,13 @@ export default function Login() {
   const [form, setForm] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const [saving, setSaving] = useState(false);
 
   function handleChange(e) {
     setForm({ ...form, [e.target.name]: e.target.value });
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
     setError("");
 
@@ -20,8 +22,20 @@ export default function Login() {
       return setError("Enter your email and password.");
     }
 
-    // No backend yet: pretend the login worked
-    navigate("/dashboard");
+    setSaving(true);
+    try {
+      await api.post("/auth/login", {
+        email: form.email.trim().toLowerCase(),
+        password: form.password,
+      });
+
+      // Someone who never finished Setup has no shop yet
+      const me = await api.get("/auth/me");
+      navigate(me.site ? "/dashboard" : "/setup");
+    } catch (err) {
+      setError(err.message);
+      setSaving(false);
+    }
   }
 
   return (
@@ -49,7 +63,9 @@ export default function Login() {
 
         {error && <p className="auth-error">{error}</p>}
 
-        <button type="submit" className="auth-btn">Log in</button>
+        <button type="submit" className="auth-btn" disabled={saving}>
+          {saving ? "Logging in..." : "Log in"}
+        </button>
 
         <p className="auth-help">
           Don't understand something?{" "}

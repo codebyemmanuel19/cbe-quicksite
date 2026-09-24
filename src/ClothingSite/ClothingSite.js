@@ -72,6 +72,8 @@ const SORTS = [
   { id: "high", label: "Price: high to low" },
 ];
 
+const MAX_QTY = 20;
+
 /* ---------- Helpers ---------- */
 
 const cartKey = `cbe-cart-${store.slug}`;
@@ -451,6 +453,9 @@ function CheckoutPage({ basePath, cart, clearCart }) {
     note: "",
   });
   const [error, setError] = useState("");
+  const [trap, setTrap] = useState(""); // hidden field that only bots fill in
+  const [openedAt] = useState(() => Date.now());
+  const [placing, setPlacing] = useState(false);
 
   if (cart.length === 0) {
     return (
@@ -479,34 +484,47 @@ function CheckoutPage({ basePath, cart, clearCart }) {
   }
 
   function placeOrder() {
+    if (placing) return;
     setError("");
 
-    if (!form.name.trim()) return setError("Enter your name.");
-    const phone = normalizePhone(form.phone, store.phoneCode);
-    if (!phone) return setError("Enter a valid phone number.");
-    if (form.method === "delivery") {
-      if (!form.area) return setError("Choose your delivery area.");
-      if (!form.address.trim()) return setError("Enter your delivery address.");
+    // Bot checks: people never fill the hidden field, and take longer than 3 seconds
+    if (trap || Date.now() - openedAt < 3000) {
+      return setError("Something went wrong. Please try again.");
     }
 
-    // Later the backend saves this and works out the real totals itself
+    const name = form.name.trim().slice(0, 80);
+    if (name.length < 2) return setError("Enter your name.");
+    if (/https?:\/\/|www\./i.test(name)) return setError("Enter a valid name.");
+
+    const phone = normalizePhone(form.phone, store.phoneCode);
+    if (!phone) return setError("Enter a valid phone number.");
+
+    const address = form.address.trim().slice(0, 300);
+    if (form.method === "delivery") {
+      if (!form.area) return setError("Choose your delivery area.");
+      if (address.length < 5) return setError("Enter your delivery address.");
+    }
+
+    setPlacing(true);
+
+    // Later the backend saves this, checks it again and works out the real totals itself
     const order = {
       id: Math.floor(1000 + Math.random() * 9000),
       items: cart,
-      customer: { name: form.name.trim(), phone },
+      customer: { name, phone },
       delivery:
         form.method === "delivery"
           ? {
               type: "delivery",
               area: form.area === "other" ? "Area not listed" : form.area,
-              address: form.address.trim(),
+              address,
               fee,
             }
           : { type: "pickup" },
       payment: form.payment,
       subtotal,
       total,
-      note: form.note.trim(),
+      note: form.note.trim().slice(0, 500),
       createdAt: new Date().toISOString(),
     };
 
@@ -540,7 +558,11 @@ function CheckoutPage({ basePath, cart, clearCart }) {
         <p className="cs-label">Your details</p>
         <label className="cs-field">
           <span>Full name</span>
-          <input value={form.name} onChange={(e) => update("name", e.target.value)} />
+          <input
+            value={form.name}
+            maxLength={80}
+            onChange={(e) => update("name", e.target.value)}
+          />
         </label>
         <div className="cs-field">
           <span>Phone number (WhatsApp)</span>
@@ -549,11 +571,24 @@ function CheckoutPage({ basePath, cart, clearCart }) {
             <input
               type="tel"
               value={form.phone}
+              maxLength={20}
               onChange={(e) => update("phone", e.target.value)}
               placeholder="801 234 5678"
             />
           </div>
         </div>
+
+        {/* Hidden bot trap: customers never see this field, spam bots fill it */}
+        <input
+          className="cs-trap"
+          type="text"
+          name="website"
+          tabIndex={-1}
+          autoComplete="off"
+          aria-hidden="true"
+          value={trap}
+          onChange={(e) => setTrap(e.target.value)}
+        />
       </div>
 
       <div className="cs-box">
@@ -600,6 +635,7 @@ function CheckoutPage({ basePath, cart, clearCart }) {
               <span>Delivery address</span>
               <textarea
                 rows={2}
+                maxLength={300}
                 value={form.address}
                 onChange={(e) => update("address", e.target.value)}
                 placeholder="House number, street, landmark"
@@ -638,13 +674,18 @@ function CheckoutPage({ basePath, cart, clearCart }) {
 
       <label className="cs-field">
         <span>Note for the seller (optional)</span>
-        <textarea rows={2} value={form.note} onChange={(e) => update("note", e.target.value)} />
+        <textarea
+          rows={2}
+          maxLength={500}
+          value={form.note}
+          onChange={(e) => update("note", e.target.value)}
+        />
       </label>
 
       {error && <p className="cs-error">{error}</p>}
 
-      <button className="cs-btn" onClick={placeOrder}>
-        Place order · {formatPrice(total)}
+      <button className="cs-btn" onClick={placeOrder} disabled={placing}>
+        {placing ? "Placing order..." : `Place order · ${formatPrice(total)}`}
       </button>
     </div>
   );
@@ -777,7 +818,9 @@ export default function ClothingSite({ basePath = "/preview/clothing" }) {
     setCart((current) => {
       const existing = current.find((c) => c.key === key);
       if (existing) {
-        return current.map((c) => (c.key === key ? { ...c, qty: c.qty + 1 } : c));
+        return current.map((c) =>
+          c.key === key ? { ...c, qty: Math.min(c.qty + 1, MAX_QTY) } : c
+        );
       }
       return [...current, { ...item, key, qty: 1 }];
     });
@@ -787,7 +830,7 @@ export default function ClothingSite({ basePath = "/preview/clothing" }) {
   function updateQty(key, change) {
     setCart((current) =>
       current
-        .map((c) => (c.key === key ? { ...c, qty: c.qty + change } : c))
+        .map((c) => (c.key === key ? { ...c, qty: Math.min(c.qty + change, MAX_QTY) } : c))
         .filter((c) => c.qty > 0)
     );
   }

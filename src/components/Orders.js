@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { api } from "../api";
 import { formatPrice } from "./countries";
 import "./Orders.css";
 
@@ -32,41 +34,10 @@ const TABS = [
   { id: "cancelled", label: "Cancelled" },
 ];
 
-// Fake orders until the backend is connected
-const startingOrders = [
-  {
-    id: 1024, customer: "Chioma Okeke", phone: "2348031234567", method: "pod", status: "new",
-    delivery: { type: "delivery", area: "Lekki", address: "12 Admiralty Way, Lekki Phase 1", fee: 2500 },
-    items: [{ name: "Vitamin C Serum", qty: 2, price: 8500 }],
-    note: "Please call before you come", createdAt: "2026-09-21T10:15:00",
-  },
-  {
-    id: 1023, customer: "Tunde Bakare", phone: "2348059876543", method: "transfer", status: "paid",
-    delivery: { type: "delivery", area: "Ikeja", address: "4 Allen Avenue, Ikeja", fee: 3000 },
-    items: [
-      { name: "Ankara Midi Dress", qty: 1, price: 18500 },
-      { name: "Leather Slides", qty: 1, price: 12000 },
-    ],
-    note: "", createdAt: "2026-09-20T16:40:00",
-  },
-  {
-    id: 1022, customer: "Aisha Bello", phone: "2348091112233", method: "pod", status: "delivered",
-    delivery: { type: "pickup" },
-    items: [{ name: "Shea Body Butter", qty: 3, price: 4500 }],
-    note: "", createdAt: "2026-09-19T12:05:00",
-  },
-];
-
 function inTab(order, tab) {
   if (tab === "all") return true;
   if (tab === "progress") return ["confirmed", "out", "paid"].includes(order.status);
   return order.status === tab;
-}
-
-function orderTotals(order) {
-  const subtotal = order.items.reduce((sum, item) => sum + item.qty * item.price, 0);
-  const deliveryFee = order.delivery.type === "delivery" ? order.delivery.fee : 0;
-  return { subtotal, deliveryFee, total: subtotal + deliveryFee };
 }
 
 function formatDate(iso) {
@@ -76,26 +47,99 @@ function formatDate(iso) {
 }
 
 export default function Orders() {
-  const [orders, setOrders] = useState(startingOrders);
+  const navigate = useNavigate();
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [tab, setTab] = useState("all");
   const [selectedId, setSelectedId] = useState(null);
+  const [working, setWorking] = useState(false);
+  const [feeInput, setFeeInput] = useState("");
 
-  const sorted = [...orders].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-  const shown = sorted.filter((o) => inTab(o, tab));
+  useEffect(() => {
+    let cancelled = false;
+
+    async function load() {
+      try {
+        const res = await api.get("/orders");
+        if (cancelled) return;
+        setOrders(res.orders);
+      } catch (err) {
+        if (cancelled) return;
+        if (err.status === 401) return navigate("/login");
+        if (err.status === 400) return navigate("/setup");
+        setError(err.message);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, [navigate]);
+
+  const shown = orders.filter((o) => inTab(o, tab));
   const selected = orders.find((o) => o.id === selectedId);
 
-  function setStatus(id, status) {
-    setOrders(orders.map((o) => (o.id === id ? { ...o, status } : o)));
+  function replaceOrder(order) {
+    setOrders((current) => current.map((o) => (o.id === order.id ? order : o)));
+  }
+
+  async function setStatus(id, status) {
+    setError("");
+    setWorking(true);
+    try {
+      const res = await api.put(`/orders/${id}/status`, { status });
+      replaceOrder(res.order);
+    } catch (err) {
+      if (err.status === 401) return navigate("/login");
+      setError(err.message);
+    } finally {
+      setWorking(false);
+    }
   }
 
   function cancelOrder(id) {
     if (window.confirm("Cancel this order?")) setStatus(id, "cancelled");
   }
 
+  // Only for orders where the customer's area wasn't on the delivery list
+  async function saveFee(id) {
+    const fee = Number(feeInput);
+    if (feeInput === "" || !Number.isInteger(fee) || fee < 0) {
+      return setError("Enter the agreed delivery fee.");
+    }
+
+    setError("");
+    setWorking(true);
+    try {
+      const res = await api.put(`/orders/${id}/fee`, { fee });
+      replaceOrder(res.order);
+      setFeeInput("");
+    } catch (err) {
+      if (err.status === 401) return navigate("/login");
+      setError(err.message);
+    } finally {
+      setWorking(false);
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="orders">
+        <p>Loading your orders...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="orders">
       <h1 className="orders-title">Orders</h1>
       <p className="orders-sub">Tap an order to see details and update it.</p>
+
+      {error && <p className="orders-sub">{error}</p>}
 
       <div className="order-tabs">
         {TABS.map((t) => {
@@ -123,19 +167,18 @@ export default function Orders() {
       ) : (
         <div className="order-list">
           {shown.map((o) => {
-            const { total } = orderTotals(o);
             const itemCount = o.items.reduce((sum, item) => sum + item.qty, 0);
             return (
               <button key={o.id} className="order-row" onClick={() => setSelectedId(o.id)}>
                 <div className="order-main">
-                  <p className="order-name">#{o.id} · {o.customer}</p>
+                  <p className="order-name">#{o.orderNumber} · {o.customer}</p>
                   <p className="order-meta">
                     {itemCount} {itemCount === 1 ? "item" : "items"} ·{" "}
-                    {o.method === "pod" ? "Pay on delivery" : "Paid by transfer"} · {formatDate(o.createdAt)}
+                    {o.payment === "pod" ? "Pay on delivery" : "Paid by transfer"} · {formatDate(o.createdAt)}
                   </p>
                 </div>
                 <div className="order-side">
-                  <p className="order-total">{formatPrice(total)}</p>
+                  <p className="order-total">{formatPrice(o.total)}</p>
                   <span className={`status status-${o.status}`}>{STATUS_LABELS[o.status]}</span>
                 </div>
               </button>
@@ -150,7 +193,7 @@ export default function Orders() {
           <div className="sheet" onClick={(e) => e.stopPropagation()}>
             <div className="sheet-head">
               <div>
-                <h2>Order #{selected.id}</h2>
+                <h2>Order #{selected.orderNumber}</h2>
                 <p className="order-meta">{formatDate(selected.createdAt)}</p>
               </div>
               <button className="sheet-x" onClick={() => setSelectedId(null)}>✕</button>
@@ -169,7 +212,7 @@ export default function Orders() {
                   target="_blank"
                   rel="noreferrer"
                   href={`https://wa.me/${selected.phone}?text=${encodeURIComponent(
-                    `Hi ${selected.customer.split(" ")[0]}, this is about your order #${selected.id}.`
+                    `Hi ${selected.customer.split(" ")[0]}, this is about your order #${selected.orderNumber}.`
                   )}`}
                 >
                   WhatsApp
@@ -191,30 +234,68 @@ export default function Orders() {
               )}
             </div>
 
+            {/* Their area wasn't on the list, so you agree the fee and type it here */}
+            {selected.delivery.type === "delivery" && selected.delivery.fee === null && (
+              <div className="sheet-block">
+                <p className="block-label">Delivery fee not set</p>
+                <p className="order-meta">
+                  This area isn't on your list. Agree a fee on WhatsApp, then type it here.
+                </p>
+                <div className="contact-btns">
+                  <input
+                    inputMode="numeric"
+                    placeholder="Fee"
+                    value={feeInput}
+                    onChange={(e) => setFeeInput(e.target.value.replace(/\D/g, ""))}
+                  />
+                  <button
+                    className="contact-btn"
+                    disabled={working}
+                    onClick={() => saveFee(selected.id)}
+                  >
+                    {working ? "Saving..." : "Save fee"}
+                  </button>
+                </div>
+              </div>
+            )}
+
             <div className="sheet-block">
               <p className="block-label">Items</p>
-              {selected.items.map((item) => (
-                <div key={item.name} className="item-row">
-                  <span>{item.name} × {item.qty}</span>
+              {selected.items.map((item, i) => (
+                <div key={i} className="item-row">
+                  <span>
+                    {item.name} × {item.qty}
+                    {item.size ? ` · ${item.size}` : ""}
+                    {item.color ? ` · ${item.color}` : ""}
+                  </span>
                   <span>{formatPrice(item.qty * item.price)}</span>
                 </div>
               ))}
-              {(() => {
-                const { subtotal, deliveryFee, total } = orderTotals(selected);
-                return (
-                  <>
-                    <div className="item-row muted"><span>Subtotal</span><span>{formatPrice(subtotal)}</span></div>
-                    <div className="item-row muted"><span>Delivery</span><span>{formatPrice(deliveryFee)}</span></div>
-                    <div className="item-row total"><span>Total</span><span>{formatPrice(total)}</span></div>
-                  </>
-                );
-              })()}
+
+              <div className="item-row muted">
+                <span>Subtotal</span>
+                <span>{formatPrice(selected.subtotal)}</span>
+              </div>
+              <div className="item-row muted">
+                <span>Delivery</span>
+                <span>
+                  {selected.delivery.type === "pickup"
+                    ? "Pickup"
+                    : selected.delivery.fee === null
+                    ? "Not set yet"
+                    : formatPrice(selected.delivery.fee)}
+                </span>
+              </div>
+              <div className="item-row total">
+                <span>Total</span>
+                <span>{formatPrice(selected.total)}</span>
+              </div>
             </div>
 
             <div className="sheet-block">
               <p className="block-label">Payment</p>
               <p className="block-value">
-                {selected.method === "pod" ? "Pay on delivery" : "Pay before delivery (bank transfer)"}
+                {selected.payment === "pod" ? "Pay on delivery" : "Pay before delivery (bank transfer)"}
               </p>
             </div>
 
@@ -225,18 +306,21 @@ export default function Orders() {
               </div>
             )}
 
+            {error && <p className="orders-sub">{error}</p>}
+
             {/* Actions */}
-            {NEXT_STEP[selected.method][selected.status] && (
+            {NEXT_STEP[selected.payment][selected.status] && (
               <button
                 className="next-btn"
-                onClick={() => setStatus(selected.id, NEXT_STEP[selected.method][selected.status][0])}
+                disabled={working}
+                onClick={() => setStatus(selected.id, NEXT_STEP[selected.payment][selected.status][0])}
               >
-                {NEXT_STEP[selected.method][selected.status][1]}
+                {working ? "Saving..." : NEXT_STEP[selected.payment][selected.status][1]}
               </button>
             )}
 
             {!["delivered", "cancelled"].includes(selected.status) && (
-              <button className="cancel-btn" onClick={() => cancelOrder(selected.id)}>
+              <button className="cancel-btn" disabled={working} onClick={() => cancelOrder(selected.id)}>
                 Cancel order
               </button>
             )}
