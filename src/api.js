@@ -39,6 +39,7 @@ export const api = {
 // Sends a photo straight to Cloudinary, signed by our API
 export async function uploadPhoto(file) {
   const sig = await api.get("/uploads/signature");
+  console.log("Signature from our API:", sig);
 
   const form = new FormData();
   form.append("file", file);
@@ -52,6 +53,10 @@ export async function uploadPhoto(file) {
   const res = await fetch(sig.uploadUrl, { method: "POST", body: form });
   const data = await res.json();
 
-  if (!data.secure_url) throw new Error("Photo failed to upload. Try again.");
+  if (!data.secure_url) {
+    // Cloudinary says exactly what it didn't like
+    console.error("Cloudinary refused:", res.status, data);
+    throw new Error(data.error?.message || "Photo failed to upload. Try again.");
+  }
   return data.secure_url;
 }

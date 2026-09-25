@@ -6,8 +6,8 @@ import { useCart, itemDetails } from "../shop/useCart";
 import PhotoCarousel from "../shop/PhotoCarousel";
 import Checkout from "../shop/Checkout";
 import Done from "../shop/Done";
-import ClothingFooter from "./ClothingFooter";
-import "./ClothingSite.css";
+import PerfumeFooter from "./PerfumeFooter";
+import "./PerfumeSite.css";
 
 const SORTS = [
   { id: "featured", label: "Featured" },
@@ -15,7 +15,6 @@ const SORTS = [
   { id: "high", label: "Price: high to low" },
 ];
 
-// A product with lengths or bottle sizes shows its cheapest one until the customer picks
 function startingPrice(product) {
   const options = product.variants || [];
   return options.length ? Math.min(...options.map((v) => v.price)) : product.price;
@@ -27,18 +26,20 @@ function ProductCard({ store, product, basePath }) {
   const hasOptions = (product.variants || []).length > 0;
 
   return (
-    <Link to={`${basePath}/product/${product.id}`} className="cs-card">
-      <PhotoCarousel photos={product.photos} alt={product.name} />
-      <p className="cs-name">{product.name}</p>
-      <p className="cs-price">
-        {hasOptions ? "From " : ""}
-        {formatPrice(startingPrice(product), store.symbol)}
-      </p>
-      {product.soldOut ? (
-        <p className="cs-tag sold">Sold out</p>
-      ) : (
-        product.tag && <p className="cs-tag">{product.tag}</p>
-      )}
+    <Link to={`${basePath}/product/${product.id}`} className="pf-card">
+      <PhotoCarousel photos={product.photos} alt={product.name} prefix="pf" />
+      <div className="pf-card-info">
+        <p className="pf-name">{product.name}</p>
+        <p className="pf-price">
+          {hasOptions ? "From " : ""}
+          {formatPrice(startingPrice(product), store.symbol)}
+        </p>
+        {product.soldOut ? (
+          <span className="pf-tag sold">Sold out</span>
+        ) : (
+          product.tag && <span className="pf-tag">{product.tag}</span>
+        )}
+      </div>
     </Link>
   );
 }
@@ -48,46 +49,46 @@ function BagDrawer({ store, open, onClose, cart, updateQty, subtotal, basePath }
 
   return (
     <>
-      {open && <div className="cs-overlay" onClick={onClose} />}
-      <aside className={open ? "cs-bag-drawer open" : "cs-bag-drawer"}>
-        <div className="cs-bag-head">
+      {open && <div className="pf-overlay" onClick={onClose} />}
+      <aside className={open ? "pf-bag-drawer open" : "pf-bag-drawer"}>
+        <div className="pf-bag-head">
           <h2>Your bag</h2>
-          <button className="cs-close" onClick={onClose} aria-label="Close bag">✕</button>
+          <button className="pf-close" onClick={onClose} aria-label="Close bag">✕</button>
         </div>
 
         {cart.length === 0 ? (
-          <p className="cs-muted">Your bag is empty.</p>
+          <p className="pf-muted">Your bag is empty.</p>
         ) : (
           <>
-            <div className="cs-bag-items">
+            <div className="pf-bag-items">
               {cart.map((item) => (
-                <div key={item.key} className="cs-bag-item">
+                <div key={item.key} className="pf-bag-item">
                   <img src={item.photo} alt={item.name} />
-                  <div className="cs-bag-info">
-                    <p className="cs-name">{item.name}</p>
-                    {itemDetails(item) && <p className="cs-muted">{itemDetails(item)}</p>}
-                    <p className="cs-price">{formatPrice(item.price, store.symbol)}</p>
-                    <div className="cs-qty">
+                  <div className="pf-bag-info">
+                    <p className="pf-name">{item.name}</p>
+                    {itemDetails(item) && <p className="pf-muted">{itemDetails(item)}</p>}
+                    <p className="pf-price">{formatPrice(item.price, store.symbol)}</p>
+                    <div className="pf-qty">
                       <button onClick={() => updateQty(item.key, -1)} aria-label="Less">−</button>
                       <span>{item.qty}</span>
                       <button onClick={() => updateQty(item.key, 1)} aria-label="More">+</button>
                     </div>
                   </div>
-                  <button className="cs-remove" onClick={() => updateQty(item.key, -item.qty)}>
+                  <button className="pf-remove" onClick={() => updateQty(item.key, -item.qty)}>
                     Remove
                   </button>
                 </div>
               ))}
             </div>
 
-            <div className="cs-bag-foot">
-              <div className="cs-row">
+            <div className="pf-bag-foot">
+              <div className="pf-row">
                 <span>Subtotal</span>
                 <strong>{formatPrice(subtotal, store.symbol)}</strong>
               </div>
-              <p className="cs-muted">Delivery is added at checkout.</p>
+              <p className="pf-muted">Delivery is added at checkout.</p>
               <button
-                className="cs-btn"
+                className="pf-btn"
                 onClick={() => {
                   onClose();
                   navigate(`${basePath}/checkout`);
@@ -110,7 +111,6 @@ function HomePage({ store, basePath, category, setCategory }) {
   const shopRef = useRef(null);
   const location = useLocation();
 
-  // "Shop now" and the menu links land here with #shop
   useEffect(() => {
     if (location.hash === "#shop" && shopRef.current) {
       shopRef.current.scrollIntoView({ behavior: "smooth" });
@@ -126,23 +126,23 @@ function HomePage({ store, basePath, category, setCategory }) {
   return (
     <>
       <section
-        className="cs-hero"
+        className={store.hero.image ? "pf-hero has-photo" : "pf-hero"}
         style={store.hero.image ? { backgroundImage: `url(${store.hero.image})` } : {}}
       >
-        <div className="cs-hero-text">
-          {store.hero.label && <p className="cs-hero-label">{store.hero.label}</p>}
-          <h1 className="cs-hero-title">{store.hero.headline || store.name}</h1>
-          <Link className="cs-hero-btn" to={`${basePath}/#shop`}>Shop now</Link>
+        <div className="pf-hero-text">
+          {store.hero.label && <p className="pf-hero-label">{store.hero.label}</p>}
+          <h1 className="pf-hero-title">{store.hero.headline || store.name}</h1>
+          <Link className="pf-hero-btn" to={`${basePath}/#shop`}>Discover the scents</Link>
         </div>
       </section>
 
-      <section className="cs-shop" ref={shopRef}>
+      <section className="pf-shop" ref={shopRef}>
         {store.categories.length > 0 && (
-          <div className="cs-cats">
+          <div className="pf-cats">
             {["All", ...store.categories].map((c) => (
               <button
                 key={c}
-                className={category === c ? "cs-cat active" : "cs-cat"}
+                className={category === c ? "pf-cat active" : "pf-cat"}
                 onClick={() => setCategory(c)}
               >
                 {c}
@@ -151,10 +151,10 @@ function HomePage({ store, basePath, category, setCategory }) {
           </div>
         )}
 
-        <div className="cs-bar">
-          <span>Items: {shown.length}</span>
-          <label className="cs-sort">
-            Sort by
+        <div className="pf-bar">
+          <span>{shown.length} {shown.length === 1 ? "scent" : "scents"}</span>
+          <label className="pf-sort">
+            Sort
             <select value={sort} onChange={(e) => setSort(e.target.value)}>
               {SORTS.map((s) => (
                 <option key={s.id} value={s.id}>{s.label}</option>
@@ -164,9 +164,9 @@ function HomePage({ store, basePath, category, setCategory }) {
         </div>
 
         {shown.length === 0 ? (
-          <p className="cs-muted">No products yet. Check back soon.</p>
+          <p className="pf-muted pf-empty">No scents yet. Check back soon.</p>
         ) : (
-          <div className="cs-grid">
+          <div className="pf-grid">
             {shown.map((p) => (
               <ProductCard key={p.id} store={store} product={p} basePath={basePath} />
             ))}
@@ -185,7 +185,6 @@ function ProductPage({ store, basePath, addToCart, openBag }) {
   const [variant, setVariant] = useState("");
   const [error, setError] = useState("");
 
-  // Start fresh when moving to another product
   useEffect(() => {
     setSize("");
     setColor("");
@@ -195,9 +194,9 @@ function ProductPage({ store, basePath, addToCart, openBag }) {
 
   if (!product) {
     return (
-      <div className="cs-page">
-        <p>Product not found.</p>
-        <Link className="cs-link" to={`${basePath}/#shop`}>Back to shop</Link>
+      <div className="pf-page">
+        <p>Scent not found.</p>
+        <Link className="pf-link" to={`${basePath}/#shop`}>Back to shop</Link>
       </div>
     );
   }
@@ -207,7 +206,6 @@ function ProductPage({ store, basePath, addToCart, openBag }) {
   const options = product.variants || [];
   const chosenColor = color || (colors.length === 1 ? colors[0] : "");
   const chosen = options.find((v) => v.label === variant);
-  // Before they pick, show the cheapest option
   const shownPrice = chosen ? chosen.price : startingPrice(product);
 
   const related = store.products
@@ -215,9 +213,9 @@ function ProductPage({ store, basePath, addToCart, openBag }) {
     .slice(0, 4);
 
   function handleAdd() {
-    if (options.length > 0 && !variant) return setError("Please choose an option.");
-    if (sizes.length > 0 && !size) return setError("Please choose a size.");
-    if (colors.length > 1 && !color) return setError("Please choose a colour.");
+    if (options.length > 0 && !variant) return setError("Please choose a bottle size.");
+    if (sizes.length > 0 && !size) return setError("Please choose an option.");
+    if (colors.length > 1 && !color) return setError("Please choose one.");
     setError("");
     addToCart({
       productId: product.id,
@@ -231,34 +229,35 @@ function ProductPage({ store, basePath, addToCart, openBag }) {
     openBag();
   }
 
-  const details = [variant, size && `Size ${size}`, chosenColor].filter(Boolean).join(", ");
+  const details = [variant, size, chosenColor].filter(Boolean).join(", ");
   const waText = `Hi ${store.name}, I'd like to order the ${product.name}${
     details ? ` (${details})` : ""
   } for ${formatPrice(shownPrice, store.symbol)}. Is it available?`;
 
   return (
-    <div className="cs-product">
-      <PhotoCarousel key={product.id} photos={product.photos} alt={product.name} />
+    <div className="pf-product">
+      <PhotoCarousel key={product.id} photos={product.photos} alt={product.name} prefix="pf" />
 
-      <div className="cs-product-info">
-        {product.tag && !product.soldOut && <p className="cs-tag">{product.tag}</p>}
-        <h1 className="cs-product-name">{product.name}</h1>
-        <p className="cs-product-price">
+      <div className="pf-product-info">
+        {product.tag && !product.soldOut && <span className="pf-tag">{product.tag}</span>}
+        <h1 className="pf-product-name">{product.name}</h1>
+        <p className="pf-product-price">
           {!chosen && options.length > 0 ? "From " : ""}
           {formatPrice(shownPrice, store.symbol)}
         </p>
 
         {options.length > 0 && (
-          <div className="cs-options">
-            <p className="cs-label">Choose{variant ? `: ${variant}` : ""}</p>
-            <div className="cs-chips">
+          <div className="pf-options">
+            <p className="pf-label">Bottle size{variant ? `: ${variant}` : ""}</p>
+            <div className="pf-sizes">
               {options.map((v) => (
                 <button
                   key={v.label}
-                  className={variant === v.label ? "cs-chip active" : "cs-chip"}
+                  className={variant === v.label ? "pf-size active" : "pf-size"}
                   onClick={() => setVariant(v.label)}
                 >
-                  {v.label} · {formatPrice(v.price, store.symbol)}
+                  <span className="pf-size-label">{v.label}</span>
+                  <span className="pf-size-price">{formatPrice(v.price, store.symbol)}</span>
                 </button>
               ))}
             </div>
@@ -266,13 +265,13 @@ function ProductPage({ store, basePath, addToCart, openBag }) {
         )}
 
         {colors.length > 1 && (
-          <div className="cs-options">
-            <p className="cs-label">Colour{color ? `: ${color}` : ""}</p>
-            <div className="cs-chips">
+          <div className="pf-options">
+            <p className="pf-label">Choose{color ? `: ${color}` : ""}</p>
+            <div className="pf-chips">
               {colors.map((c) => (
                 <button
                   key={c}
-                  className={color === c ? "cs-chip active" : "cs-chip"}
+                  className={color === c ? "pf-chip active" : "pf-chip"}
                   onClick={() => setColor(c)}
                 >
                   {c}
@@ -283,13 +282,13 @@ function ProductPage({ store, basePath, addToCart, openBag }) {
         )}
 
         {sizes.length > 0 && (
-          <div className="cs-options">
-            <p className="cs-label">Size{size ? `: ${size}` : ""}</p>
-            <div className="cs-chips">
+          <div className="pf-options">
+            <p className="pf-label">Option{size ? `: ${size}` : ""}</p>
+            <div className="pf-chips">
               {sizes.map((s) => (
                 <button
                   key={s}
-                  className={size === s ? "cs-chip active" : "cs-chip"}
+                  className={size === s ? "pf-chip active" : "pf-chip"}
                   onClick={() => setSize(s)}
                 >
                   {s}
@@ -299,37 +298,37 @@ function ProductPage({ store, basePath, addToCart, openBag }) {
           </div>
         )}
 
-        {error && <p className="cs-error">{error}</p>}
+        {error && <p className="pf-error">{error}</p>}
 
         {product.soldOut ? (
-          <button className="cs-btn" disabled>Sold out</button>
+          <button className="pf-btn" disabled>Sold out</button>
         ) : (
-          <button className="cs-btn" onClick={handleAdd}>Add to bag</button>
+          <button className="pf-btn" onClick={handleAdd}>Add to bag</button>
         )}
 
         {!product.soldOut && (
           <a
-            className="cs-btn outline"
+            className="pf-btn outline"
             href={`https://wa.me/${store.whatsapp}?text=${encodeURIComponent(waText)}`}
             target="_blank"
             rel="noreferrer"
           >
-            Order on WhatsApp
+            Ask about this scent
           </a>
         )}
 
         {product.description && (
-          <div className="cs-desc">
-            <p className="cs-label">Details</p>
+          <div className="pf-desc">
+            <p className="pf-label">The scent</p>
             <p>{product.description}</p>
           </div>
         )}
       </div>
 
       {related.length > 0 && (
-        <section className="cs-related">
-          <h2 className="cs-section-title">You may also like</h2>
-          <div className="cs-grid">
+        <section className="pf-related">
+          <h2 className="pf-section-title">You may also like</h2>
+          <div className="pf-grid">
             {related.map((p) => (
               <ProductCard key={p.id} store={store} product={p} basePath={basePath} />
             ))}
@@ -342,7 +341,7 @@ function ProductPage({ store, basePath, addToCart, openBag }) {
 
 /* ---------- The whole site ---------- */
 
-export default function ClothingSite({ basePath = "/preview/clothing", slug: slugProp }) {
+export default function PerfumeSite({ basePath = "/preview/perfume", slug: slugProp }) {
   const location = useLocation();
   const navigate = useNavigate();
   const { slug, store, loading, notFound } = useShop(slugProp);
@@ -355,17 +354,15 @@ export default function ClothingSite({ basePath = "/preview/clothing", slug: slu
 
   const isHome = location.pathname.replace(/\/$/, "") === basePath;
 
-  // The header turns solid white once you scroll past the big photo
   useEffect(() => {
     function onScroll() {
-      setScrolled(window.scrollY > window.innerHeight * 0.8);
+      setScrolled(window.scrollY > 40);
     }
     onScroll();
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Every new page starts at the top, except jumps to #shop
   useEffect(() => {
     if (!location.hash) window.scrollTo(0, 0);
   }, [location.pathname, location.hash]);
@@ -377,48 +374,49 @@ export default function ClothingSite({ basePath = "/preview/clothing", slug: slu
   }
 
   if (loading) {
-    return <div className="cs-loading">Loading...</div>;
+    return <div className="pf-loading">Loading...</div>;
   }
 
   if (notFound || !store) {
     return (
-      <div className="cs-page">
-        <h1 className="cs-page-title">Shop not found</h1>
-        <p className="cs-muted">This website address doesn't belong to any shop.</p>
+      <div className="pf">
+        <div className="pf-page">
+          <h1 className="pf-page-title">Shop not found</h1>
+          <p className="pf-muted">This website address doesn't belong to any shop.</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="cs">
-      <header className={!isHome || scrolled ? "cs-header solid" : "cs-header"}>
-        <button className="cs-icon" onClick={() => setMenuOpen(true)} aria-label="Open menu">
-          <span className="cs-burger"><span /><span /><span /></span>
+    <div className="pf">
+      <header className={scrolled ? "pf-header solid" : "pf-header"}>
+        <button className="pf-icon" onClick={() => setMenuOpen(true)} aria-label="Open menu">
+          <span className="pf-burger"><span /><span /><span /></span>
         </button>
 
-        <Link to={basePath || "/"} className="cs-logo">
+        <Link to={basePath || "/"} className="pf-logo">
           {store.logo ? <img src={store.logo} alt={store.name} /> : store.name}
         </Link>
 
-        <button className="cs-icon" onClick={() => setBagOpen(true)} aria-label="Shopping bag">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
+        <button className="pf-icon" onClick={() => setBagOpen(true)} aria-label="Shopping bag">
+          <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4">
             <path d="M5 8h14l-1 12H6L5 8z" />
             <path d="M9 8V6a3 3 0 0 1 6 0v2" />
           </svg>
-          <span>({cartCount})</span>
+          {cartCount > 0 && <span className="pf-count">{cartCount}</span>}
         </button>
       </header>
 
-      {/* Menu drawer */}
-      {menuOpen && <div className="cs-overlay" onClick={() => setMenuOpen(false)} />}
-      <nav className={menuOpen ? "cs-drawer open" : "cs-drawer"}>
-        <button className="cs-close" onClick={() => setMenuOpen(false)} aria-label="Close menu">✕</button>
-        <button className="cs-drawer-link" onClick={() => goToShop("All")}>Shop all</button>
+      {menuOpen && <div className="pf-overlay" onClick={() => setMenuOpen(false)} />}
+      <nav className={menuOpen ? "pf-drawer open" : "pf-drawer"}>
+        <button className="pf-close" onClick={() => setMenuOpen(false)} aria-label="Close menu">✕</button>
+        <button className="pf-drawer-link" onClick={() => goToShop("All")}>All scents</button>
         {store.categories.map((c) => (
-          <button key={c} className="cs-drawer-link" onClick={() => goToShop(c)}>{c}</button>
+          <button key={c} className="pf-drawer-link" onClick={() => goToShop(c)}>{c}</button>
         ))}
         <a
-          className="cs-drawer-wa"
+          className="pf-drawer-wa"
           href={`https://wa.me/${store.whatsapp}`}
           target="_blank"
           rel="noreferrer"
@@ -437,7 +435,7 @@ export default function ClothingSite({ basePath = "/preview/clothing", slug: slu
         basePath={basePath}
       />
 
-      <main className={isHome ? "" : "cs-main"}>
+      <main className={isHome ? "" : "pf-main"}>
         <Routes>
           <Route
             index
@@ -462,15 +460,15 @@ export default function ClothingSite({ basePath = "/preview/clothing", slug: slu
                 basePath={basePath}
                 cart={cart}
                 clearCart={clearCart}
-                prefix="cs"
+                prefix="pf"
               />
             }
           />
-          <Route path="done" element={<Done store={store} basePath={basePath} prefix="cs" />} />
+          <Route path="done" element={<Done store={store} basePath={basePath} prefix="pf" />} />
         </Routes>
       </main>
 
-      <ClothingFooter store={store} />
+      <PerfumeFooter store={store} />
     </div>
   );
 }

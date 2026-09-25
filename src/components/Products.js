@@ -5,6 +5,7 @@ import "./Products.css";
 
 const MAX_PHOTOS = 4;
 const MAX_OPTIONS = 20;
+const MAX_VARIANTS = 10;
 
 const TAGS = ["New", "Most loved", "Pre-order", "Limited", "Sale"];
 
@@ -15,6 +16,16 @@ const SIZE_PRESETS = [
   { label: "Shoes 38 – 45", values: ["38", "39", "40", "41", "42", "43", "44", "45"] },
 ];
 
+// Each business type calls its priced options something different
+const VARIANT_WORDS = {
+  hair: { title: "Lengths & prices", one: "length", placeholder: "14 inch" },
+  perfume: { title: "Bottle sizes & prices", one: "size", placeholder: "50ml" },
+  skincare: { title: "Sizes & prices", one: "size", placeholder: "100ml" },
+  gadgets: { title: "Options & prices", one: "option", placeholder: "128GB" },
+  jewellery: { title: "Options & prices", one: "option", placeholder: "18 inch chain" },
+  clothing: { title: "Options & prices", one: "option", placeholder: "Small" },
+};
+
 const emptyForm = {
   name: "",
   price: "",
@@ -24,6 +35,7 @@ const emptyForm = {
   photos: [],
   sizes: [],
   colors: [],
+  variants: [],
   soldOut: false,
 };
 
@@ -118,10 +130,91 @@ function ChipInput({ label, values, onChange, placeholder, presets = [] }) {
   );
 }
 
+// Lengths, bottle sizes, storage: each one carries its own price
+function VariantInput({ words, values, onChange }) {
+  const [label, setLabel] = useState("");
+  const [price, setPrice] = useState("");
+  const [error, setError] = useState("");
+
+  function add() {
+    const clean = label.trim().slice(0, 30);
+    if (!clean) return setError(`Type the ${words.one}.`);
+    if (values.some((v) => v.label.toLowerCase() === clean.toLowerCase())) {
+      return setError("That one is already on the list.");
+    }
+    const amount = Number(price);
+    if (price === "" || !Number.isInteger(amount) || amount <= 0) {
+      return setError("Enter a valid price.");
+    }
+    if (values.length >= MAX_VARIANTS) {
+      return setError(`You can add up to ${MAX_VARIANTS}.`);
+    }
+
+    setError("");
+    onChange([...values, { label: clean, price: amount }]);
+    setLabel("");
+    setPrice("");
+  }
+
+  function handleKey(e) {
+    if (e.key === "Enter") {
+      e.preventDefault(); // stops Enter from saving the whole product
+      add();
+    }
+  }
+
+  return (
+    <div className="chip-field">
+      <span className="chip-label">{words.title} (optional)</span>
+
+      {values.length > 0 && (
+        <div className="cat-list">
+          {values.map((v) => (
+            <span key={v.label} className="cat-pill">
+              {v.label} · {formatNaira(v.price)}
+              <button
+                type="button"
+                onClick={() => onChange(values.filter((x) => x.label !== v.label))}
+                aria-label={`Remove ${v.label}`}
+              >
+                ×
+              </button>
+            </span>
+          ))}
+        </div>
+      )}
+
+      <div className="chip-add">
+        <input
+          value={label}
+          onChange={(e) => setLabel(e.target.value)}
+          onKeyDown={handleKey}
+          placeholder={words.placeholder}
+          maxLength={30}
+        />
+        <input
+          value={price}
+          inputMode="numeric"
+          onChange={(e) => setPrice(e.target.value.replace(/\D/g, ""))}
+          onKeyDown={handleKey}
+          placeholder="Price"
+        />
+        <button type="button" onClick={add}>Add</button>
+      </div>
+
+      {error && <p className="prod-error">{error}</p>}
+      <p className="prod-sub">
+        Add one for each {words.one} you sell. Customers pick one, and pay that price.
+      </p>
+    </div>
+  );
+}
+
 export default function Products() {
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [businessType, setBusinessType] = useState("clothing");
   const [loading, setLoading] = useState(true);
   const [pageError, setPageError] = useState("");
   const [locked, setLocked] = useState(false);
@@ -136,19 +229,26 @@ export default function Products() {
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
 
+  const words = VARIANT_WORDS[businessType] || VARIANT_WORDS.clothing;
+
   useEffect(() => {
     let cancelled = false;
 
     async function load() {
       try {
-        const [p, c] = await Promise.all([api.get("/products"), api.get("/categories")]);
+        const [p, c, mine] = await Promise.all([
+          api.get("/products"),
+          api.get("/categories"),
+          api.get("/sites/me"),
+        ]);
         if (cancelled) return;
         setProducts(p.products);
         setCategories(c.categories);
+        setBusinessType(mine.site.businessType || "clothing");
       } catch (err) {
         if (cancelled) return;
         if (err.status === 401) return navigate("/login");
-        if (err.status === 400) return navigate("/setup"); // no shop yet
+        if (err.status === 400 || err.status === 404) return navigate("/setup"); // no shop yet
         setPageError(err.message);
       } finally {
         if (!cancelled) setLoading(false);
@@ -200,6 +300,7 @@ export default function Products() {
       photos: product.photos || [],
       sizes: product.sizes || [],
       colors: product.colors || [],
+      variants: product.variants || [],
       soldOut: product.soldOut,
     });
     setError("");
@@ -269,6 +370,7 @@ export default function Products() {
       photos: form.photos,
       sizes: form.sizes,
       colors: form.colors,
+      variants: form.variants,
       soldOut: form.soldOut,
     };
 
@@ -410,10 +512,20 @@ export default function Products() {
 
               <div className="row-info">
                 <p className="row-name">{p.name}</p>
-                <p className="row-price">{formatNaira(p.price)}</p>
+                <p className="row-price">
+                  {p.variants?.length > 0 ? "From " : ""}
+                  {formatNaira(
+                    p.variants?.length > 0
+                      ? Math.min(...p.variants.map((v) => v.price))
+                      : p.price
+                  )}
+                </p>
                 <div className="row-tags">
                   {p.category && <span className="tag">{p.category}</span>}
                   {p.tag && <span className="tag">{p.tag}</span>}
+                  {p.variants?.length > 0 && (
+                    <span className="tag">{p.variants.length} {words.one}s</span>
+                  )}
                   {p.sizes?.length > 0 && <span className="tag">{p.sizes.length} sizes</span>}
                   {p.soldOut && <span className="tag sold">Sold out</span>}
                 </div>
@@ -483,9 +595,14 @@ export default function Products() {
             <input name="name" value={form.name} onChange={handleChange}
               maxLength={80} placeholder="Product name" />
 
-            <label>Price (₦)</label>
+            <label>{form.variants.length > 0 ? "Starting price (₦)" : "Price (₦)"}</label>
             <input name="price" type="number" inputMode="numeric" value={form.price}
               onChange={handleChange} placeholder="15000" />
+            {form.variants.length > 0 && (
+              <p className="prod-sub">
+                Customers pay the {words.one} price they pick. This one is only shown before they choose.
+              </p>
+            )}
 
             <label>Category (optional)</label>
             <select name="categoryId" value={form.categoryId} onChange={handleChange}>
@@ -494,6 +611,12 @@ export default function Products() {
                 <option key={c.id} value={c.id}>{c.name}</option>
               ))}
             </select>
+
+            <VariantInput
+              words={words}
+              values={form.variants}
+              onChange={(variants) => setForm({ ...form, variants })}
+            />
 
             <ChipInput
               label="Sizes (optional)"

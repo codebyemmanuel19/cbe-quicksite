@@ -11,6 +11,12 @@ import OrderSettings from "./components/OrderSettings";
 import Billing from "./components/Billing";
 import Support from "./components/Support";
 import ClothingSite from "./ClothingSite/ClothingSite";
+import HairSite from "./HairSite/HairSite";
+import SkincareSite from "./SkincareSite/SkincareSite";
+import PerfumeSite from "./PerfumeSite/PerfumeSite";
+import JewellerySite from "./JewellerySite/JewellerySite";
+import GadgetsSite from "./GadgetsSite/GadgetsSite";
+import ShopRouter from "./ShopRouter";
 import "./App.css";
 
 const Page = ({ title }) => <h1 className="page-title">{title}</h1>;
@@ -89,8 +95,13 @@ export default function App() {
         <Route path="/forgot-password" element={<Page title="Reset password" />} />
         <Route path="/setup" element={<Setup />} />
 
-        {/* Preview of the Clothing template with fake data */}
+        {/* Template previews. Add ?slug=yourshop to load a real shop's data. */}
         <Route path="/preview/clothing/*" element={<ClothingSite basePath="/preview/clothing" />} />
+        <Route path="/preview/hair/*" element={<HairSite basePath="/preview/hair" />} />
+        <Route path="/preview/skincare/*" element={<SkincareSite basePath="/preview/skincare" />} />
+        <Route path="/preview/perfume/*" element={<PerfumeSite basePath="/preview/perfume" />} />
+        <Route path="/preview/jewellery/*" element={<JewellerySite basePath="/preview/jewellery" />} />
+        <Route path="/preview/gadgets/*" element={<GadgetsSite basePath="/preview/gadgets" />} />
 
         <Route path="/dashboard" element={<DashboardLayout />}>
           <Route index element={<DashboardHome />} />

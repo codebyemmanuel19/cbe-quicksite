@@ -6,8 +6,8 @@ import { useCart, itemDetails } from "../shop/useCart";
 import PhotoCarousel from "../shop/PhotoCarousel";
 import Checkout from "../shop/Checkout";
 import Done from "../shop/Done";
-import ClothingFooter from "./ClothingFooter";
-import "./ClothingSite.css";
+import SkincareFooter from "./SkincareFooter";
+import "./SkincareSite.css";
 
 const SORTS = [
   { id: "featured", label: "Featured" },
@@ -15,7 +15,6 @@ const SORTS = [
   { id: "high", label: "Price: high to low" },
 ];
 
-// A product with lengths or bottle sizes shows its cheapest one until the customer picks
 function startingPrice(product) {
   const options = product.variants || [];
   return options.length ? Math.min(...options.map((v) => v.price)) : product.price;
@@ -27,18 +26,21 @@ function ProductCard({ store, product, basePath }) {
   const hasOptions = (product.variants || []).length > 0;
 
   return (
-    <Link to={`${basePath}/product/${product.id}`} className="cs-card">
-      <PhotoCarousel photos={product.photos} alt={product.name} />
-      <p className="cs-name">{product.name}</p>
-      <p className="cs-price">
-        {hasOptions ? "From " : ""}
-        {formatPrice(startingPrice(product), store.symbol)}
-      </p>
-      {product.soldOut ? (
-        <p className="cs-tag sold">Sold out</p>
-      ) : (
-        product.tag && <p className="cs-tag">{product.tag}</p>
-      )}
+    <Link to={`${basePath}/product/${product.id}`} className="sk-card">
+      <PhotoCarousel photos={product.photos} alt={product.name} prefix="sk" />
+      <div className="sk-card-info">
+        {product.category && <p className="sk-cat-label">{product.category}</p>}
+        <p className="sk-name">{product.name}</p>
+        <p className="sk-price">
+          {hasOptions ? "From " : ""}
+          {formatPrice(startingPrice(product), store.symbol)}
+        </p>
+        {product.soldOut ? (
+          <span className="sk-tag sold">Out of stock</span>
+        ) : (
+          product.tag && <span className="sk-tag">{product.tag}</span>
+        )}
+      </div>
     </Link>
   );
 }
@@ -48,46 +50,48 @@ function BagDrawer({ store, open, onClose, cart, updateQty, subtotal, basePath }
 
   return (
     <>
-      {open && <div className="cs-overlay" onClick={onClose} />}
-      <aside className={open ? "cs-bag-drawer open" : "cs-bag-drawer"}>
-        <div className="cs-bag-head">
+      {open && <div className="sk-overlay" onClick={onClose} />}
+      <aside className={open ? "sk-bag-drawer open" : "sk-bag-drawer"}>
+        <div className="sk-bag-head">
           <h2>Your bag</h2>
-          <button className="cs-close" onClick={onClose} aria-label="Close bag">✕</button>
+          <button className="sk-close" onClick={onClose} aria-label="Close bag">✕</button>
         </div>
 
         {cart.length === 0 ? (
-          <p className="cs-muted">Your bag is empty.</p>
+          <p className="sk-muted">Your bag is empty.</p>
         ) : (
           <>
-            <div className="cs-bag-items">
+            <div className="sk-bag-items">
               {cart.map((item) => (
-                <div key={item.key} className="cs-bag-item">
-                  <img src={item.photo} alt={item.name} />
-                  <div className="cs-bag-info">
-                    <p className="cs-name">{item.name}</p>
-                    {itemDetails(item) && <p className="cs-muted">{itemDetails(item)}</p>}
-                    <p className="cs-price">{formatPrice(item.price, store.symbol)}</p>
-                    <div className="cs-qty">
+                <div key={item.key} className="sk-bag-item">
+                  <div className="sk-bag-img">
+                    <img src={item.photo} alt={item.name} />
+                  </div>
+                  <div className="sk-bag-info">
+                    <p className="sk-name">{item.name}</p>
+                    {itemDetails(item) && <p className="sk-muted">{itemDetails(item)}</p>}
+                    <p className="sk-price">{formatPrice(item.price, store.symbol)}</p>
+                    <div className="sk-qty">
                       <button onClick={() => updateQty(item.key, -1)} aria-label="Less">−</button>
                       <span>{item.qty}</span>
                       <button onClick={() => updateQty(item.key, 1)} aria-label="More">+</button>
                     </div>
                   </div>
-                  <button className="cs-remove" onClick={() => updateQty(item.key, -item.qty)}>
+                  <button className="sk-remove" onClick={() => updateQty(item.key, -item.qty)}>
                     Remove
                   </button>
                 </div>
               ))}
             </div>
 
-            <div className="cs-bag-foot">
-              <div className="cs-row">
+            <div className="sk-bag-foot">
+              <div className="sk-row">
                 <span>Subtotal</span>
                 <strong>{formatPrice(subtotal, store.symbol)}</strong>
               </div>
-              <p className="cs-muted">Delivery is added at checkout.</p>
+              <p className="sk-muted">Delivery is added at checkout.</p>
               <button
-                className="cs-btn"
+                className="sk-btn"
                 onClick={() => {
                   onClose();
                   navigate(`${basePath}/checkout`);
@@ -110,7 +114,6 @@ function HomePage({ store, basePath, category, setCategory }) {
   const shopRef = useRef(null);
   const location = useLocation();
 
-  // "Shop now" and the menu links land here with #shop
   useEffect(() => {
     if (location.hash === "#shop" && shopRef.current) {
       shopRef.current.scrollIntoView({ behavior: "smooth" });
@@ -126,23 +129,24 @@ function HomePage({ store, basePath, category, setCategory }) {
   return (
     <>
       <section
-        className="cs-hero"
+        className={store.hero.image ? "sk-hero has-photo" : "sk-hero"}
         style={store.hero.image ? { backgroundImage: `url(${store.hero.image})` } : {}}
       >
-        <div className="cs-hero-text">
-          {store.hero.label && <p className="cs-hero-label">{store.hero.label}</p>}
-          <h1 className="cs-hero-title">{store.hero.headline || store.name}</h1>
-          <Link className="cs-hero-btn" to={`${basePath}/#shop`}>Shop now</Link>
+        <div className="sk-hero-text">
+          {store.hero.label && <p className="sk-hero-label">{store.hero.label}</p>}
+          <h1 className="sk-hero-title">{store.hero.headline || store.name}</h1>
+          {store.about && <p className="sk-hero-about">{store.about}</p>}
+          <Link className="sk-hero-btn" to={`${basePath}/#shop`}>Shop all products</Link>
         </div>
       </section>
 
-      <section className="cs-shop" ref={shopRef}>
+      <section className="sk-shop" ref={shopRef}>
         {store.categories.length > 0 && (
-          <div className="cs-cats">
+          <div className="sk-cats">
             {["All", ...store.categories].map((c) => (
               <button
                 key={c}
-                className={category === c ? "cs-cat active" : "cs-cat"}
+                className={category === c ? "sk-cat active" : "sk-cat"}
                 onClick={() => setCategory(c)}
               >
                 {c}
@@ -151,10 +155,10 @@ function HomePage({ store, basePath, category, setCategory }) {
           </div>
         )}
 
-        <div className="cs-bar">
-          <span>Items: {shown.length}</span>
-          <label className="cs-sort">
-            Sort by
+        <div className="sk-bar">
+          <span>{shown.length} {shown.length === 1 ? "product" : "products"}</span>
+          <label className="sk-sort">
+            Sort
             <select value={sort} onChange={(e) => setSort(e.target.value)}>
               {SORTS.map((s) => (
                 <option key={s.id} value={s.id}>{s.label}</option>
@@ -164,9 +168,9 @@ function HomePage({ store, basePath, category, setCategory }) {
         </div>
 
         {shown.length === 0 ? (
-          <p className="cs-muted">No products yet. Check back soon.</p>
+          <p className="sk-muted sk-empty">No products yet. Check back soon.</p>
         ) : (
-          <div className="cs-grid">
+          <div className="sk-grid">
             {shown.map((p) => (
               <ProductCard key={p.id} store={store} product={p} basePath={basePath} />
             ))}
@@ -185,7 +189,6 @@ function ProductPage({ store, basePath, addToCart, openBag }) {
   const [variant, setVariant] = useState("");
   const [error, setError] = useState("");
 
-  // Start fresh when moving to another product
   useEffect(() => {
     setSize("");
     setColor("");
@@ -195,9 +198,9 @@ function ProductPage({ store, basePath, addToCart, openBag }) {
 
   if (!product) {
     return (
-      <div className="cs-page">
+      <div className="sk-page">
         <p>Product not found.</p>
-        <Link className="cs-link" to={`${basePath}/#shop`}>Back to shop</Link>
+        <Link className="sk-link" to={`${basePath}/#shop`}>Back to shop</Link>
       </div>
     );
   }
@@ -207,7 +210,6 @@ function ProductPage({ store, basePath, addToCart, openBag }) {
   const options = product.variants || [];
   const chosenColor = color || (colors.length === 1 ? colors[0] : "");
   const chosen = options.find((v) => v.label === variant);
-  // Before they pick, show the cheapest option
   const shownPrice = chosen ? chosen.price : startingPrice(product);
 
   const related = store.products
@@ -215,9 +217,9 @@ function ProductPage({ store, basePath, addToCart, openBag }) {
     .slice(0, 4);
 
   function handleAdd() {
-    if (options.length > 0 && !variant) return setError("Please choose an option.");
-    if (sizes.length > 0 && !size) return setError("Please choose a size.");
-    if (colors.length > 1 && !color) return setError("Please choose a colour.");
+    if (options.length > 0 && !variant) return setError("Please choose a size.");
+    if (sizes.length > 0 && !size) return setError("Please choose an option.");
+    if (colors.length > 1 && !color) return setError("Please choose a shade.");
     setError("");
     addToCart({
       productId: product.id,
@@ -231,34 +233,35 @@ function ProductPage({ store, basePath, addToCart, openBag }) {
     openBag();
   }
 
-  const details = [variant, size && `Size ${size}`, chosenColor].filter(Boolean).join(", ");
+  const details = [variant, size, chosenColor].filter(Boolean).join(", ");
   const waText = `Hi ${store.name}, I'd like to order the ${product.name}${
     details ? ` (${details})` : ""
   } for ${formatPrice(shownPrice, store.symbol)}. Is it available?`;
 
   return (
-    <div className="cs-product">
-      <PhotoCarousel key={product.id} photos={product.photos} alt={product.name} />
+    <div className="sk-product">
+      <PhotoCarousel key={product.id} photos={product.photos} alt={product.name} prefix="sk" />
 
-      <div className="cs-product-info">
-        {product.tag && !product.soldOut && <p className="cs-tag">{product.tag}</p>}
-        <h1 className="cs-product-name">{product.name}</h1>
-        <p className="cs-product-price">
+      <div className="sk-product-info">
+        {product.category && <p className="sk-cat-label">{product.category}</p>}
+        <h1 className="sk-product-name">{product.name}</h1>
+        <p className="sk-product-price">
           {!chosen && options.length > 0 ? "From " : ""}
           {formatPrice(shownPrice, store.symbol)}
         </p>
 
         {options.length > 0 && (
-          <div className="cs-options">
-            <p className="cs-label">Choose{variant ? `: ${variant}` : ""}</p>
-            <div className="cs-chips">
+          <div className="sk-options">
+            <p className="sk-label">Size{variant ? `: ${variant}` : ""}</p>
+            <div className="sk-sizes">
               {options.map((v) => (
                 <button
                   key={v.label}
-                  className={variant === v.label ? "cs-chip active" : "cs-chip"}
+                  className={variant === v.label ? "sk-size active" : "sk-size"}
                   onClick={() => setVariant(v.label)}
                 >
-                  {v.label} · {formatPrice(v.price, store.symbol)}
+                  <span className="sk-size-label">{v.label}</span>
+                  <span className="sk-size-price">{formatPrice(v.price, store.symbol)}</span>
                 </button>
               ))}
             </div>
@@ -266,13 +269,13 @@ function ProductPage({ store, basePath, addToCart, openBag }) {
         )}
 
         {colors.length > 1 && (
-          <div className="cs-options">
-            <p className="cs-label">Colour{color ? `: ${color}` : ""}</p>
-            <div className="cs-chips">
+          <div className="sk-options">
+            <p className="sk-label">Shade{color ? `: ${color}` : ""}</p>
+            <div className="sk-chips">
               {colors.map((c) => (
                 <button
                   key={c}
-                  className={color === c ? "cs-chip active" : "cs-chip"}
+                  className={color === c ? "sk-chip active" : "sk-chip"}
                   onClick={() => setColor(c)}
                 >
                   {c}
@@ -283,13 +286,13 @@ function ProductPage({ store, basePath, addToCart, openBag }) {
         )}
 
         {sizes.length > 0 && (
-          <div className="cs-options">
-            <p className="cs-label">Size{size ? `: ${size}` : ""}</p>
-            <div className="cs-chips">
+          <div className="sk-options">
+            <p className="sk-label">Option{size ? `: ${size}` : ""}</p>
+            <div className="sk-chips">
               {sizes.map((s) => (
                 <button
                   key={s}
-                  className={size === s ? "cs-chip active" : "cs-chip"}
+                  className={size === s ? "sk-chip active" : "sk-chip"}
                   onClick={() => setSize(s)}
                 >
                   {s}
@@ -299,37 +302,37 @@ function ProductPage({ store, basePath, addToCart, openBag }) {
           </div>
         )}
 
-        {error && <p className="cs-error">{error}</p>}
+        {error && <p className="sk-error">{error}</p>}
 
         {product.soldOut ? (
-          <button className="cs-btn" disabled>Sold out</button>
+          <button className="sk-btn" disabled>Out of stock</button>
         ) : (
-          <button className="cs-btn" onClick={handleAdd}>Add to bag</button>
+          <button className="sk-btn" onClick={handleAdd}>Add to bag</button>
         )}
 
         {!product.soldOut && (
           <a
-            className="cs-btn outline"
+            className="sk-btn outline"
             href={`https://wa.me/${store.whatsapp}?text=${encodeURIComponent(waText)}`}
             target="_blank"
             rel="noreferrer"
           >
-            Order on WhatsApp
+            Ask a question
           </a>
         )}
 
         {product.description && (
-          <div className="cs-desc">
-            <p className="cs-label">Details</p>
+          <div className="sk-desc">
+            <p className="sk-label">About this product</p>
             <p>{product.description}</p>
           </div>
         )}
       </div>
 
       {related.length > 0 && (
-        <section className="cs-related">
-          <h2 className="cs-section-title">You may also like</h2>
-          <div className="cs-grid">
+        <section className="sk-related">
+          <h2 className="sk-section-title">Goes well with</h2>
+          <div className="sk-grid">
             {related.map((p) => (
               <ProductCard key={p.id} store={store} product={p} basePath={basePath} />
             ))}
@@ -342,7 +345,7 @@ function ProductPage({ store, basePath, addToCart, openBag }) {
 
 /* ---------- The whole site ---------- */
 
-export default function ClothingSite({ basePath = "/preview/clothing", slug: slugProp }) {
+export default function SkincareSite({ basePath = "/preview/skincare", slug: slugProp }) {
   const location = useLocation();
   const navigate = useNavigate();
   const { slug, store, loading, notFound } = useShop(slugProp);
@@ -351,21 +354,9 @@ export default function ClothingSite({ basePath = "/preview/clothing", slug: slu
   const [category, setCategory] = useState("All");
   const [menuOpen, setMenuOpen] = useState(false);
   const [bagOpen, setBagOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
 
   const isHome = location.pathname.replace(/\/$/, "") === basePath;
 
-  // The header turns solid white once you scroll past the big photo
-  useEffect(() => {
-    function onScroll() {
-      setScrolled(window.scrollY > window.innerHeight * 0.8);
-    }
-    onScroll();
-    window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  // Every new page starts at the top, except jumps to #shop
   useEffect(() => {
     if (!location.hash) window.scrollTo(0, 0);
   }, [location.pathname, location.hash]);
@@ -377,48 +368,48 @@ export default function ClothingSite({ basePath = "/preview/clothing", slug: slu
   }
 
   if (loading) {
-    return <div className="cs-loading">Loading...</div>;
+    return <div className="sk-loading">Loading...</div>;
   }
 
   if (notFound || !store) {
     return (
-      <div className="cs-page">
-        <h1 className="cs-page-title">Shop not found</h1>
-        <p className="cs-muted">This website address doesn't belong to any shop.</p>
+      <div className="sk-page">
+        <h1 className="sk-page-title">Shop not found</h1>
+        <p className="sk-muted">This website address doesn't belong to any shop.</p>
       </div>
     );
   }
 
   return (
-    <div className="cs">
-      <header className={!isHome || scrolled ? "cs-header solid" : "cs-header"}>
-        <button className="cs-icon" onClick={() => setMenuOpen(true)} aria-label="Open menu">
-          <span className="cs-burger"><span /><span /><span /></span>
+    <div className="sk">
+      {/* This header stays white all the way down, so it never fights the photos */}
+      <header className="sk-header">
+        <button className="sk-icon" onClick={() => setMenuOpen(true)} aria-label="Open menu">
+          <span className="sk-burger"><span /><span /><span /></span>
         </button>
 
-        <Link to={basePath || "/"} className="cs-logo">
+        <Link to={basePath || "/"} className="sk-logo">
           {store.logo ? <img src={store.logo} alt={store.name} /> : store.name}
         </Link>
 
-        <button className="cs-icon" onClick={() => setBagOpen(true)} aria-label="Shopping bag">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
+        <button className="sk-icon" onClick={() => setBagOpen(true)} aria-label="Shopping bag">
+          <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
             <path d="M5 8h14l-1 12H6L5 8z" />
             <path d="M9 8V6a3 3 0 0 1 6 0v2" />
           </svg>
-          <span>({cartCount})</span>
+          {cartCount > 0 && <span className="sk-count">{cartCount}</span>}
         </button>
       </header>
 
-      {/* Menu drawer */}
-      {menuOpen && <div className="cs-overlay" onClick={() => setMenuOpen(false)} />}
-      <nav className={menuOpen ? "cs-drawer open" : "cs-drawer"}>
-        <button className="cs-close" onClick={() => setMenuOpen(false)} aria-label="Close menu">✕</button>
-        <button className="cs-drawer-link" onClick={() => goToShop("All")}>Shop all</button>
+      {menuOpen && <div className="sk-overlay" onClick={() => setMenuOpen(false)} />}
+      <nav className={menuOpen ? "sk-drawer open" : "sk-drawer"}>
+        <button className="sk-close" onClick={() => setMenuOpen(false)} aria-label="Close menu">✕</button>
+        <button className="sk-drawer-link" onClick={() => goToShop("All")}>All products</button>
         {store.categories.map((c) => (
-          <button key={c} className="cs-drawer-link" onClick={() => goToShop(c)}>{c}</button>
+          <button key={c} className="sk-drawer-link" onClick={() => goToShop(c)}>{c}</button>
         ))}
         <a
-          className="cs-drawer-wa"
+          className="sk-drawer-wa"
           href={`https://wa.me/${store.whatsapp}`}
           target="_blank"
           rel="noreferrer"
@@ -437,7 +428,7 @@ export default function ClothingSite({ basePath = "/preview/clothing", slug: slu
         basePath={basePath}
       />
 
-      <main className={isHome ? "" : "cs-main"}>
+      <main className="sk-main">
         <Routes>
           <Route
             index
@@ -462,15 +453,15 @@ export default function ClothingSite({ basePath = "/preview/clothing", slug: slu
                 basePath={basePath}
                 cart={cart}
                 clearCart={clearCart}
-                prefix="cs"
+                prefix="sk"
               />
             }
           />
-          <Route path="done" element={<Done store={store} basePath={basePath} prefix="cs" />} />
+          <Route path="done" element={<Done store={store} basePath={basePath} prefix="sk" />} />
         </Routes>
       </main>
 
-      <ClothingFooter store={store} />
+      <SkincareFooter store={store} />
     </div>
   );
 }
