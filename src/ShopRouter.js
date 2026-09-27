@@ -1,4 +1,4 @@
-﻿import { useShop } from "./shop/useShop";
+import { useShop } from "./shop/useShop";
 import ClothingSite from "./ClothingSite/ClothingSite";
 import HairSite from "./HairSite/HairSite";
 import SkincareSite from "./SkincareSite/SkincareSite";
