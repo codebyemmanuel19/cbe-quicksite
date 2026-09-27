@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { api } from "../api";
 
-// kemisboutique.cbequicksite.com -> kemisboutique
+// kemisboutique.cbequicksite.com -> kemsboutique
 // On your laptop use ?slug=kemisboutique once, and it's remembered
 export function detectSlug() {
   const fromQuery = new URLSearchParams(window.location.search).get("slug");
