@@ -27,7 +27,6 @@ export default function Signup() {
 
     setSaving(true);
     try {
-      // Creates the account and sets the login cookie
       await api.post("/auth/signup", {
         email: form.email.trim().toLowerCase(),
         password: form.password,
@@ -50,6 +49,10 @@ export default function Signup() {
             <text x="50" y="90" textAnchor="middle" fill="#9db3f5" fontSize="22" fontFamily="monospace" fontWeight="bold">/&gt;</text>
           </svg>
         </div>
+
+        <p className="brand-wordmark">
+          <span className="brand-dark">CBE</span><span className="brand-blue">QuickSite</span>
+        </p>
 
         <h1>Create your account</h1>
         <p className="auth-sub">Get your business website live in minutes.</p>

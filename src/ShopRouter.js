@@ -18,7 +18,7 @@ const TEMPLATES = {
 
 // kemisboutique.cbequicksite.com loads this. It asks the API which
 // kind of shop this is, then hands over to that template.
-export default function ShopRouter() {
+export default function ShopRouter({ basePath = "" }) {
   const { slug, store, loading, notFound } = useShop();
 
   if (loading) {
@@ -29,12 +29,12 @@ export default function ShopRouter() {
     return (
       <div className="shop-missing">
         <h1>Shop not found</h1>
-        <p>This website address doesn't belong to any shop.</p>
+        <p>This website address does not belong to any shop.</p>
         <a href="https://cbequicksite.com">Create your own website</a>
       </div>
     );
   }
 
   const Template = TEMPLATES[store.businessType] || ClothingSite;
-  return <Template basePath="" slug={slug} />;
+  return <Template basePath={basePath} slug={slug} />;
 }
