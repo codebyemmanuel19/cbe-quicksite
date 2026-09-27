@@ -355,8 +355,6 @@ export default function SkincareSite({ basePath = "/preview/skincare", slug: slu
   const [menuOpen, setMenuOpen] = useState(false);
   const [bagOpen, setBagOpen] = useState(false);
 
-  const isHome = location.pathname.replace(/\/$/, "") === basePath;
-
   useEffect(() => {
     if (!location.hash) window.scrollTo(0, 0);
   }, [location.pathname, location.hash]);
