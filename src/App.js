@@ -3,6 +3,8 @@ import { BrowserRouter, Routes, Route, NavLink, Outlet, Navigate } from "react-r
 import Signup from "./components/Signup";
 import Setup from "./components/Setup";
 import Login from "./components/Login";
+import ForgotPassword from "./components/ForgotPassword";
+import ResetPassword from "./components/ResetPassword";
 import DashboardHome from "./components/DashboardHome";
 import BusinessInfo from "./components/BusinessInfo";
 import Products from "./components/Products";
@@ -18,8 +20,6 @@ import JewellerySite from "./JewellerySite/JewellerySite";
 import GadgetsSite from "./GadgetsSite/GadgetsSite";
 import ShopRouter from "./ShopRouter";
 import "./App.css";
-
-const Page = ({ title }) => <h1 className="page-title">{title}</h1>;
 
 // True on kemisboutique.cbequicksite.com, false on cbequicksite.com and localhost
 function isVendorSubdomain() {
@@ -167,7 +167,8 @@ export default function App() {
         <Route path="/" element={<Navigate to="/dashboard" />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/forgot-password" element={<Page title="Reset password" />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/setup" element={<Setup />} />
 
         {/* Test the real subdomain behaviour on your laptop:

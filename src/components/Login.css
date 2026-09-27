@@ -264,3 +264,14 @@ html, body {
     border-radius: 18px;
   }
 }
+
+/* A button that looks like a link, used inside sentences */
+.link-btn {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: #2d3f8f;
+  text-decoration: underline;
+  cursor: pointer;
+}
