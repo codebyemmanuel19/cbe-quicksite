@@ -551,6 +551,8 @@
   line-height: 1.6;
   color: #666;
   text-decoration: none;
+  /* A long email must wrap inside its column, never run into the next one */
+  overflow-wrap: anywhere;
 }
 
 .cs-footer-cols a:hover { color: #111; }
