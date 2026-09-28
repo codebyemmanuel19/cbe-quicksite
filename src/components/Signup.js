@@ -103,16 +103,7 @@ export default function Signup() {
           <Link to="/terms">Terms</Link> and <Link to="/privacy">Privacy Policy</Link>.
         </p>
 
-        <p className="auth-help">
-          Don't understand something?{" "}
-          <a
-            href="https://wa.me/2349027090880?text=Hi%2C%20I%20need%20help%20with%20CBE%20QuickSite"
-            target="_blank"
-            rel="noreferrer"
-          >
-            Contact support
-          </a>
-        </p>
+        
 
         <p className="auth-switch">
           Already have an account? <Link to="/login">Log in</Link>
