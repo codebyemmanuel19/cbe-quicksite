@@ -255,6 +255,11 @@ html, body {
   text-decoration: underline;
 }
 
+/* The button is now the last thing above this, so give it room */
+.auth-switch {
+  margin-top: 24px;
+}
+
 @media (max-width: 400px) {
   .auth-page {
     padding: 16px;
