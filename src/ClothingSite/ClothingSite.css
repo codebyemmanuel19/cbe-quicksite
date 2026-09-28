@@ -63,6 +63,15 @@
   text-decoration: none;
 }
 
+/* Whatever size the vendor uploads, the logo fits the header bar */
+.cs-header .cs-logo img {
+  height: 38px;
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
+  display: block;
+}
+
 /* Drawers */
 .cs-overlay { position: fixed; inset: 0; z-index: 30; background: rgba(0, 0, 0, 0.4); }
 
