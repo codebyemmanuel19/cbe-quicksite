@@ -144,3 +144,59 @@
   color: #2563eb;
   text-decoration: none;
 }
+
+/* Confirm your email. Amber, not red: nothing is broken, it's a nudge. */
+.verify-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 16px 18px;
+  margin-bottom: 16px;
+  border: 1px solid #f5d98a;
+  border-radius: 14px;
+  background: #fffaf0;
+}
+
+.verify-title {
+  margin: 0 0 4px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #7a5a12;
+}
+
+.verify-sub {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.55;
+  color: #8a6d2f;
+}
+
+.verify-btn {
+  flex-shrink: 0;
+  padding: 10px 16px;
+  border: 1px solid #c99a2e;
+  border-radius: 10px;
+  background: #fff;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: #7a5a12;
+  cursor: pointer;
+}
+
+.verify-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+@media (max-width: 520px) {
+  .verify-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .verify-btn {
+    width: 100%;
+  }
+}

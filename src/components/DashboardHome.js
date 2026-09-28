@@ -89,12 +89,15 @@ function statusCard(billing) {
 export default function DashboardHome() {
   const navigate = useNavigate();
   const [site, setSite] = useState(null);
+  const [account, setAccount] = useState(null);
   const [products, setProducts] = useState([]);
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
   const [shared, setShared] = useState(false);
+  const [resending, setResending] = useState(false);
+  const [resent, setResent] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -103,11 +106,16 @@ export default function DashboardHome() {
       try {
         // The shop first: products and orders need it to exist
         const mine = await api.get("/sites/me");
-        const [p, o] = await Promise.all([api.get("/products"), api.get("/orders")]);
+        const [p, o, me] = await Promise.all([
+          api.get("/products"),
+          api.get("/orders"),
+          api.get("/auth/me"),
+        ]);
         if (cancelled) return;
         setSite(mine.site);
         setProducts(p.products);
         setOrders(o.orders);
+        setAccount(me.user);
       } catch (err) {
         if (cancelled) return;
         if (err.status === 401) return navigate("/login");
@@ -151,12 +159,25 @@ export default function DashboardHome() {
   const ordersThisWeek = orders.filter((o) => new Date(o.createdAt).getTime() > weekAgo).length;
 
   const card = statusCard(site.billing);
+  const needsVerify = account && !account.emailVerified;
 
   async function handleCopy() {
     const ok = await copyText(url);
     if (ok) {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
+    }
+  }
+
+  async function handleResend() {
+    setResending(true);
+    try {
+      await api.post("/auth/resend-verification");
+      setResent(true);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setResending(false);
     }
   }
 
@@ -171,6 +192,26 @@ export default function DashboardHome() {
   return (
     <div className="home">
       <h1 className="home-title">Hi, {site.business.businessName} 👋</h1>
+
+      {/* Nothing is blocked. This is only so they never lose their account
+          to a typo in their email. */}
+      {needsVerify && (
+        <section className="verify-card">
+          <div>
+            <p className="verify-title">Confirm your email</p>
+            <p className="verify-sub">
+              {resent
+                ? `New link sent to ${account.email}. Check your inbox and your spam folder.`
+                : `We sent a link to ${account.email}. Confirming it means you can always get back into your account.`}
+            </p>
+          </div>
+          {!resent && (
+            <button className="verify-btn" onClick={handleResend} disabled={resending}>
+              {resending ? "Sending..." : "Send again"}
+            </button>
+          )}
+        </section>
+      )}
 
       <section className="live-card">
         <p className="live-label">Your website is live</p>
