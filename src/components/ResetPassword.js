@@ -8,9 +8,11 @@ const BrandHead = () => (
     <div className="brand-badge">
       <svg viewBox="0 0 100 100" width="56" height="56">
         <rect width="100" height="100" rx="22" fill="#2d3f8f" />
-        <text x="50" y="32" textAnchor="middle" fill="#9db3f5" fontSize="22" fontFamily="monospace" fontWeight="bold">&lt;</text>
-        <text x="50" y="64" textAnchor="middle" fill="#ffffff" fontSize="34" fontFamily="Arial, sans-serif" fontWeight="800">CBE</text>
-        <text x="50" y="90" textAnchor="middle" fill="#9db3f5" fontSize="22" fontFamily="monospace" fontWeight="bold">/&gt;</text>
+        <path d="M20 47 L80 47 L74 88 L26 88 Z" fill="#ffffff" />
+        <path d="M38 47 Q38 28 50 28 Q62 28 62 47" fill="none" stroke="#ffffff" strokeWidth="6" strokeLinecap="round" />
+        <circle cx="41" cy="63" r="4" fill="#2d3f8f" />
+        <circle cx="59" cy="63" r="4" fill="#2d3f8f" />
+        <path d="M39 73 Q50 81 61 73" fill="none" stroke="#2d3f8f" strokeWidth="3.5" strokeLinecap="round" />
       </svg>
     </div>
     <p className="brand-wordmark">
@@ -40,7 +42,9 @@ export default function ResetPassword() {
           <p className="auth-sub">
             This page needs the link we emailed you. Ask for a new one.
           </p>
-          <Link className="auth-btn" to="/forgot-password">Send a new link</Link>
+          <Link className="auth-btn" to="/forgot-password" style={{ textAlign: "center", textDecoration: "none", display: "block" }}>
+            Send a new link
+          </Link>
         </div>
       </div>
     );

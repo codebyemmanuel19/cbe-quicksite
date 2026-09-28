@@ -8,9 +8,11 @@ const BrandHead = () => (
     <div className="brand-badge">
       <svg viewBox="0 0 100 100" width="56" height="56">
         <rect width="100" height="100" rx="22" fill="#2d3f8f" />
-        <text x="50" y="32" textAnchor="middle" fill="#9db3f5" fontSize="22" fontFamily="monospace" fontWeight="bold">&lt;</text>
-        <text x="50" y="64" textAnchor="middle" fill="#ffffff" fontSize="34" fontFamily="Arial, sans-serif" fontWeight="800">CBE</text>
-        <text x="50" y="90" textAnchor="middle" fill="#9db3f5" fontSize="22" fontFamily="monospace" fontWeight="bold">/&gt;</text>
+        <path d="M20 47 L80 47 L74 88 L26 88 Z" fill="#ffffff" />
+        <path d="M38 47 Q38 28 50 28 Q62 28 62 47" fill="none" stroke="#ffffff" strokeWidth="6" strokeLinecap="round" />
+        <circle cx="41" cy="63" r="4" fill="#2d3f8f" />
+        <circle cx="59" cy="63" r="4" fill="#2d3f8f" />
+        <path d="M39 73 Q50 81 61 73" fill="none" stroke="#2d3f8f" strokeWidth="3.5" strokeLinecap="round" />
       </svg>
     </div>
     <p className="brand-wordmark">
@@ -53,6 +55,8 @@ export default function VerifyEmail() {
     };
   }, [token, navigate]);
 
+  const btn = { textAlign: "center", textDecoration: "none", display: "block" };
+
   return (
     <div className="auth-page">
       <div className="auth-card">
@@ -68,10 +72,10 @@ export default function VerifyEmail() {
         {state === "done" && (
           <>
             <h1>Email confirmed</h1>
-            <p className="auth-sub">
-              Thank you. Taking you to your dashboard...
-            </p>
-            <Link className="auth-btn" to="/dashboard">Go to dashboard</Link>
+            <p className="auth-sub">Thank you. Taking you to your dashboard...</p>
+            <Link className="auth-btn" to="/dashboard" style={btn}>
+              Go to dashboard
+            </Link>
           </>
         )}
 
@@ -81,7 +85,9 @@ export default function VerifyEmail() {
             <p className="auth-sub">
               This page needs the link we emailed you. Log in and we'll send a new one.
             </p>
-            <Link className="auth-btn" to="/login">Log in</Link>
+            <Link className="auth-btn" to="/login" style={btn}>
+              Log in
+            </Link>
           </>
         )}
 
@@ -89,8 +95,10 @@ export default function VerifyEmail() {
           <>
             <h1>Link no longer works</h1>
             <p className="auth-sub">{error}</p>
-            <Link className="auth-btn" to="/dashboard">Go to dashboard</Link>
-            <p className="auth-help">
+            <Link className="auth-btn" to="/dashboard" style={btn}>
+              Go to dashboard
+            </Link>
+            <p className="auth-switch">
               You can send a new link from your dashboard.
             </p>
           </>
