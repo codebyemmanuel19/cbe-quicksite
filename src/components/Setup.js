@@ -5,13 +5,14 @@ import { api } from "../api";
 import { COUNTRIES } from "./countries";
 import "./Setup.css";
 
+// All six templates are built, so every type can be picked
 const TYPES = [
-  { id: "clothing", icon: "👗", name: "Clothing & Fashion", desc: "Dresses, thrift, bags, shoes", ready: true },
-  { id: "hair", icon: "💇", name: "Hair & Wigs", desc: "Wigs, bundles, frontals", ready: false },
-  { id: "skincare", icon: "🧴", name: "Skincare & Body Care", desc: "Creams, serums, soaps, oils", ready: false },
-  { id: "perfume", icon: "🌸", name: "Perfume & Fragrance", desc: "Perfumes, oils, body mists", ready: false },
-  { id: "jewellery", icon: "💍", name: "Jewellery & Accessories", desc: "Watches, bracelets, glasses", ready: false },
-  { id: "gadgets", icon: "🎧", name: "Gadgets & Accessories", desc: "Earbuds, chargers, phone cases", ready: false },
+  { id: "clothing", icon: "👗", name: "Clothing & Fashion", desc: "Dresses, thrift, bags, shoes" },
+  { id: "hair", icon: "💇", name: "Hair & Wigs", desc: "Wigs, bundles, frontals" },
+  { id: "skincare", icon: "🧴", name: "Skincare & Body Care", desc: "Creams, serums, soaps, oils" },
+  { id: "perfume", icon: "🌸", name: "Perfume & Fragrance", desc: "Perfumes, oils, body mists" },
+  { id: "jewellery", icon: "💍", name: "Jewellery & Accessories", desc: "Watches, bracelets, glasses" },
+  { id: "gadgets", icon: "🎧", name: "Gadgets & Accessories", desc: "Earbuds, chargers, phone cases" },
 ];
 
 // Addresses no customer can take, because you need them
@@ -140,19 +141,18 @@ export default function Setup() {
         </select>
 
         <h2 className="setup-step">2. What kind of business?</h2>
+        <p className="hint">Each one gets a different design, made for that kind of shop.</p>
         <div className="type-grid">
           {TYPES.map((t) => (
             <button
               key={t.id}
               type="button"
-              disabled={!t.ready}
               className={type === t.id ? "type-card selected" : "type-card"}
               onClick={() => setType(t.id)}
             >
               <span className="type-icon">{t.icon}</span>
               <span className="type-name">{t.name}</span>
               <span className="type-desc">{t.desc}</span>
-              {!t.ready && <span className="soon">Coming soon</span>}
             </button>
           ))}
         </div>
