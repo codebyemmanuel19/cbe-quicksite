@@ -5,6 +5,7 @@ import Setup from "./components/Setup";
 import Login from "./components/Login";
 import ForgotPassword from "./components/ForgotPassword";
 import ResetPassword from "./components/ResetPassword";
+import VerifyEmail from "./components/VerifyEmail";
 import DashboardHome from "./components/DashboardHome";
 import BusinessInfo from "./components/BusinessInfo";
 import Products from "./components/Products";
@@ -19,7 +20,6 @@ import PerfumeSite from "./PerfumeSite/PerfumeSite";
 import JewellerySite from "./JewellerySite/JewellerySite";
 import GadgetsSite from "./GadgetsSite/GadgetsSite";
 import ShopRouter from "./ShopRouter";
-import VerifyEmail from "./components/VerifyEmail";
 import "./App.css";
 
 // True on kemisboutique.cbequicksite.com, false on cbequicksite.com and localhost
@@ -170,6 +170,7 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/verify-email" element={<VerifyEmail />} />
         <Route path="/setup" element={<Setup />} />
 
         {/* Test the real subdomain behaviour on your laptop:
@@ -187,7 +188,6 @@ export default function App() {
         <Route path="/dashboard" element={<DashboardLayout />}>
           <Route index element={<DashboardHome />} />
           <Route path="business" element={<BusinessInfo />} />
-          <Route path="/verify-email" element={<VerifyEmail />} />
           <Route path="products" element={<Products />} />
           <Route path="orders" element={<Orders />} />
           <Route path="order-settings" element={<OrderSettings />} />
