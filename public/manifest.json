@@ -1,13 +1,18 @@
 {
   "short_name": "QuickSite",
   "name": "CBE QuickSite",
+  "description": "Your business website. Orders straight to your WhatsApp.",
   "icons": [
     { "src": "favicon.ico", "sizes": "64x64 32x32 24x24 16x16", "type": "image/x-icon" },
-    { "src": "logo192.png", "type": "image/png", "sizes": "192x192" },
-    { "src": "logo512.png", "type": "image/png", "sizes": "512x512" }
+    { "src": "logo192.png", "type": "image/png", "sizes": "192x192", "purpose": "any" },
+    { "src": "logo192.png", "type": "image/png", "sizes": "192x192", "purpose": "maskable" },
+    { "src": "logo512.png", "type": "image/png", "sizes": "512x512", "purpose": "any" },
+    { "src": "logo512.png", "type": "image/png", "sizes": "512x512", "purpose": "maskable" }
   ],
   "start_url": "/dashboard",
+  "scope": "/",
   "display": "standalone",
-  "theme_color": "#2563eb",
-  "background_color": "#f7f7f8"
+  "orientation": "portrait",
+  "theme_color": "#2d3f8f",
+  "background_color": "#f4f7ff"
 }

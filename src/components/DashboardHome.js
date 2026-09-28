@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import InstallCard from "./InstallCard";
 import { api } from "../api";
 import "./DashboardHome.css";
 
@@ -192,6 +193,9 @@ export default function DashboardHome() {
   return (
     <div className="home">
       <h1 className="home-title">Hi, {site.business.businessName} 👋</h1>
+
+      {/* Hides itself once installed, or once they close it */}
+      <InstallCard />
 
       {/* Nothing is blocked. This is only so they never lose their account
           to a typo in their email. */}
