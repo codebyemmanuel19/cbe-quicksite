@@ -57,6 +57,13 @@ export default function Signup() {
         <h1>Create your account</h1>
         <p className="auth-sub">Get your business website live in minutes.</p>
 
+        {/* The three things a vendor worries about, answered before they ask */}
+        <ul className="auth-points">
+          <li>7 days free. No card needed.</li>
+          <li>Your own website address.</li>
+          <li>Orders come straight to your WhatsApp.</li>
+        </ul>
+
         <label>Email</label>
         <div className="input-icon-row">
           <svg className="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -87,6 +94,12 @@ export default function Signup() {
         <button type="submit" className="auth-btn" disabled={saving}>
           {saving ? "Creating your account..." : "Create account"}
         </button>
+
+        {/* Quietly says a real business is behind this */}
+        <p className="auth-legal">
+          By creating an account you agree to our{" "}
+          <Link to="/terms">Terms</Link> and <Link to="/privacy">Privacy Policy</Link>.
+        </p>
 
         <p className="auth-help">
           Don't understand something?{" "}
