@@ -7,12 +7,42 @@ import "./Setup.css";
 
 // All six templates are built, so every type can be picked
 const TYPES = [
-  { id: "clothing", icon: "👗", name: "Clothing & Fashion", desc: "Dresses, thrift, bags, shoes" },
-  { id: "hair", icon: "💇", name: "Hair & Wigs", desc: "Wigs, bundles, frontals" },
-  { id: "skincare", icon: "🧴", name: "Skincare & Body Care", desc: "Creams, serums, soaps, oils" },
-  { id: "perfume", icon: "🌸", name: "Perfume & Fragrance", desc: "Perfumes, oils, body mists" },
-  { id: "jewellery", icon: "💍", name: "Jewellery & Accessories", desc: "Watches, bracelets, glasses" },
-  { id: "gadgets", icon: "🎧", name: "Gadgets & Accessories", desc: "Earbuds, chargers, phone cases" },
+  {
+    id: "clothing",
+    icon: "👗",
+    name: "Clothing & Fashion",
+    desc: "Clothing, shoes, native wear & accessories",
+  },
+  {
+    id: "hair",
+    icon: "💇",
+    name: "Hair & Wigs",
+    desc: "Wigs, bundles, frontals & extensions",
+  },
+  {
+    id: "skincare",
+    icon: "🧴",
+    name: "Skincare & Body Care",
+    desc: "Creams, serums, soaps & oils",
+  },
+  {
+    id: "perfume",
+    icon: "🌸",
+    name: "Perfume & Fragrance",
+    desc: "Perfumes, oils & body mists",
+  },
+  {
+    id: "jewellery",
+    icon: "💍",
+    name: "Jewellery & Accessories",
+    desc: "Watches, bracelets, glasses & more",
+  },
+  {
+    id: "gadgets",
+    icon: "🎧",
+    name: "Gadgets & Accessories",
+    desc: "Phones, earbuds, chargers & accessories",
+  },
 ];
 
 // Addresses no customer can take, because you need them
