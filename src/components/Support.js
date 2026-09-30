@@ -14,16 +14,16 @@ const FAQS = [
     a: "Customers add items to their cart on your website and check out. The order appears under Orders, and they can also send it straight to your WhatsApp.",
   },
   {
-    q: "How do I get paid?",
-    a: "Go to Plans & Billing and choose 1, 3, 6 or 12 months, starting from ₦10,000 a month. Pay by card or bank transfer, and editing unlocks immediately.",
+    q: "How do customers pay me?",
+    a: "Your customers pay you directly. Set your bank account and delivery areas under Order Settings, and your account details show at checkout. The money goes straight to your bank, not to us.",
   },
   {
     q: "What happens after my free trial?",
     a: "Your website stays live, but you can't make changes until you pay. If it stays unpaid for 30 days, your website goes offline until you pay.",
   },
   {
-    q: "How do I pay for my plan?",
-    a: "Go to Plans & Billing and pay ₦15,000 a month by card or bank transfer. Editing unlocks immediately after payment.",
+    q: "How much does it cost?",
+    a: "₦5,000 a month. Go to Plans & Billing and choose 1, 3, 6 or 12 months — the longer plans cost less per month. Pay by card or bank transfer, and editing unlocks immediately.",
   },
   {
     q: "Can I change my website address?",

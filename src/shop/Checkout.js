@@ -164,7 +164,7 @@ export default function Checkout({ store, basePath, cart, clearCart, prefix = "c
               className={form.method === "delivery" ? `${c("choice")} active` : c("choice")}
               onClick={() => update("method", "delivery")}
             >
-              Delivery <small>We bring it to you</small>
+              Delivery <small>We'll bring it to you</small>
             </button>
           )}
           {s.offersPickup && (
