@@ -41,7 +41,14 @@ export default function Login() {
     <div className="auth-page">
       <form className="auth-card" onSubmit={handleSubmit}>
         <div className="brand-badge">
-          <img src="/logo.png" alt="CBE QuickSite" width="56" height="56" />
+          <svg viewBox="0 0 100 100" width="56" height="56">
+            <rect width="100" height="100" rx="22" fill="#2d3f8f" />
+            <path d="M20 47 L80 47 L74 88 L26 88 Z" fill="#ffffff" />
+            <path d="M38 47 Q38 28 50 28 Q62 28 62 47" fill="none" stroke="#ffffff" strokeWidth="6" strokeLinecap="round" />
+            <circle cx="41" cy="63" r="4" fill="#2d3f8f" />
+            <circle cx="59" cy="63" r="4" fill="#2d3f8f" />
+            <path d="M39 73 Q50 81 61 73" fill="none" stroke="#2d3f8f" strokeWidth="3.5" strokeLinecap="round" />
+          </svg>
         </div>
 
         <p className="brand-wordmark">
