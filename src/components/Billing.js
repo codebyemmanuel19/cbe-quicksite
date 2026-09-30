@@ -27,7 +27,6 @@ export default function Billing() {
 
   const [billing, setBilling] = useState(null);
   const [plans, setPlans] = useState([]);
-  const [history, setHistory] = useState([]);
   const [planId, setPlanId] = useState("1m");
   const [loading, setLoading] = useState(true);
   const [paying, setPaying] = useState(false);
@@ -61,7 +60,6 @@ export default function Billing() {
         if (cancelled) return;
         setBilling(res.billing);
         setPlans(res.plans);
-        setHistory(res.history);
       } catch (err) {
         if (cancelled) return;
         if (err.status === 401) return navigate("/login");
@@ -178,26 +176,6 @@ export default function Billing() {
           {paying ? "Opening Paystack..." : plan ? `Pay ${formatPrice(plan.amount)}` : "Pay"}
         </button>
         <p className="billing-hint">Secure payment by card, bank transfer or USSD through Paystack.</p>
-      </section>
-
-      <section className="billing-card">
-        <h2>Payment history</h2>
-        {history.length === 0 ? (
-          <p className="billing-hint">No payments yet.</p>
-        ) : (
-          history.map((h) => (
-            <div key={h.reference} className="history-row">
-              <div>
-                <p className="history-plan">
-                  {h.months} {h.months === 1 ? "month" : "months"}
-                  {h.status !== "success" ? ` · ${h.status}` : ""}
-                </p>
-                <p className="billing-hint">{formatDay(h.created_at)} · {h.reference}</p>
-              </div>
-              <span className="history-amount">{formatPrice(h.amount)}</span>
-            </div>
-          ))
-        )}
       </section>
 
       <section className="billing-card">

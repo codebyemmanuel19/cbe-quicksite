@@ -133,6 +133,19 @@ export default function DashboardHome() {
     };
   }, [navigate]);
 
+  // Opened from the home screen instead of a browser tab? Tell the server,
+  // so we know who has installed it and who still needs a reminder.
+  useEffect(() => {
+    const standalone =
+      window.matchMedia("(display-mode: standalone)").matches ||
+      window.navigator.standalone === true;
+
+    if (!standalone) return;
+    api.post("/auth/installed").catch(() => {
+      // Not worth bothering the vendor about
+    });
+  }, []);
+
   if (loading) {
     return (
       <div className="home">
