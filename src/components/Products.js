@@ -573,7 +573,7 @@ export default function Products() {
               <button type="button" className="x-btn" onClick={closeForm}>✕</button>
             </div>
 
-            <label>
+            <label className="plain">
               Photos ({form.photos.length}/{MAX_PHOTOS}){uploading ? " · uploading..." : ""}
             </label>
             <div className="photo-row">
@@ -650,11 +650,13 @@ export default function Products() {
               Mark as sold out
             </label>
 
-            {error && <p className="prod-error">{error}</p>}
-
-            <button type="submit" className="add-btn full" disabled={saving || uploading}>
-              {saving ? "Saving..." : editingId === "new" ? "Add product" : "Save changes"}
-            </button>
+            {/* Stays pinned at the bottom of the form while the fields scroll */}
+            <div className="modal-foot">
+              {error && <p className="prod-error">{error}</p>}
+              <button type="submit" className="add-btn full" disabled={saving || uploading}>
+                {saving ? "Saving..." : editingId === "new" ? "Add product" : "Save changes"}
+              </button>
+            </div>
           </form>
         </div>
       )}
