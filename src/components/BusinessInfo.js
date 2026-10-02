@@ -258,9 +258,9 @@ export default function BusinessInfo() {
 
       {/* Rendered on document.body so no parent layout can stop it staying at the bottom */}
       {createPortal(
-        <div className="save-bar">
-          {saved && <span className="saved">Saved ✓</span>}
-          <button type="submit" form="biz-form" className="save-btn" disabled={saving || uploading}>
+        <div className="biz-savebar">
+          {saved && <span className="biz-saved">Saved ✓</span>}
+          <button type="submit" form="biz-form" className="biz-savebtn" disabled={saving || uploading}>
             {saving ? "Saving..." : "Save changes"}
           </button>
         </div>,
