@@ -215,27 +215,18 @@
 .modal-head h2 { margin: 0; font-size: 19px; }
 .x-btn { font-size: 20px; background: none; border: none; cursor: pointer; }
 
-/* Label sits on the top border line of the box below it */
-.modal > label:not(.plain):not(.check-row) {
-  position: relative;
-  z-index: 1;
-  align-self: flex-start;
-  margin: 18px 0 -9px 12px;
-  padding: 0 6px;
-  font-size: 13px;
+/* Labels sit above the inputs */
+.modal > label:not(.check-row) {
+  margin: 16px 0 6px;
+  font-size: 14px;
   font-weight: 600;
-  line-height: 18px;
-  color: #6b7280;
-  background: #fff;
 }
-
-/* Normal label (used for Photos, which has no box under it) */
-.modal > label.plain { margin: 16px 0 8px; font-size: 14px; font-weight: 600; }
 
 .modal input,
 .modal select,
 .modal textarea {
   width: 100%;
+  box-sizing: border-box;
   padding: 14px;
   font-size: 16px;
   font-family: inherit;
@@ -244,7 +235,28 @@
   border-radius: 10px;
 }
 
-.modal textarea { resize: vertical; }
+/* Every input and dropdown has the same height */
+.modal input:not([type="checkbox"]),
+.modal select { height: 52px; }
+
+.modal input:focus,
+.modal select:focus,
+.modal textarea:focus { outline: none; border-color: #2563eb; }
+
+/* Dropdowns look the same on every phone, with our own arrow */
+.modal select {
+  -webkit-appearance: none;
+  appearance: none;
+  padding-right: 42px;
+  color: #111827;
+  background: #fff url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>") no-repeat right 14px center;
+}
+
+.modal textarea {
+  min-height: 90px;
+  line-height: 1.5;
+  resize: vertical;
+}
 
 .photo-row { display: flex; flex-wrap: wrap; gap: 8px; }
 
@@ -311,11 +323,12 @@
 .modal-foot .prod-error { margin: 0 0 8px; }
 .modal-foot .add-btn.full { margin-top: 0; }
 
-/* Sizes and colours */
-.chip-field { display: flex; flex-direction: column; margin-top: 18px; }
+/* Sizes, colours and priced options */
+.chip-field { display: flex; flex-direction: column; margin-top: 16px; }
 .chip-label { margin-bottom: 6px; font-size: 14px; font-weight: 600; }
+.chip-field .prod-sub { margin: 8px 0 0; font-size: 13px; color: #888; }
 
-.chip-list { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+.chip-list { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
 
 .chip-item {
   display: inline-flex;
@@ -340,10 +353,12 @@
   cursor: pointer;
 }
 
-.chip-add { display: flex; gap: 8px; }
+.chip-add { display: flex; align-items: stretch; gap: 8px; }
 .chip-add input { flex: 1; min-width: 0; }
 
 .chip-add button {
+  flex-shrink: 0;
+  min-width: 64px;
   padding: 0 16px;
   font-weight: 600;
   color: #fff;
