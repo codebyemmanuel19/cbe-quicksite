@@ -254,11 +254,10 @@ export default function BusinessInfo() {
           maxLength={100} placeholder="@yourshop" />
       </section>
 
-      {error && <p className="biz-error">{error}</p>}
-
       {/* Rendered on document.body so no parent layout can stop it staying at the bottom */}
       {createPortal(
         <div className="biz-savebar">
+          {error && <p className="biz-toast">{error}</p>}
           {saved && <span className="biz-saved">Saved ✓</span>}
           <button type="submit" form="biz-form" className="biz-savebtn" disabled={saving || uploading}>
             {saving ? "Saving..." : "Save changes"}

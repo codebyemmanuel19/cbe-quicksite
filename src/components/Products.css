@@ -206,12 +206,23 @@
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  padding: 20px 20px 0;
+  padding: 0 20px;
   background: #fff;
   border-radius: 18px 18px 0 0;
 }
 
-.modal-head { display: flex; justify-content: space-between; align-items: center; }
+.modal-head {
+  position: sticky;
+  top: 0;
+  z-index: 6;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 -20px;
+  padding: calc(16px + env(safe-area-inset-top, 0px)) 20px 14px;
+  background: #fff;
+  border-bottom: 1px solid #eef0f3;
+}
 .modal-head h2 { margin: 0; font-size: 19px; }
 .x-btn { font-size: 20px; background: none; border: none; cursor: pointer; }
 
@@ -310,18 +321,39 @@
 .prod-error { margin: 12px 0 0; font-size: 14px; color: #dc2626; }
 
 /* Save area: always visible at the bottom of the form */
+/* Save area: stays pinned, same size always, floats above the phone's bottom edge */
 .modal-foot {
   position: sticky;
   bottom: 0;
   z-index: 5;
   margin: 14px -20px 0;
-  padding: 12px 20px calc(12px + env(safe-area-inset-bottom, 0px));
+  padding: 14px 20px calc(26px + env(safe-area-inset-bottom, 0px));
   background: #fff;
-  border-top: 1px solid #e5e7eb;
+  box-shadow: 0 -8px 20px rgba(0, 0, 0, 0.07);
 }
 
-.modal-foot .prod-error { margin: 0 0 8px; }
-.modal-foot .add-btn.full { margin-top: 0; }
+/* The error floats above the button, so the bar never changes size */
+.modal-foot .prod-error {
+  position: absolute;
+  left: 20px;
+  right: 20px;
+  bottom: 100%;
+  margin: 0 0 10px;
+  padding: 10px 12px;
+  font-weight: 600;
+  color: #b91c1c;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 10px;
+}
+
+.modal-foot .add-btn.full {
+  height: 52px;
+  margin-top: 0;
+  padding: 0;
+  font-size: 17px;
+  box-shadow: 0 6px 14px rgba(37, 99, 235, 0.25);
+}
 
 /* Sizes, colours and priced options */
 .chip-field { display: flex; flex-direction: column; margin-top: 16px; }
@@ -381,8 +413,12 @@
   cursor: pointer;
 }
 
+@media (max-width: 699px) {
+  .modal { height: 100vh; height: 100dvh; max-height: 100dvh; border-radius: 0; }
+}
+
 @media (min-width: 700px) {
   .row-actions { flex-direction: row; }
   .modal-bg { align-items: center; }
-  .modal { border-radius: 18px; }
+  .modal { border-radius: 18px; max-height: 92vh; }
 }
