@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { Link, useNavigate } from "react-router-dom";
 import { api, uploadPhoto } from "../api";
 import "./BusinessInfo.css";
@@ -16,6 +17,22 @@ const emptyInfo = {
   facebook: "",
   instagram: "",
 };
+
+function toInfo(b) {
+  return {
+    businessName: b.businessName || "",
+    heroLabel: b.heroLabel || "",
+    heroHeadline: b.heroHeadline || "",
+    whatsapp: b.whatsapp || "",
+    phone: b.phone || "",
+    email: b.email || "",
+    address: b.address || "",
+    about: b.about || "",
+    tiktok: b.tiktok || "",
+    facebook: b.facebook || "",
+    instagram: b.instagram || "",
+  };
+}
 
 export default function BusinessInfo() {
   const navigate = useNavigate();
@@ -37,19 +54,7 @@ export default function BusinessInfo() {
         const mine = await api.get("/sites/me");
         if (cancelled) return;
         const b = mine.site.business;
-        setInfo({
-          businessName: b.businessName || "",
-          heroLabel: b.heroLabel || "",
-          heroHeadline: b.heroHeadline || "",
-          whatsapp: b.whatsapp || "",
-          phone: b.phone || "",
-          email: b.email || "",
-          address: b.address || "",
-          about: b.about || "",
-          tiktok: b.tiktok || "",
-          facebook: b.facebook || "",
-          instagram: b.instagram || "",
-        });
+        setInfo(toInfo(b));
         setLogo(b.logo || "");
         setCover(b.cover || "");
       } catch (err) {
@@ -108,19 +113,7 @@ export default function BusinessInfo() {
       const res = await api.put("/sites/business", { ...info, logo, cover });
       // Show exactly what the server stored, not what we typed
       const b = res.site.business;
-      setInfo({
-        businessName: b.businessName || "",
-        heroLabel: b.heroLabel || "",
-        heroHeadline: b.heroHeadline || "",
-        whatsapp: b.whatsapp || "",
-        phone: b.phone || "",
-        email: b.email || "",
-        address: b.address || "",
-        about: b.about || "",
-        tiktok: b.tiktok || "",
-        facebook: b.facebook || "",
-        instagram: b.instagram || "",
-      });
+      setInfo(toInfo(b));
       setLogo(b.logo || "");
       setCover(b.cover || "");
       setSaved(true);
@@ -146,7 +139,7 @@ export default function BusinessInfo() {
   }
 
   return (
-    <form className="biz" onSubmit={handleSave}>
+    <form id="biz-form" className="biz" onSubmit={handleSave}>
       <h1 className="biz-title">Business Info</h1>
       <p className="biz-sub">This is what customers see on your website.</p>
 
@@ -263,12 +256,16 @@ export default function BusinessInfo() {
 
       {error && <p className="biz-error">{error}</p>}
 
-      <div className="save-bar">
-        {saved && <span className="saved">Saved ✓</span>}
-        <button type="submit" className="save-btn" disabled={saving || uploading}>
-          {saving ? "Saving..." : "Save changes"}
-        </button>
-      </div>
+      {/* Rendered on document.body so no parent layout can stop it staying at the bottom */}
+      {createPortal(
+        <div className="save-bar">
+          {saved && <span className="saved">Saved ✓</span>}
+          <button type="submit" form="biz-form" className="save-btn" disabled={saving || uploading}>
+            {saving ? "Saving..." : "Save changes"}
+          </button>
+        </div>,
+        document.body
+      )}
     </form>
   );
 }
