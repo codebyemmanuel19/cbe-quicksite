@@ -3,7 +3,6 @@ import { Link, useNavigate } from "react-router-dom";
 import InstallCard from "./InstallCard";
 import { api } from "../api";
 import "./DashboardHome.css";
-import "./MonthCard.css";
 
 // Copy that also works when testing on your phone over WiFi
 async function copyText(text) {
@@ -27,10 +26,6 @@ function formatDay(value) {
     month: "short",
     year: "numeric",
   });
-}
-
-function formatNaira(amount) {
-  return "₦" + Number(amount).toLocaleString("en-NG");
 }
 
 // One card, six possible states. The server decides which one.
@@ -177,20 +172,6 @@ export default function DashboardHome() {
   const newOrders = orders.filter((o) => o.status === "new").length;
   const ordersThisWeek = orders.filter((o) => new Date(o.createdAt).getTime() > weekAgo).length;
 
-  // Orders since the 1st of this month (cancelled ones don't count)
-  const monthStart = new Date();
-  monthStart.setDate(1);
-  monthStart.setHours(0, 0, 0, 0);
-  const monthOrders = orders.filter(
-    (o) => o.status !== "cancelled" && new Date(o.createdAt) >= monthStart
-  );
-  const ordersThisMonth = monthOrders.length;
-  // If your orders store their money under a different name, add it here
-  const monthTotal = monthOrders.reduce(
-    (sum, o) => sum + (Number(o.total ?? o.totalAmount ?? o.amount) || 0),
-    0
-  );
-
   const card = statusCard(site.billing);
   const needsVerify = account && !account.emailVerified;
 
@@ -265,35 +246,6 @@ export default function DashboardHome() {
             Share on WhatsApp
           </a>
         </div>
-      </section>
-
-      {/* What the website brought in this month: the reason to keep paying */}
-      <section className="month-card">
-        <p className="month-label">This month</p>
-        {ordersThisMonth > 0 ? (
-          <>
-            <p className="month-main">
-              You got {ordersThisMonth} {ordersThisMonth === 1 ? "order" : "orders"}
-            </p>
-            {monthTotal > 0 && <p className="month-sub">Worth {formatNaira(monthTotal)}</p>}
-          </>
-        ) : (
-          <>
-            <p className="month-main">No orders yet this month</p>
-            <p className="month-sub">
-              Share your link on your WhatsApp status to get your first order.
-            </p>
-            <a
-              href={shareLink}
-              target="_blank"
-              rel="noreferrer"
-              className="month-share"
-              onClick={() => setShared(true)}
-            >
-              Share on WhatsApp
-            </a>
-          </>
-        )}
       </section>
 
       <section className={card.urgent ? "trial-card urgent" : "trial-card"}>
