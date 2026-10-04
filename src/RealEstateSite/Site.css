@@ -92,6 +92,7 @@
 }
 
 /* However long the About is, the hero only ever shows two lines */
+/* However long the About is, the hero only ever shows two lines */
 .re-hero p {
   max-width: 520px;
   margin: 0;
@@ -99,6 +100,7 @@
   opacity: .92;
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
