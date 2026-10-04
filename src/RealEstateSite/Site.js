@@ -44,9 +44,7 @@ function Gallery({ photos }) {
     <div className="re-gal">
       <div className="re-gal-track" onScroll={handleScroll}>
         {photos.map((src, i) => (
-          // The blurred copy behind means a tall photo and a wide photo
-          // both show in full, with nothing cut off
-          <div className="re-gal-slide" key={src + i} style={{ backgroundImage: `url(${src})` }}>
+          <div className="re-gal-slide" key={src + i}>
             <img src={src} alt="" loading={i === 0 ? "eager" : "lazy"} />
           </div>
         ))}
@@ -226,6 +224,7 @@ function Detail({ properties, busy, base, money, waLink, onInquire }) {
 
   const status = p.status || "Available";
   const photos = p.photos || [];
+  const hasFacts = p.bedrooms || p.bathrooms || p.size;
 
   return (
     <>
@@ -247,17 +246,18 @@ function Detail({ properties, busy, base, money, waLink, onInquire }) {
         </p>
         <p className="re-loc">{p.location}</p>
 
-        <div className="re-facts">
-          {p.bedrooms ? (
-            <div><b>{p.bedrooms}</b><span>Bedrooms</span></div>
-          ) : null}
-          {p.bathrooms ? (
-            <div><b>{p.bathrooms}</b><span>Bathrooms</span></div>
-          ) : null}
-          {p.size ? (
-            <div><b>{p.size}</b><span>Size</span></div>
-          ) : null}
-        </div>
+        {/* One tight line, so two facts never leave half the screen empty */}
+        {hasFacts && (
+          <div className="re-facts">
+            {p.bedrooms ? (
+              <span><b>{p.bedrooms}</b> {p.bedrooms === 1 ? "bed" : "beds"}</span>
+            ) : null}
+            {p.bathrooms ? (
+              <span><b>{p.bathrooms}</b> {p.bathrooms === 1 ? "bath" : "baths"}</span>
+            ) : null}
+            {p.size ? <span><b>{p.size}</b></span> : null}
+          </div>
+        )}
 
         {p.description && (
           <section className="re-about">
@@ -403,27 +403,26 @@ export default function RealEstateSite({ basePath = "", slug: slugProp }) {
         <Route path="property/:id" element={<Detail {...shared} />} />
       </Routes>
 
-      {/* About, contact and socials all in one block */}
+      {/* About, contact and socials, all stacked down the left */}
       <footer className="re-foot">
         <div className="re-foot-in">
-          <div className="re-foot-brand">
-            <b>{store.name}</b>
-            {store.about && <p>{store.about}</p>}
-          </div>
+          <b className="re-foot-name">{store.name}</b>
 
-          <div className="re-foot-col">
-            <h3>Contact</h3>
+          {store.about && <p className="re-foot-about">{store.about}</p>}
+
+          <div className="re-foot-contact">
             {store.address && <span>{store.address}</span>}
             {store.phone && <a href={`tel:${store.phone}`}>{store.phone}</a>}
             {store.email && <a href={`mailto:${store.email}`}>{store.email}</a>}
             {phone && (
-              <a href={`https://wa.me/${phone}`} target="_blank" rel="noreferrer">WhatsApp</a>
+              <a href={`https://wa.me/${phone}`} target="_blank" rel="noreferrer">
+                Chat on WhatsApp
+              </a>
             )}
           </div>
 
           {socials.length > 0 && (
-            <div className="re-foot-col">
-              <h3>Follow</h3>
+            <div className="re-foot-social">
               {socials.map((s) => (
                 <a key={s.name} href={s.url} target="_blank" rel="noreferrer">{s.name}</a>
               ))}

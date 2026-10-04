@@ -41,7 +41,6 @@
   white-space: nowrap;
 }
 
-/* Any logo the agent uploads is forced into the same neat square */
 .re-logo i,
 .re-logo img {
   flex-shrink: 0;
@@ -137,12 +136,8 @@
   border-radius: 12px;
 }
 
-.re-search input:focus {
-  outline: none;
-  border-color: var(--b);
-}
+.re-search input:focus { outline: none; border-color: var(--b); }
 
-/* Buy or rent: one block, three equal parts */
 .re-seg {
   display: flex;
   gap: 4px;
@@ -169,7 +164,6 @@
   box-shadow: 0 1px 3px rgba(15, 23, 42, .16);
 }
 
-/* House, flat, land */
 .re-chips {
   display: flex;
   gap: 8px;
@@ -203,7 +197,7 @@
 .re-main {
   max-width: 1040px;
   margin: 0 auto;
-  padding: 28px 16px 40px;
+  padding: 26px 16px 36px;
 }
 
 .re-head-row {
@@ -218,11 +212,7 @@
 .re-found { font-size: 13px; color: #64748b; }
 .re-empty { color: #64748b; }
 
-.re-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 18px;
-}
+.re-grid { display: grid; grid-template-columns: 1fr; gap: 18px; }
 
 .re-card {
   display: flex;
@@ -236,10 +226,10 @@
 
 .re-card-top { text-decoration: none; color: inherit; }
 
-/* Every photo lands in the same shape, whatever size it was uploaded at */
+/* Tall on a phone, so the photo fills the card the way the gallery does */
 .re-img {
   position: relative;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 4 / 5;
   background: #e2eef1;
 }
 
@@ -278,32 +268,20 @@
   font-weight: 700;
 }
 
-.re-body { padding: 15px 16px 4px; }
+.re-body { padding: 14px 16px 2px; }
 
-.re-body h3 {
-  margin: 0;
-  font-size: 17px;
-  font-weight: 800;
-  line-height: 1.3;
-}
+.re-body h3 { margin: 0; font-size: 17px; font-weight: 800; line-height: 1.3; }
 
 .re-price {
-  margin: 5px 0 2px;
+  margin: 4px 0 2px;
   font-size: 20px;
   font-weight: 800;
   color: var(--b);
 }
 
-.re-price.big { font-size: 28px; margin: 6px 0 4px; }
-
 .re-loc { margin: 0 0 10px; font-size: 14px; color: #64748b; }
 
-.re-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: 12px;
-}
+.re-meta { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
 
 .re-meta span {
   padding: 4px 10px;
@@ -314,15 +292,11 @@
   color: #475569;
 }
 
-.re-acts {
-  display: flex;
-  gap: 10px;
-  padding: 0 16px 16px;
-}
+.re-acts { display: flex; gap: 10px; padding: 0 16px 16px; }
 
 .re-view {
   flex: 1;
-  padding: 12px;
+  padding: 11px;
   text-align: center;
   border: 1.5px solid #cbd5e1;
   border-radius: 12px;
@@ -335,7 +309,7 @@
 .re-wa {
   flex: 1;
   display: block;
-  padding: 12px;
+  padding: 11px;
   text-align: center;
   border-radius: 12px;
   background: #22c55e;
@@ -362,7 +336,6 @@
 
 .re-gal-track::-webkit-scrollbar { display: none; }
 
-/* A tall frame, so a phone photo fills it the way the clothing site does */
 .re-gal-slide {
   position: relative;
   flex: 0 0 100%;
@@ -413,18 +386,18 @@
 .re-gal-dots i.on { background: #fff; width: 20px; border-radius: 999px; }
 
 /* ---- Detail ---- */
-.re-detail { padding-bottom: 110px; }
+.re-detail { padding: 18px 16px 92px; }
 
 .re-back {
   display: inline-block;
-  margin-bottom: 14px;
+  margin-bottom: 12px;
   color: var(--b);
   font-size: 14px;
   font-weight: 700;
   text-decoration: none;
 }
 
-.re-pills { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+.re-pills { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 10px; }
 
 .re-pill {
   padding: 5px 12px;
@@ -440,34 +413,36 @@
 
 .re-detail h1 {
   margin: 0;
-  font-size: clamp(22px, 6vw, 32px);
+  font-size: clamp(21px, 5.6vw, 28px);
   font-weight: 800;
-  line-height: 1.2;
+  line-height: 1.25;
 }
 
+.re-price.big { font-size: 25px; margin: 5px 0 1px; }
+
+.re-detail .re-loc { margin: 0; font-size: 15px; }
+
+/* One tight line between two hairlines, instead of big empty boxes */
 .re-facts {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
-  margin: 18px 0 4px;
+  align-items: center;
+  gap: 6px 18px;
+  margin: 14px 0 0;
+  padding: 11px 0;
+  border-top: 1px solid #eef0f3;
+  border-bottom: 1px solid #eef0f3;
+  font-size: 14px;
+  color: #64748b;
 }
 
-.re-facts div {
-  flex: 1 1 90px;
-  padding: 14px 12px;
-  text-align: center;
-  background: #f8fafc;
-  border: 1px solid #e8ebf0;
-  border-radius: 14px;
-}
+.re-facts span { display: inline-flex; align-items: baseline; gap: 5px; }
+.re-facts b { color: #0f172a; font-size: 15px; font-weight: 800; }
 
-.re-facts b { display: block; font-size: 18px; font-weight: 800; }
-.re-facts span { font-size: 12px; color: #64748b; }
+.re-about { margin-top: 22px; }
 
-.re-about { margin-top: 26px; }
-
-.re-about h2 { margin: 0 0 8px; font-size: 18px; font-weight: 800; }
-.re-about p { margin: 0; color: #475569; white-space: pre-line; }
+.re-about h2 { margin: 0 0 7px; font-size: 17px; font-weight: 800; }
+.re-about p { margin: 0; color: #475569; line-height: 1.65; white-space: pre-line; }
 
 .re-feats { display: flex; flex-wrap: wrap; gap: 8px; }
 
@@ -487,79 +462,80 @@
   right: 0;
   bottom: 0;
   z-index: 30;
-  padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
+  padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px));
   background: rgba(255, 255, 255, .97);
   border-top: 1px solid #eef0f3;
 }
 
-.re-bar .re-wa { max-width: 520px; margin: 0 auto; padding: 14px; font-size: 15px; }
+.re-bar .re-wa { max-width: 520px; margin: 0 auto; padding: 13px; font-size: 15px; }
 
-/* ---- Footer: about, contact and socials together ---- */
+/* ---- Footer: everything in one column down the left ---- */
 .re-foot {
-  padding: 38px 16px 28px;
+  padding: 38px 16px 26px;
   background: #0b1220;
   color: #94a3b8;
-  font-size: 14px;
+  font-size: 15px;
   text-align: left;
 }
 
 .re-foot-in {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 28px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 18px;
   max-width: 1040px;
   margin: 0 auto;
 }
 
-/* The about block takes the full width on a phone, a wide column on a laptop */
-.re-foot-brand { grid-column: 1 / -1; }
-
-.re-foot-brand b {
-  display: block;
-  margin-bottom: 8px;
+.re-foot-name {
   color: #fff;
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 800;
 }
 
-.re-foot-brand p {
+.re-foot-about {
   margin: 0;
-  max-width: 460px;
-  line-height: 1.65;
+  max-width: 620px;
+  font-size: 16px;
+  line-height: 1.75;
+  color: #b6c2d3;
   white-space: pre-line;
 }
 
-.re-foot-col {
+.re-foot-contact {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 9px;
-  min-width: 0;
 }
 
-.re-foot-col h3 {
-  margin: 0 0 2px;
-  color: #fff;
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: .07em;
-  text-transform: uppercase;
-}
-
-.re-foot-col a,
-.re-foot-col span {
-  color: #94a3b8;
+.re-foot-contact a,
+.re-foot-contact span {
+  color: #cbd5e1;
   text-decoration: none;
   overflow-wrap: anywhere;
 }
 
-.re-foot-col a:hover { color: #fff; }
+.re-foot-contact a:hover { color: #fff; }
+
+.re-foot-social {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.re-foot-social a {
+  color: #fff;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.re-foot-social a:hover { opacity: .8; }
 
 .re-foot-bottom {
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 8px;
+  gap: 6px 20px;
   max-width: 1040px;
   margin: 30px auto 0;
   padding-top: 18px;
@@ -583,14 +559,13 @@
 @media (min-width: 760px) {
   .re-hero { min-height: 62vh; padding: 70px 24px 80px; }
   .re-grid { grid-template-columns: repeat(2, 1fr); }
-  .re-detail { padding-bottom: 40px; }
+  .re-detail { padding: 24px 16px 40px; }
 
-  /* On a laptop a wider frame suits the screen better */
+  /* Wider frames suit a laptop, where cards sit side by side */
+  .re-img { aspect-ratio: 4 / 3; }
+
   .re-gal-slide,
   .re-gal.empty { aspect-ratio: 3 / 2; }
-
-  .re-foot-in { grid-template-columns: 2fr 1fr 1fr; gap: 20px 40px; }
-  .re-foot-brand { grid-column: auto; }
 
   .re-bar {
     position: static;
