@@ -5,7 +5,7 @@ import { api } from "../api";
 import { COUNTRIES } from "./countries";
 import "./Setup.css";
 
-// All six templates are built, so every type can be picked
+// Every template that is built can be picked here
 const TYPES = [
   {
     id: "clothing",
@@ -43,6 +43,12 @@ const TYPES = [
     name: "Gadgets & Accessories",
     desc: "Phones, earbuds, chargers & accessories",
   },
+  {
+    id: "realestate",
+    icon: "🏠",
+    name: "Real Estate",
+    desc: "Houses, flats & land for sale or rent",
+  },
 ];
 
 // Addresses no customer can take, because you need them
@@ -72,11 +78,15 @@ export default function Setup() {
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
 
+  // The business type list that slides up from the bottom
+  const [sheetOpen, setSheetOpen] = useState(false);
+
   // What the server says about this link: null while we haven't asked
   const [slugCheck, setSlugCheck] = useState(null);
   const [checking, setChecking] = useState(false);
 
   const selectedCountry = COUNTRIES.find((c) => c.code === country);
+  const selectedType = TYPES.find((t) => t.id === type);
   const slugError = slug ? checkSlug(slug) : "";
 
   // Ask the server if the link is free, but only after they stop typing
@@ -103,6 +113,29 @@ export default function Setup() {
       clearTimeout(timer);
     };
   }, [slug]);
+
+  // Stop the page behind from scrolling while the list is open
+  useEffect(() => {
+    if (!sheetOpen) return;
+
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    function handleKey(e) {
+      if (e.key === "Escape") setSheetOpen(false);
+    }
+    window.addEventListener("keydown", handleKey);
+
+    return () => {
+      document.body.style.overflow = previous;
+      window.removeEventListener("keydown", handleKey);
+    };
+  }, [sheetOpen]);
+
+  function pickType(id) {
+    setType(id);
+    setSheetOpen(false);
+  }
 
   function handleName(e) {
     setName(e.target.value);
@@ -171,21 +204,29 @@ export default function Setup() {
         </select>
 
         <h2 className="setup-step">2. What kind of business?</h2>
-        <p className="hint">Each one gets a different design, made for that kind of shop.</p>
-        <div className="type-grid">
-          {TYPES.map((t) => (
-            <button
-              key={t.id}
-              type="button"
-              className={type === t.id ? "type-card selected" : "type-card"}
-              onClick={() => setType(t.id)}
-            >
-              <span className="type-icon">{t.icon}</span>
-              <span className="type-name">{t.name}</span>
-              <span className="type-desc">{t.desc}</span>
-            </button>
-          ))}
-        </div>
+        <button
+          type="button"
+          className={selectedType ? "type-trigger picked" : "type-trigger"}
+          onClick={() => setSheetOpen(true)}
+        >
+          {selectedType ? (
+            <>
+              <span className="type-icon">{selectedType.icon}</span>
+              <span className="type-text">
+                <span className="type-name">{selectedType.name}</span>
+                <span className="type-desc">{selectedType.desc}</span>
+              </span>
+            </>
+          ) : (
+            <span className="type-placeholder">Choose your business type</span>
+          )}
+          <span className="type-caret" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M6 9l6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </span>
+        </button>
+        <p className="hint">Each one gets a different design, made for that kind of business.</p>
 
         <h2 className="setup-step">3. Your business</h2>
         <label>Business name</label>
@@ -239,6 +280,49 @@ export default function Setup() {
           </a>
         </p>
       </form>
+
+      {/* The list that slides up when they tap the button above */}
+      {sheetOpen && (
+        <div className="sheet-backdrop" onClick={() => setSheetOpen(false)}>
+          <div className="sheet" onClick={(e) => e.stopPropagation()}>
+            <div className="sheet-head">
+              <h3>Which one describes your business?</h3>
+              <button
+                type="button"
+                className="sheet-close"
+                onClick={() => setSheetOpen(false)}
+                aria-label="Close"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M18 6 6 18M6 6l12 12" strokeLinecap="round" />
+                </svg>
+              </button>
+            </div>
+
+            <div className="sheet-list">
+              {TYPES.map((t) => (
+                <button
+                  key={t.id}
+                  type="button"
+                  className={type === t.id ? "type-row selected" : "type-row"}
+                  onClick={() => pickType(t.id)}
+                >
+                  <span className="type-icon">{t.icon}</span>
+                  <span className="type-text">
+                    <span className="type-name">{t.name}</span>
+                    <span className="type-desc">{t.desc}</span>
+                  </span>
+                  <span className="type-mark" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                      <path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route, NavLink, Outlet, Navigate } from "react-router-dom";
+import Landing from "./components/Landing";
 import Signup from "./components/Signup";
 import Setup from "./components/Setup";
 import Login from "./components/Login";
@@ -13,12 +14,18 @@ import Orders from "./components/Orders";
 import OrderSettings from "./components/OrderSettings";
 import Billing from "./components/Billing";
 import Support from "./components/Support";
+import { api } from "./api";
+import RealEstateHome from "./RealEstateSite/dashboard/Home";
+import Properties from "./RealEstateSite/dashboard/Properties";
+import AddProperty from "./RealEstateSite/dashboard/AddProperty";
+import Inquiries from "./RealEstateSite/dashboard/Inquiries";
 import ClothingSite from "./ClothingSite/ClothingSite";
 import HairSite from "./HairSite/HairSite";
 import SkincareSite from "./SkincareSite/SkincareSite";
 import PerfumeSite from "./PerfumeSite/PerfumeSite";
 import JewellerySite from "./JewellerySite/JewellerySite";
 import GadgetsSite from "./GadgetsSite/GadgetsSite";
+import RealEstateSite from "./RealEstateSite/Site";
 import ShopRouter from "./ShopRouter";
 import "./App.css";
 
@@ -100,8 +107,45 @@ const menu = [
   ]},
 ];
 
+// The menu a real estate agent sees
+const realEstateMenu = [
+  { group: "WEBSITE", items: [
+    { to: "/dashboard", label: "Dashboard", end: true, icon: icons.dashboard },
+    { to: "/dashboard/business", label: "Business Info", icon: icons.business },
+    { to: "/dashboard/properties", label: "Properties", icon: icons.products },
+  ]},
+  { group: "SALES", items: [
+    { to: "/dashboard/inquiries", label: "Inquiries", icon: icons.orders },
+  ]},
+  { group: "ACCOUNT", items: [
+    { to: "/dashboard/billing", label: "Plans & Billing", icon: icons.billing },
+    { to: "/dashboard/support", label: "Support", icon: icons.support },
+  ]},
+];
+
+// Shows the right home page for the shop's type
+function HomeRouter() {
+  const [type, setType] = useState(null);
+
+  useEffect(() => {
+    api.get("/sites/me")
+      .then((res) => setType(res.site.businessType || ""))
+      .catch(() => setType(""));
+  }, []);
+
+  if (type === null) return null;
+  return type === "realestate" ? <RealEstateHome /> : <DashboardHome />;
+}
+
 function DashboardLayout() {
   const [open, setOpen] = useState(false);
+  const [type, setType] = useState("");
+
+  useEffect(() => {
+    api.get("/sites/me")
+      .then((res) => setType(res.site.businessType || ""))
+      .catch(() => {});
+  }, []);
 
   return (
     <div className="layout">
@@ -122,7 +166,7 @@ function DashboardLayout() {
           </button>
         </div>
 
-        {menu.map((section) => (
+        {(type === "realestate" ? realEstateMenu : menu).map((section) => (
           <div key={section.group || "main"} className="menu-group">
             {section.group && <p className="menu-label">{section.group}</p>}
             {section.items.map((item) => (
@@ -164,8 +208,8 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* For testing: the main link opens the dashboard. Switch back when the landing page is built. */}
-        <Route path="/" element={<Navigate to="/dashboard" />} />
+        {/* The page people see from your ads */}
+        <Route path="/" element={<Landing />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -184,13 +228,17 @@ export default function App() {
         <Route path="/preview/perfume/*" element={<PerfumeSite basePath="/preview/perfume" />} />
         <Route path="/preview/jewellery/*" element={<JewellerySite basePath="/preview/jewellery" />} />
         <Route path="/preview/gadgets/*" element={<GadgetsSite basePath="/preview/gadgets" />} />
+        <Route path="/preview/realestate/*" element={<RealEstateSite basePath="/preview/realestate" />} />
 
         <Route path="/dashboard" element={<DashboardLayout />}>
-          <Route index element={<DashboardHome />} />
+          <Route index element={<HomeRouter />} />
           <Route path="business" element={<BusinessInfo />} />
           <Route path="products" element={<Products />} />
           <Route path="orders" element={<Orders />} />
           <Route path="order-settings" element={<OrderSettings />} />
+          <Route path="properties" element={<Properties />} />
+          <Route path="properties/:id" element={<AddProperty />} />
+          <Route path="inquiries" element={<Inquiries />} />
           <Route path="billing" element={<Billing />} />
           <Route path="support" element={<Support />} />
         </Route>
