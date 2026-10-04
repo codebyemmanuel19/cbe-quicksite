@@ -392,10 +392,21 @@ export default function RealEstateSite({ basePath = "", slug: slugProp }) {
                 <div className="re-hero-in">
                   {hero.label && <span className="re-badge">{hero.label}</span>}
                   <h1>{hero.headline || "Find a home you will love"}</h1>
+                  {/* Only the first two lines show here. The full text sits further down. */}
                   <p>{store.about || "Verified houses, flats and land. Chat with an agent on WhatsApp."}</p>
                 </div>
               </section>
+
               <Listing {...shared} />
+
+              {store.about && (
+                <section className="re-aboutus">
+                  <div>
+                    <h2>About {store.name}</h2>
+                    <p>{store.about}</p>
+                  </div>
+                </section>
+              )}
             </>
           }
         />

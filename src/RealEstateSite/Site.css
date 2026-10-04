@@ -91,11 +91,16 @@
   font-weight: 800;
 }
 
+/* However long the About is, the hero only ever shows two lines */
 .re-hero p {
   max-width: 520px;
   margin: 0;
   font-size: 15px;
   opacity: .92;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .re-badge {
@@ -353,6 +358,24 @@
 }
 
 .re-wa.off { background: #e2e8f0; color: #64748b; }
+
+/* ---- About the agent ---- */
+.re-aboutus {
+  padding: 36px 16px;
+  background: #f8fafc;
+  border-top: 1px solid #eef0f3;
+}
+
+.re-aboutus > div { max-width: 1040px; margin: 0 auto; }
+
+.re-aboutus h2 { margin: 0 0 10px; font-size: 20px; font-weight: 800; }
+
+.re-aboutus p {
+  margin: 0;
+  max-width: 720px;
+  color: #475569;
+  white-space: pre-line;
+}
 
 /* ---- Gallery ---- */
 .re-gal { position: relative; background: #0b1220; }
