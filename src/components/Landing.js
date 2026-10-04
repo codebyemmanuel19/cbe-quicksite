@@ -2,7 +2,13 @@ import { Link } from "react-router-dom";
 import "./Landing.css";
 
 const SUPPORT = "https://wa.me/2349027090880?text=Hi%2C%20I%20have%20a%20question%20about%20CBE%20QuickSite";
-const EXAMPLE = "https://kemisboutique.cbequicksite.com";
+
+// Change these to your clean demo shops. Three different looks, on purpose.
+const EXAMPLES = [
+  { type: "Clothing & fashion", name: "Kemi's Boutique", url: "https://kemisboutique.cbequicksite.com" },
+  { type: "Hair & wigs", name: "Luxe Hair", url: "https://luxehair.cbequicksite.com" },
+  { type: "Real estate", name: "Port Harcourt Homes", url: "https://realestate.cbequicksite.com" },
+];
 
 const STEPS = [
   { title: "Sign up and pick your business", text: "Choose your type, your business name and your website address. It takes about two minutes." },
@@ -77,11 +83,27 @@ export default function Landing() {
         </p>
         <div className="lp-actions">
           <Link to="/signup" className="lp-btn">Start free</Link>
-          <a href={EXAMPLE} target="_blank" rel="noreferrer" className="lp-btn ghost">See a live example</a>
+          <a href="#examples" className="lp-btn ghost">See live examples</a>
         </div>
       </section>
 
-      <section className="lp-section" id="how">
+      {/* Three real sites, three different designs. This is the proof. */}
+      <section className="lp-section" id="examples">
+        <h2>See real websites</h2>
+        <p className="lp-sub">Open them on your phone. Every business type looks different.</p>
+
+        <div className="lp-examples">
+          {EXAMPLES.map((e) => (
+            <a key={e.url} className="lp-example" href={e.url} target="_blank" rel="noreferrer">
+              <span className="lp-ex-type">{e.type}</span>
+              <span className="lp-ex-name">{e.name}</span>
+              <span className="lp-ex-go">Open website →</span>
+            </a>
+          ))}
+        </div>
+      </section>
+
+      <section className="lp-section grey" id="how">
         <h2>How it works</h2>
         <div className="lp-steps">
           {STEPS.map((s, i) => (
@@ -94,7 +116,7 @@ export default function Landing() {
         </div>
       </section>
 
-      <section className="lp-section grey">
+      <section className="lp-section">
         <h2>Everything you need to sell online</h2>
         <div className="lp-features">
           {FEATURES.map((f) => (
@@ -107,7 +129,7 @@ export default function Landing() {
       </section>
 
       {/* The price said plainly, so nobody has to message to find out */}
-      <section className="lp-section" id="pricing">
+      <section className="lp-section grey" id="pricing">
         <h2>Simple pricing</h2>
         <p className="lp-sub">Seven days free first. No card needed.</p>
 
