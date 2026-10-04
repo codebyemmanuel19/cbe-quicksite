@@ -119,9 +119,10 @@ export default function DashboardHome() {
         ]);
         if (cancelled) return;
         setSite(mine.site);
-        setProducts(p.products);
-        setOrders(o.orders);
-        setAccount(me.user);
+        // A missing list must never turn into undefined, or the page goes blank
+        setProducts(Array.isArray(p?.products) ? p.products : []);
+        setOrders(Array.isArray(o?.orders) ? o.orders : []);
+        setAccount(me?.user || null);
       } catch (err) {
         if (cancelled) return;
         if (err.status === 401) return navigate("/login");
@@ -170,6 +171,10 @@ export default function DashboardHome() {
 
   if (!site) return null;
 
+  // Anything the server left out must not take the whole page down
+  const business = site.business || {};
+  const billing = site.billing || {};
+
   const url = site.url;
   const shareLink = `https://wa.me/?text=${encodeURIComponent(`Check out my new website: ${url}`)}`;
 
@@ -191,7 +196,7 @@ export default function DashboardHome() {
     0
   );
 
-  const card = statusCard(site.billing);
+  const card = statusCard(billing);
   const needsVerify = account && !account.emailVerified;
 
   async function handleCopy() {
@@ -215,8 +220,8 @@ export default function DashboardHome() {
   }
 
   const checklist = [
-    { label: "Add your WhatsApp number", done: !!site.business.whatsapp, to: "/dashboard/business" },
-    { label: "Upload your logo", done: !!site.business.logo, to: "/dashboard/business" },
+    { label: "Add your WhatsApp number", done: !!business.whatsapp, to: "/dashboard/business" },
+    { label: "Upload your logo", done: !!business.logo, to: "/dashboard/business" },
     { label: "Add your first product", done: products.length > 0, to: "/dashboard/products" },
     { label: "Share your website link", done: shared, share: true },
   ];
@@ -224,7 +229,7 @@ export default function DashboardHome() {
 
   return (
     <div className="home">
-      <h1 className="home-title">Hi, {site.business.businessName} 👋</h1>
+      <h1 className="home-title">Hi, {business.businessName} 👋</h1>
 
       {/* Hides itself once installed, or once they close it */}
       <InstallCard />
