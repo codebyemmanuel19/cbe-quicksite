@@ -242,9 +242,16 @@ export default function Products() {
           api.get("/sites/me"),
         ]);
         if (cancelled) return;
-        setProducts(p.products);
-        setCategories(c.categories);
-        setBusinessType(mine.site.businessType || "clothing");
+
+        // If a list is missing, say so instead of letting the page go white
+        if (!Array.isArray(p?.products)) {
+          console.log("Bad answer from /products:", p);
+          setPageError("Could not load your products. Reload the page.");
+        }
+
+        setProducts(Array.isArray(p?.products) ? p.products : []);
+        setCategories(Array.isArray(c?.categories) ? c.categories : []);
+        setBusinessType(mine?.site?.businessType || "clothing");
       } catch (err) {
         if (cancelled) return;
         if (err.status === 401) return navigate("/login");
@@ -280,7 +287,7 @@ export default function Products() {
 
   const shown = products.filter((p) => {
     const inCategory = filter === "All" || p.categoryId === filter;
-    const matchesSearch = p.name.toLowerCase().includes(search.trim().toLowerCase());
+    const matchesSearch = String(p.name || "").toLowerCase().includes(search.trim().toLowerCase());
     return inCategory && matchesSearch;
   });
 
@@ -507,7 +514,7 @@ export default function Products() {
           {shown.map((p) => (
             <div key={p.id} className="prod-row">
               <div className="row-img">
-                {p.photos[0] ? <img src={p.photos[0]} alt={p.name} /> : <span>No photo</span>}
+                {p.photos?.[0] ? <img src={p.photos[0]} alt={p.name} /> : <span>No photo</span>}
               </div>
 
               <div className="row-info">
