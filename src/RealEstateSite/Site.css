@@ -85,24 +85,10 @@
 
 .re-hero h1 {
   max-width: 620px;
-  margin: 12px 0 8px;
+  margin: 12px 0 0;
   font-size: clamp(28px, 8vw, 50px);
   line-height: 1.1;
   font-weight: 800;
-}
-
-/* However long the About is, the hero only ever shows two lines */
-/* However long the About is, the hero only ever shows two lines */
-.re-hero p {
-  max-width: 520px;
-  margin: 0;
-  font-size: 15px;
-  opacity: .92;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
 }
 
 .re-badge {
@@ -361,24 +347,6 @@
 
 .re-wa.off { background: #e2e8f0; color: #64748b; }
 
-/* ---- About the agent ---- */
-.re-aboutus {
-  padding: 36px 16px;
-  background: #f8fafc;
-  border-top: 1px solid #eef0f3;
-}
-
-.re-aboutus > div { max-width: 1040px; margin: 0 auto; }
-
-.re-aboutus h2 { margin: 0 0 10px; font-size: 20px; font-weight: 800; }
-
-.re-aboutus p {
-  margin: 0;
-  max-width: 720px;
-  color: #475569;
-  white-space: pre-line;
-}
-
 /* ---- Gallery ---- */
 .re-gal { position: relative; background: #0b1220; }
 
@@ -536,25 +504,79 @@
 
 .re-bar .re-wa { max-width: 520px; margin: 0 auto; padding: 14px; font-size: 15px; }
 
-/* ---- Footer ---- */
+/* ---- Footer: about, contact and socials together ---- */
 .re-foot {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  padding: 30px 16px 40px;
+  padding: 38px 16px 28px;
   background: #0b1220;
   color: #94a3b8;
-  font-size: 13px;
+  font-size: 14px;
+  text-align: left;
 }
 
-.re-foot b { color: #fff; font-size: 16px; }
+.re-foot-in {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px 20px;
+  max-width: 1040px;
+  margin: 0 auto;
+}
 
-.re-mail { color: #94a3b8; text-decoration: none; overflow-wrap: anywhere; }
-.re-mail:hover { color: #fff; }
+/* The about block takes the full width on a phone, a wide column on a laptop */
+.re-foot-brand { grid-column: 1 / -1; }
 
-.re-social { display: flex; flex-wrap: wrap; gap: 16px; margin: 10px 0 4px; }
-.re-social a { color: #cbd5e1; font-weight: 700; text-decoration: none; }
-.re-social a:hover { color: #fff; }
+.re-foot-brand b {
+  display: block;
+  margin-bottom: 8px;
+  color: #fff;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.re-foot-brand p {
+  margin: 0;
+  max-width: 460px;
+  line-height: 1.65;
+  white-space: pre-line;
+}
+
+.re-foot-col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 9px;
+  min-width: 0;
+}
+
+.re-foot-col h3 {
+  margin: 0 0 2px;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+}
+
+.re-foot-col a,
+.re-foot-col span {
+  color: #94a3b8;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+.re-foot-col a:hover { color: #fff; }
+
+.re-foot-bottom {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px;
+  max-width: 1040px;
+  margin: 30px auto 0;
+  padding-top: 18px;
+  border-top: 1px solid rgba(255, 255, 255, .1);
+  font-size: 12px;
+  color: #64748b;
+}
 
 .re-loading {
   display: flex;
@@ -573,6 +595,9 @@
   .re-grid { grid-template-columns: repeat(2, 1fr); }
   .re-gal-slide { aspect-ratio: 16 / 9; }
   .re-detail { padding-bottom: 40px; }
+
+  .re-foot-in { grid-template-columns: 2fr 1fr 1fr; gap: 20px 40px; }
+  .re-foot-brand { grid-column: auto; }
 
   .re-bar {
     position: static;

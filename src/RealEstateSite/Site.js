@@ -381,7 +381,7 @@ export default function RealEstateSite({ basePath = "", slug: slugProp }) {
           path="/"
           element={
             <>
-              {/* Label and headline only. The About text belongs in its own section. */}
+              {/* Label and headline only. The About text lives in the footer. */}
               <section
                 className="re-hero"
                 style={
@@ -397,36 +397,44 @@ export default function RealEstateSite({ basePath = "", slug: slugProp }) {
               </section>
 
               <Listing {...shared} />
-
-              {store.about && (
-                <section className="re-aboutus">
-                  <div>
-                    <h2>About {store.name}</h2>
-                    <p>{store.about}</p>
-                  </div>
-                </section>
-              )}
             </>
           }
         />
         <Route path="property/:id" element={<Detail {...shared} />} />
       </Routes>
 
+      {/* About, contact and socials all in one block */}
       <footer className="re-foot">
-        <b>{store.name}</b>
-        {store.address && <span>{store.address}</span>}
-        {store.phone && <span>{store.phone}</span>}
-        {store.email && <a className="re-mail" href={`mailto:${store.email}`}>{store.email}</a>}
-
-        {socials.length > 0 && (
-          <div className="re-social">
-            {socials.map((s) => (
-              <a key={s.name} href={s.url} target="_blank" rel="noreferrer">{s.name}</a>
-            ))}
+        <div className="re-foot-in">
+          <div className="re-foot-brand">
+            <b>{store.name}</b>
+            {store.about && <p>{store.about}</p>}
           </div>
-        )}
 
-        <small>Powered by CBE QuickSite</small>
+          <div className="re-foot-col">
+            <h3>Contact</h3>
+            {store.address && <span>{store.address}</span>}
+            {store.phone && <a href={`tel:${store.phone}`}>{store.phone}</a>}
+            {store.email && <a href={`mailto:${store.email}`}>{store.email}</a>}
+            {phone && (
+              <a href={`https://wa.me/${phone}`} target="_blank" rel="noreferrer">WhatsApp</a>
+            )}
+          </div>
+
+          {socials.length > 0 && (
+            <div className="re-foot-col">
+              <h3>Follow</h3>
+              {socials.map((s) => (
+                <a key={s.name} href={s.url} target="_blank" rel="noreferrer">{s.name}</a>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div className="re-foot-bottom">
+          <small>© {new Date().getFullYear()} {store.name}</small>
+          <small>Powered by CBE QuickSite</small>
+        </div>
       </footer>
     </div>
   );
