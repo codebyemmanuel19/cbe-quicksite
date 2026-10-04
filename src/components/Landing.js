@@ -11,15 +11,13 @@ const STEPS = [
 ];
 
 const FEATURES = [
+  { title: "A design made for your business", text: "Clothing, hair, skincare, perfume, jewellery, gadgets and real estate each get their own look. Not one template for everybody." },
   { title: "Your own website address", text: "Something like yourshop.cbequicksite.com that you can send to anyone." },
   { title: "Orders on WhatsApp", text: "Every order comes straight to your WhatsApp, with the product and the customer's details." },
   { title: "Edit it yourself", text: "Change prices, photos and business info from your phone. No need to call a developer." },
   { title: "Sizes, colours and options", text: "Sell shoes in different sizes, wigs in different lengths, or perfume in different bottle sizes." },
   { title: "A dashboard that shows results", text: "See how many orders your website brought you this month and how much they are worth." },
-  { title: "Works on any phone", text: "Your shop looks good on a small screen, which is where most of your customers will open it." },
 ];
-
-const TYPES = ["Clothing", "Hair & wigs", "Skincare", "Perfume", "Jewellery", "Gadgets", "Real estate"];
 
 const FAQ = [
   { q: "How much does it cost?", a: "You try it free for 7 days first. After that you pick a plan, and you see the plans for your type of business inside your dashboard." },
@@ -77,14 +75,6 @@ export default function Landing() {
               <p>{f.text}</p>
             </div>
           ))}
-        </div>
-      </section>
-
-      <section className="lp-section">
-        <h2>Made for sellers like you</h2>
-        <p className="lp-sub">Each business type gets its own design.</p>
-        <div className="lp-types">
-          {TYPES.map((t) => <span key={t}>{t}</span>)}
         </div>
       </section>
 
