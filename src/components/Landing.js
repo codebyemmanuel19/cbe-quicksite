@@ -22,7 +22,7 @@ const FEATURES = [
 const TYPES = ["Clothing", "Hair & wigs", "Skincare", "Perfume", "Jewellery", "Gadgets", "Real estate"];
 
 const FAQ = [
-  { q: "How much does it cost?", a: "You try it free for 7 days first. After that you pick a plan, and you see the plans for your type of business inside your dashboard." },
+  { q: "How much does it cost?", a: "Seven days free first, no card needed. After that, shops are ₦5,000 a month and real estate is ₦10,000 a month. Pay for 3, 6 or 12 months and it costs less. You see your own price inside your dashboard." },
   { q: "Do I need to know coding?", a: "No. You fill in simple forms, and your website is ready. If you get stuck, message us on WhatsApp." },
   { q: "How do my customers pay me?", a: "Your customers order and pay you directly. Set your bank account and delivery areas in your dashboard, and your details show at checkout. The money goes straight to your bank, not to us." },
   { q: "What happens after the 7 free days?", a: "Your website stays live. You pay to keep editing it. If it stays unpaid for 30 days, it goes offline until you pay." },
@@ -53,6 +53,8 @@ export default function Landing() {
           <Link to="/signup" className="lp-btn">Start free</Link>
           <a href={EXAMPLE} target="_blank" rel="noreferrer" className="lp-btn ghost">See a live example</a>
         </div>
+        {/* The price said plainly, so nobody has to ask */}
+        <p className="lp-price">Then ₦5,000 a month. Real estate ₦10,000.</p>
       </section>
 
       <section className="lp-section" id="how">
