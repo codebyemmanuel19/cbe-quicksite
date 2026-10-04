@@ -381,6 +381,7 @@ export default function RealEstateSite({ basePath = "", slug: slugProp }) {
           path="/"
           element={
             <>
+              {/* Label and headline only. The About text belongs in its own section. */}
               <section
                 className="re-hero"
                 style={
@@ -392,8 +393,6 @@ export default function RealEstateSite({ basePath = "", slug: slugProp }) {
                 <div className="re-hero-in">
                   {hero.label && <span className="re-badge">{hero.label}</span>}
                   <h1>{hero.headline || "Find a home you will love"}</h1>
-                  {/* Only the first two lines show here. The full text sits further down. */}
-                  <p>{store.about || "Verified houses, flats and land. Chat with an agent on WhatsApp."}</p>
                 </div>
               </section>
 
