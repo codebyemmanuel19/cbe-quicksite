@@ -369,12 +369,32 @@
 
 .re-gal-track::-webkit-scrollbar { display: none; }
 
-.re-gal-track img {
+.re-gal-slide {
+  position: relative;
   flex: 0 0 100%;
   width: 100%;
   aspect-ratio: 4 / 3;
-  object-fit: cover;
   scroll-snap-align: start;
+  overflow: hidden;
+  background-size: cover;
+  background-position: center;
+}
+
+/* The blur sits between the stretched copy and the real photo */
+.re-gal-slide::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  backdrop-filter: blur(26px) saturate(130%);
+  -webkit-backdrop-filter: blur(26px) saturate(130%);
+  background: rgba(11, 18, 32, .45);
+}
+
+.re-gal-slide img {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
   display: block;
 }
 
@@ -526,7 +546,7 @@
 @media (min-width: 760px) {
   .re-hero { min-height: 62vh; padding: 70px 24px 80px; }
   .re-grid { grid-template-columns: repeat(2, 1fr); }
-  .re-gal-track img { aspect-ratio: 16 / 9; }
+  .re-gal-slide { aspect-ratio: 16 / 9; }
   .re-detail { padding-bottom: 40px; }
 
   .re-bar {

@@ -44,7 +44,11 @@ function Gallery({ photos }) {
     <div className="re-gal">
       <div className="re-gal-track" onScroll={handleScroll}>
         {photos.map((src, i) => (
-          <img key={src + i} src={src} alt="" loading={i === 0 ? "eager" : "lazy"} />
+          // The blurred copy behind means a tall photo and a wide photo
+          // both show in full, with nothing cut off
+          <div className="re-gal-slide" key={src + i} style={{ backgroundImage: `url(${src})` }}>
+            <img src={src} alt="" loading={i === 0 ? "eager" : "lazy"} />
+          </div>
         ))}
       </div>
 
