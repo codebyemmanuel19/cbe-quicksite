@@ -19,8 +19,36 @@ const FEATURES = [
   { title: "A dashboard that shows results", text: "See how many orders your website brought you this month and how much they are worth." },
 ];
 
+// Two kinds of business, two prices
+const PLANS = [
+  {
+    name: "Shops",
+    price: "₦5,000",
+    per: "a month",
+    who: "Clothing, hair & wigs, skincare, perfume, jewellery and gadgets",
+    points: [
+      "Your own website address",
+      "Products with photos, sizes and colours",
+      "A price for every option you sell",
+      "Orders straight to your WhatsApp",
+    ],
+  },
+  {
+    name: "Real estate",
+    price: "₦10,000",
+    per: "a month",
+    who: "Estate agents and property companies",
+    points: [
+      "Your own website address",
+      "Up to 8 photos on every property",
+      "Buyers filter by sale, rent, house, flat or land",
+      "Every enquiry lands in your dashboard",
+    ],
+  },
+];
+
 const FAQ = [
-  { q: "How much does it cost?", a: "You try it free for 7 days first. After that you pick a plan, and you see the plans for your type of business inside your dashboard." },
+  { q: "How much does it cost?", a: "Seven days free first, and no card needed. After that, shops are ₦5,000 a month and real estate is ₦10,000 a month. Pay for 3, 6 or 12 months and it costs less." },
   { q: "Do I need to know coding?", a: "No. You fill in simple forms, and your website is ready. If you get stuck, message us on WhatsApp." },
   { q: "How do my customers pay me?", a: "Your customers order and pay you directly. Set your bank account and delivery areas in your dashboard, and your details show at checkout. The money goes straight to your bank, not to us." },
   { q: "What happens after the 7 free days?", a: "Your website stays live. You pay to keep editing it. If it stays unpaid for 30 days, it goes offline until you pay." },
@@ -76,6 +104,30 @@ export default function Landing() {
             </div>
           ))}
         </div>
+      </section>
+
+      {/* The price said plainly, so nobody has to message to find out */}
+      <section className="lp-section" id="pricing">
+        <h2>Simple pricing</h2>
+        <p className="lp-sub">Seven days free first. No card needed.</p>
+
+        <div className="lp-plans">
+          {PLANS.map((p) => (
+            <div key={p.name} className="lp-plan">
+              <h3>{p.name}</h3>
+              <p className="lp-amount">
+                {p.price}<small> {p.per}</small>
+              </p>
+              <p className="lp-who">{p.who}</p>
+              <ul>
+                {p.points.map((t) => <li key={t}>{t}</li>)}
+              </ul>
+              <Link to="/signup" className="lp-btn ghost full">Start free</Link>
+            </div>
+          ))}
+        </div>
+
+        <p className="lp-note">Pay for 3, 6 or 12 months and it costs less.</p>
       </section>
 
       <section className="lp-section">

@@ -52,6 +52,7 @@
 .lp-btn.small { padding: 9px 16px; font-size: 14px; box-shadow: none; }
 .lp-btn.ghost { color: #2563eb; background: #fff; border: 1.5px solid #bfdbfe; box-shadow: none; }
 .lp-btn.light { color: #1d4ed8; background: #fff; box-shadow: none; }
+.lp-btn.full { display: block; width: 100%; padding: 12px; font-size: 15px; }
 
 /* Hero */
 .lp-hero {
@@ -136,17 +137,55 @@
   border-radius: 50%;
 }
 
-.lp-types { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
-
-.lp-types span {
-  padding: 10px 18px;
-  font-size: 14px;
-  font-weight: 700;
-  color: #1d4ed8;
-  background: #eff6ff;
-  border: 1px solid #bfdbfe;
-  border-radius: 999px;
+/* Pricing */
+.lp-plans {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  margin-top: 22px;
 }
+
+.lp-plan {
+  display: flex;
+  flex-direction: column;
+  padding: 24px 20px;
+  background: #fff;
+  border: 1px solid #e8ebf0;
+  border-radius: 18px;
+}
+
+.lp-plan h3 { margin: 0; font-size: 18px; font-weight: 800; }
+
+.lp-amount {
+  margin: 8px 0 4px;
+  font-size: 32px;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1.1;
+}
+
+.lp-amount small { font-size: 14px; font-weight: 600; color: #64748b; }
+
+.lp-who { margin: 0 0 16px; font-size: 13px; color: #64748b; }
+
+.lp-plan ul { flex: 1; margin: 0 0 18px; padding: 0; list-style: none; }
+
+.lp-plan li {
+  position: relative;
+  padding: 0 0 9px 24px;
+  font-size: 14px;
+  color: #334155;
+}
+
+.lp-plan li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: #2563eb;
+  font-weight: 800;
+}
+
+.lp-note { margin: 18px 0 0; text-align: center; font-size: 13px; color: #64748b; }
 
 /* Questions */
 .lp-faq { max-width: 700px; margin: 18px auto 0; }
@@ -197,17 +236,12 @@
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
 }
 
-.lp-price {
-  margin: 16px auto 0;
-  font-size: 14px;
-  color: #64748b;
-}
-
 @media (min-width: 760px) {
   .lp-hero { padding: 70px 24px 70px; }
   .lp-hero h1 { font-size: 52px; }
   .lp-actions { flex-direction: row; justify-content: center; max-width: none; }
   .lp-steps { grid-template-columns: repeat(3, 1fr); }
   .lp-features { grid-template-columns: repeat(3, 1fr); }
-    .lp-final { margin: 0 auto 40px; }
+  .lp-plans { grid-template-columns: repeat(2, 1fr); max-width: 760px; margin-left: auto; margin-right: auto; }
+  .lp-final { margin: 0 auto 40px; }
 }
