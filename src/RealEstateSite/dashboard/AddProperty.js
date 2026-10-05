@@ -5,6 +5,8 @@ import { api, uploadPhoto } from "../../api";
 import "./dashboard.css";
 
 const MAX_PHOTOS = 8;
+const MAX_SIDE = 1600;            // longest side after shrinking
+const MAX_BYTES = 5 * 1024 * 1024; // server limit
 
 const empty = {
   title: "",
@@ -19,6 +21,34 @@ const empty = {
   description: "",
   photos: [],
 };
+
+// Shrinks a photo to about 1600px and turns it into a JPEG.
+// It also fixes sideways phone photos. If the browser can't read the file, the original is returned.
+async function shrink(file) {
+  try {
+    const bitmap = await createImageBitmap(file, { imageOrientation: "from-image" });
+    const scale = Math.min(1, MAX_SIDE / Math.max(bitmap.width, bitmap.height));
+    const w = Math.round(bitmap.width * scale);
+    const h = Math.round(bitmap.height * scale);
+
+    const canvas = document.createElement("canvas");
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#fff"; // PNGs with see-through areas
+    ctx.fillRect(0, 0, w, h);
+    ctx.drawImage(bitmap, 0, 0, w, h);
+    bitmap.close?.();
+
+    const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/jpeg", 0.8));
+    if (!blob) return file;
+
+    const name = file.name.replace(/\.[^.]+$/, "") + ".jpg";
+    return new File([blob], name, { type: "image/jpeg" });
+  } catch {
+    return file;
+  }
+}
 
 // One-tap choices
 function Options({ value, list, onPick }) {
@@ -62,14 +92,26 @@ export default function AddProperty() {
     const files = Array.from(e.target.files);
     e.target.value = "";
     const room = MAX_PHOTOS - form.photos.length;
-    const good = files.filter((f) => f.type.startsWith("image/") && f.size <= 5 * 1024 * 1024).slice(0, room);
-    if (!good.length) return;
+    const picked = files.filter((f) => f.type.startsWith("image/")).slice(0, room);
+    if (!picked.length) return;
+
     setError("");
     setUploading(true);
     try {
       const links = [];
-      for (const file of good) links.push(await uploadPhoto(file));
-      setForm((f) => ({ ...f, photos: [...f.photos, ...links] }));
+      let skipped = 0;
+
+      for (const original of picked) {
+        const file = await shrink(original); // shrink first, then check size
+        if (file.size > MAX_BYTES) {
+          skipped++;
+          continue;
+        }
+        links.push(await uploadPhoto(file));
+      }
+
+      if (links.length) setForm((f) => ({ ...f, photos: [...f.photos, ...links] }));
+      if (skipped) setError(`${skipped} photo(s) could not be added. Try a different photo.`);
     } catch (err) {
       setError(err.message);
     } finally {
