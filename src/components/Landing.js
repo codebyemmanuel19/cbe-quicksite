@@ -175,6 +175,10 @@ export default function Landing() {
           <span className="lp-light">CBE</span><span className="lp-sky">QuickSite</span>
         </span>
         <a href={SUPPORT} target="_blank" rel="noreferrer">Chat with us on WhatsApp</a>
+        <div className="lp-legal">
+          <Link to="/privacy">Privacy Policy</Link>
+          <Link to="/terms">Terms of Service</Link>
+        </div>
         <small>© {new Date().getFullYear()} CBE QuickSite</small>
       </footer>
 

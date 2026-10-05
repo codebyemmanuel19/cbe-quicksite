@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route, NavLink, Outlet, Navigate } from "react-router-dom";
 import Landing from "./components/Landing";
+import { Privacy, Terms } from "./components/Legal";
 import Signup from "./components/Signup";
 import Setup from "./components/Setup";
 import Login from "./components/Login";
@@ -25,7 +26,6 @@ import SkincareSite from "./SkincareSite/SkincareSite";
 import PerfumeSite from "./PerfumeSite/PerfumeSite";
 import JewellerySite from "./JewellerySite/JewellerySite";
 import GadgetsSite from "./GadgetsSite/GadgetsSite";
-import RealEstateSite from "./RealEstateSite/Site";
 import ShopRouter from "./ShopRouter";
 import "./App.css";
 
@@ -210,6 +210,8 @@ export default function App() {
       <Routes>
         {/* The page people see from your ads */}
         <Route path="/" element={<Landing />} />
+        <Route path="/privacy" element={<Privacy />} />
+        <Route path="/terms" element={<Terms />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -228,7 +230,6 @@ export default function App() {
         <Route path="/preview/perfume/*" element={<PerfumeSite basePath="/preview/perfume" />} />
         <Route path="/preview/jewellery/*" element={<JewellerySite basePath="/preview/jewellery" />} />
         <Route path="/preview/gadgets/*" element={<GadgetsSite basePath="/preview/gadgets" />} />
-        <Route path="/preview/realestate/*" element={<RealEstateSite basePath="/preview/realestate" />} />
 
         <Route path="/dashboard" element={<DashboardLayout />}>
           <Route index element={<HomeRouter />} />
