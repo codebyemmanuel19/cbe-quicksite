@@ -26,6 +26,21 @@ function withQuery(path) {
   return path + (typeof window !== "undefined" ? window.location.search : "");
 }
 
+// Shows the whole photo whatever its shape. A blurred copy fills the leftover space.
+function Photo({ src, alt = "", eager = false }) {
+  return (
+    <>
+      <img className="re-img-bg" src={src} alt="" aria-hidden="true" loading="lazy" />
+      <img
+        className="re-img-main"
+        src={src}
+        alt={alt}
+        loading={eager ? "eager" : "lazy"}
+      />
+    </>
+  );
+}
+
 // Swipe through every photo, with a counter and dots
 function Gallery({ photos }) {
   const [active, setActive] = useState(0);
@@ -45,7 +60,7 @@ function Gallery({ photos }) {
       <div className="re-gal-track" onScroll={handleScroll}>
         {photos.map((src, i) => (
           <div className="re-gal-slide" key={src + i}>
-            <img src={src} alt="" loading={i === 0 ? "eager" : "lazy"} />
+            <Photo src={src} eager={i === 0} />
           </div>
         ))}
       </div>
@@ -73,7 +88,7 @@ function Card({ p, base, money, waLink, onInquire }) {
     <article className="re-card">
       <Link className="re-card-top" to={withQuery(`${base}/property/${p.id}`)}>
         <div className="re-img">
-          {photos[0] ? <img src={photos[0]} alt="" loading="lazy" /> : <span className="re-noimg" />}
+          {photos[0] ? <Photo src={photos[0]} alt={p.title} /> : <span className="re-noimg" />}
           {p.listing && <span className="re-tag">For {String(p.listing).toLowerCase()}</span>}
           {status !== "Available" && <span className="re-sold">{status}</span>}
           {photos.length > 1 && <span className="re-shots">{photos.length} photos</span>}
@@ -431,7 +446,7 @@ export default function RealEstateSite({ basePath = "", slug: slugProp }) {
         </div>
 
         <div className="re-foot-bottom">
-          <small>© {new Date().getFullYear()} {store.name}</small>
+          <small>©️ {new Date().getFullYear()} {store.name}</small>
           <small>Powered by CBE QuickSite</small>
         </div>
       </footer>
