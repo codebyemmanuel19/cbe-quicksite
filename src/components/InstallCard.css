@@ -1,0 +1,73 @@
+/* Download the App: one big button, like a normal app store prompt */
+.dl-card {
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.dl-btn {
+  width: 100%;
+  padding: 18px 20px;
+  border: 0;
+  border-radius: 16px;
+  background: #312383;
+  color: #fff;
+  font-family: inherit;
+  font-size: 17px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.dl-btn:active { opacity: 0.9; }
+
+.dl-later {
+  margin-top: 8px;
+  padding: 6px 12px;
+  border: 0;
+  background: none;
+  color: #8b93a7;
+  font-family: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+/* Steps sheet (iPhone and browsers that can't show the install popup) */
+.dl-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.dl-sheet {
+  width: 100%;
+  max-width: 480px;
+  padding: 22px 20px calc(22px + env(safe-area-inset-bottom, 0px));
+  border-radius: 20px 20px 0 0;
+  background: #fff;
+}
+
+.dl-sheet-title {
+  margin: 0 0 14px;
+  font-size: 18px;
+  color: #1f2937;
+}
+
+.dl-steps {
+  margin: 0 0 20px;
+  padding-left: 22px;
+}
+
+.dl-steps li {
+  margin-bottom: 10px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: #4b5563;
+}
+
+@media (min-width: 900px) {
+  .dl-overlay { align-items: center; }
+  .dl-sheet { border-radius: 20px; }
+}

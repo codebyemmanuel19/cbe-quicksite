@@ -1,88 +1,119 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
+import "./InstallCard.css";
 
-// Three different phones, three different ways in:
-//   Chrome on Android gives us a real install button
-//   Other Android browsers need the menu steps
-//   iPhone only allows this from Safari, never Chrome
-export default function InstallCard() {
-  const [prompt, setPrompt] = useState(null);
-  const [hidden, setHidden] = useState(false);
-
-  const ua = window.navigator.userAgent;
-  const isIphone = /iphone|ipad|ipod/i.test(ua);
-
-  // Already installed: running from the home screen, not the browser
-  const installed =
+function isStandalone() {
+  return (
     window.matchMedia("(display-mode: standalone)").matches ||
-    window.navigator.standalone === true;
+    window.navigator.standalone === true
+  );
+}
+
+function isIos() {
+  return /iphone|ipad|ipod/i.test(window.navigator.userAgent);
+}
+
+function readHidden() {
+  try {
+    return localStorage.getItem("installHidden") === "1";
+  } catch {
+    return false;
+  }
+}
+
+export default function InstallCard() {
+  // window.deferredInstallPrompt is saved early in main.jsx, so the event
+  // is not lost if it fired before this card appeared.
+  const [promptEvent, setPromptEvent] = useState(() => window.deferredInstallPrompt || null);
+  const [installed, setInstalled] = useState(isStandalone());
+  const [hidden, setHidden] = useState(readHidden());
+  const [showSteps, setShowSteps] = useState(false);
 
   useEffect(() => {
     function onPrompt(e) {
-      e.preventDefault(); // stop the browser showing its own bar
-      setPrompt(e);
+      e.preventDefault();
+      window.deferredInstallPrompt = e;
+      setPromptEvent(e);
     }
+    function onInstalled() {
+      window.deferredInstallPrompt = null;
+      setPromptEvent(null);
+      setInstalled(true);
+    }
+
     window.addEventListener("beforeinstallprompt", onPrompt);
-    return () => window.removeEventListener("beforeinstallprompt", onPrompt);
+    window.addEventListener("appinstalled", onInstalled);
+    return () => {
+      window.removeEventListener("beforeinstallprompt", onPrompt);
+      window.removeEventListener("appinstalled", onInstalled);
+    };
   }, []);
-
-  // They closed it: remember that for this browser
-  useEffect(() => {
-    try {
-      if (localStorage.getItem("hideInstallCard") === "yes") setHidden(true);
-    } catch {
-      // private browsing, never mind
-    }
-  }, []);
-
-  function close() {
-    setHidden(true);
-    try {
-      localStorage.setItem("hideInstallCard", "yes");
-    } catch {
-      // private browsing, never mind
-    }
-  }
-
-  async function install() {
-    if (!prompt) return;
-    prompt.prompt();
-    await prompt.userChoice;
-    setPrompt(null);
-    close();
-  }
 
   if (installed || hidden) return null;
 
+  async function handleInstall() {
+    // Android / Chrome: one tap opens the real install popup
+    if (promptEvent) {
+      promptEvent.prompt();
+      const { outcome } = await promptEvent.userChoice;
+      window.deferredInstallPrompt = null;
+      setPromptEvent(null);
+      if (outcome === "accepted") setInstalled(true);
+      return;
+    }
+    // iPhone and other browsers can't be prompted, so show the steps
+    setShowSteps(true);
+  }
+
+  function handleLater() {
+    try {
+      localStorage.setItem("installHidden", "1");
+    } catch {
+      // Storage blocked: it just comes back next visit
+    }
+    setHidden(true);
+  }
+
+  const ios = isIos();
+
   return (
-    <section className="install-card">
-      <button className="install-close" onClick={close} aria-label="Close">✕</button>
-
-      <p className="install-title">Put this on your phone</p>
-      <p className="install-sub">
-        Open your dashboard in one tap, like a normal app.
-      </p>
-
-      {prompt && (
-        <button className="install-btn" onClick={install}>
-          Add to home screen
+    <>
+      <section className="dl-card">
+        <button type="button" className="dl-btn" onClick={handleInstall}>
+          Download the App
         </button>
-      )}
+        <button type="button" className="dl-later" onClick={handleLater}>
+          Maybe later
+        </button>
+      </section>
 
-      {!prompt && isIphone && (
-        <ol className="install-steps">
-          <li>Make sure you are in <strong>Safari</strong>, not Chrome</li>
-          <li>Tap the share button at the bottom of the screen</li>
-          <li>Scroll down and tap <strong>Add to Home Screen</strong></li>
-        </ol>
-      )}
+      {showSteps &&
+        createPortal(
+          <div className="dl-overlay" onClick={() => setShowSteps(false)}>
+            <div className="dl-sheet" onClick={(e) => e.stopPropagation()}>
+              <h3 className="dl-sheet-title">Add to your home screen</h3>
 
-      {!prompt && !isIphone && (
-        <ol className="install-steps">
-          <li>Tap the three dots at the top of your browser</li>
-          <li>Tap <strong>Add to Home screen</strong> or <strong>Install app</strong></li>
-          <li>Tap <strong>Add</strong> to finish</li>
-        </ol>
-      )}
-    </section>
+              {ios ? (
+                <ol className="dl-steps">
+                  <li>Tap the <b>Share</b> button at the bottom of Safari</li>
+                  <li>Scroll down and tap <b>Add to Home Screen</b></li>
+                  <li>Tap <b>Add</b> at the top right</li>
+                </ol>
+              ) : (
+                <ol className="dl-steps">
+                  <li>Tap the <b>three dots</b> at the top of your browser</li>
+                  <li>Tap <b>Install app</b> or <b>Add to Home screen</b></li>
+                  <li>Tap <b>Install</b> or <b>Add</b> to finish</li>
+                </ol>
+              )}
+
+              <button type="button" className="dl-btn" onClick={() => setShowSteps(false)}>
+                Got it
+              </button>
+            </div>
+          </div>,
+          document.body
+        )}
+    </>
   );
 }
