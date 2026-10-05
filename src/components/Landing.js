@@ -6,7 +6,7 @@ const SUPPORT = "https://wa.me/2349027090880?text=Hi%2C%20I%20have%20a%20questio
 // Change these to your clean demo shops. Three different looks, on purpose.
 const EXAMPLES = [
   { type: "Clothing & fashion", name: "Kemi's Boutique", url: "https://kemisboutique.cbequicksite.com" },
-  { type: "Hair & wigs", name: "Luxe Hair", url: "https://luxehair.cbequicksite.com" },
+  { type: "Hair & wigs", name: "Luxe Hair", url: "https://hair.cbequicksite.com" },
   { type: "Real estate", name: "Port Harcourt Homes", url: "https://realestate.cbequicksite.com" },
 ];
 
