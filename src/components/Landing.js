@@ -164,11 +164,7 @@ export default function Landing() {
         </div>
       </section>
 
-      <section className="lp-final">
-        <h2>Your shop can be online today</h2>
-        <p>Sign up now and add your first product in a few minutes.</p>
-        <Link to="/signup" className="lp-btn light">Start free</Link>
-      </section>
+      
 
       <footer className="lp-foot">
         <span className="lp-brand">
