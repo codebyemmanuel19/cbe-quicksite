@@ -3,11 +3,25 @@ import "./Landing.css";
 
 const SUPPORT = "https://wa.me/2349027090880?text=Hi%2C%20I%20have%20a%20question%20about%20CBE%20QuickSite";
 
-// Change these to your clean demo shops. Three different looks, on purpose.
+// Add a phone screenshot of each shop to your public/examples folder,
+// then set img to "/examples/kemi.png" and so on. Without img, a plain tile shows.
 const EXAMPLES = [
-  { type: "Clothing & fashion", name: "Kemi's Boutique", url: "https://kemisboutique.cbequicksite.com" },
-  { type: "Hair & wigs", name: "Luxe Hair", url: "https://hair.cbequicksite.com" },
-  { type: "Real estate", name: "Port Harcourt Homes", url: "https://realestate.cbequicksite.com" },
+  { type: "Clothing & fashion", name: "Kemi's Boutique", url: "https://kemisboutique.cbequicksite.com", img: "" },
+  { type: "Hair & wigs", name: "Luxe Hair", url: "https://hair.cbequicksite.com", img: "" },
+  { type: "Real estate", name: "Port Harcourt Homes", url: "https://realestate.cbequicksite.com", img: "" },
+];
+
+const TRUST = [
+  "Orders go to your WhatsApp",
+  "Customers pay your bank directly",
+  "Edit everything from your phone",
+];
+
+const MOCK_ITEMS = [
+  { name: "Ankara gown", price: "₦19,000", color: "#fdba74" },
+  { name: "Lace set", price: "₦24,500", color: "#a5b4fc" },
+  { name: "Senator wear", price: "₦32,000", color: "#86efac" },
+  { name: "Ankara skirt", price: "₦12,000", color: "#f9a8d4" },
 ];
 
 const STEPS = [
@@ -25,7 +39,6 @@ const FEATURES = [
   { title: "A dashboard that shows results", text: "See how many orders your website brought you this month and how much they are worth." },
 ];
 
-// Two kinds of business, two prices
 const PLANS = [
   {
     name: "Shops",
@@ -61,6 +74,30 @@ const FAQ = [
   { q: "Can I change my products later?", a: "Yes. You can add, edit or remove products, prices and photos as often as you like." },
 ];
 
+// A small drawing of a finished shop, with the WhatsApp order arriving
+function PhoneMock() {
+  return (
+    <div className="lp-phone" aria-hidden="true">
+      <div className="lp-screen">
+        <div className="lp-shophead">Kemi's Boutique</div>
+        <div className="lp-mockgrid">
+          {MOCK_ITEMS.map((i) => (
+            <div key={i.name} className="lp-mockitem">
+              <span className="lp-mockimg" style={{ background: i.color }} />
+              <span className="lp-mockname">{i.name}</span>
+              <span className="lp-mockprice">{i.price}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="lp-toast">
+        <b>New order on WhatsApp</b>
+        <span>2 × Ankara gown, ₦38,000</span>
+      </div>
+    </div>
+  );
+}
+
 export default function Landing() {
   return (
     <div className="lp">
@@ -74,20 +111,26 @@ export default function Landing() {
         </nav>
       </header>
 
-      <section className="lp-hero">
-        <span className="lp-pill">7 days free. No card needed.</span>
-        <h1>Create your own professional business website</h1>
-        <p>
-          Show your products, services, or properties online.
-          No coding. No developer needed.
-        </p>
-        <div className="lp-actions">
-          <Link to="/signup" className="lp-btn">Start free</Link>
-          <a href="#examples" className="lp-btn ghost">See live examples</a>
+      <section className="lp-top">
+        <div className="lp-top-text">
+          <h1>Your shop online in 5 minutes. Orders go straight to your WhatsApp.</h1>
+          <p>
+            Make a website for your clothes, hair, perfume or property business.
+            No coding, no developer.
+          </p>
+          <div className="lp-actions">
+            <Link to="/signup" className="lp-btn">Start free</Link>
+            <a href="#examples" className="lp-btn ghost">See real websites</a>
+          </div>
+          <p className="lp-free">7 days free. No card needed.</p>
         </div>
+        <PhoneMock />
       </section>
 
-      {/* Three real sites, three different designs. This is the proof. */}
+      <div className="lp-strip">
+        {TRUST.map((t) => <span key={t}>{t}</span>)}
+      </div>
+
       <section className="lp-section" id="examples">
         <h2>See real websites</h2>
         <p className="lp-sub">Open them on your phone. Every business type looks different.</p>
@@ -95,9 +138,12 @@ export default function Landing() {
         <div className="lp-examples">
           {EXAMPLES.map((e) => (
             <a key={e.url} className="lp-example" href={e.url} target="_blank" rel="noreferrer">
+              <span className="lp-shot">
+                {e.img ? <img src={e.img} alt={`${e.name} website`} loading="lazy" /> : e.name.charAt(0)}
+              </span>
               <span className="lp-ex-type">{e.type}</span>
               <span className="lp-ex-name">{e.name}</span>
-              <span className="lp-ex-go">Open website →</span>
+              <span className="lp-ex-go">Open website</span>
             </a>
           ))}
         </div>
@@ -128,7 +174,6 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* The price said plainly, so nobody has to message to find out */}
       <section className="lp-section grey" id="pricing">
         <h2>Simple pricing</h2>
         <p className="lp-sub">Seven days free first. No card needed.</p>
@@ -164,7 +209,11 @@ export default function Landing() {
         </div>
       </section>
 
-      
+      <section className="lp-final">
+        <h2>Ready to put your business online?</h2>
+        <p>Seven days free. No card needed.</p>
+        <Link to="/signup" className="lp-btn light">Start free</Link>
+      </section>
 
       <footer className="lp-foot">
         <span className="lp-brand">
