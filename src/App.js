@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { BrowserRouter, Routes, Route, NavLink, Outlet, Navigate } from "react-router-dom";
+import { useState, useEffect, useRef } from "react";
+import { BrowserRouter, Routes, Route, NavLink, Outlet, Navigate, useLocation } from "react-router-dom";
 import Landing from "./components/Landing";
 import { Privacy, Terms } from "./components/Legal";
 import Signup from "./components/Signup";
@@ -27,12 +27,32 @@ import PerfumeSite from "./PerfumeSite/PerfumeSite";
 import JewellerySite from "./JewellerySite/JewellerySite";
 import GadgetsSite from "./GadgetsSite/GadgetsSite";
 import ShopRouter from "./ShopRouter";
+import { initPixel, track } from "./pixel";
 import "./App.css";
 
 // True on kemisboutique.cbequicksite.com, false on cbequicksite.com and localhost
 function isVendorSubdomain() {
   const parts = window.location.hostname.split(".");
   return parts.length > 2 && parts[0] !== "www";
+}
+
+// The Facebook Pixel counts visits to cbequicksite.com only, never a vendor's shop
+if (!isVendorSubdomain()) initPixel();
+
+// A React page does not reload when you move between pages, so tell the Pixel each time
+function PixelTracker() {
+  const location = useLocation();
+  const first = useRef(true);
+
+  useEffect(() => {
+    if (first.current) {
+      first.current = false; // the first visit is already counted by initPixel
+      return;
+    }
+    track("PageView");
+  }, [location.pathname]);
+
+  return null;
 }
 
 const Brand = () => (
@@ -207,6 +227,7 @@ export default function App() {
 
   return (
     <BrowserRouter>
+      <PixelTracker />
       <Routes>
         {/* The page people see from your ads */}
         <Route path="/" element={<Landing />} />

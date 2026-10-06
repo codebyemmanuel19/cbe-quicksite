@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { api } from "../api";
+import { track } from "../pixel";
 import "./Signup.css";
 
 export default function Signup() {
@@ -31,6 +32,8 @@ export default function Signup() {
         email: form.email.trim().toLowerCase(),
         password: form.password,
       });
+      // Tell Facebook a new account was made, so your ads can be measured
+      track("CompleteRegistration");
       navigate("/setup");
     } catch (err) {
       setError(err.message);
@@ -102,8 +105,6 @@ export default function Signup() {
           By creating an account you agree to our{" "}
           <Link to="/terms">Terms</Link> and <Link to="/privacy">Privacy Policy</Link>.
         </p>
-
-        
 
         <p className="auth-switch">
           Already have an account? <Link to="/login">Log in</Link>
