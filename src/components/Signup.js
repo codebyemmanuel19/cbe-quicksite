@@ -63,7 +63,8 @@ export default function Signup() {
         <p className="auth-sub">Get your business website live in minutes.</p>
 
         {/* The three things a vendor worries about, answered before they ask */}
-        <ul className="auth-points">
+        <ul className="auth-points11">
+          <li>7 days free. No card needed.</li>
           <li>Your own website address.</li>
           <li>Orders come straight to your WhatsApp.</li>
         </ul>
