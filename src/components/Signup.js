@@ -64,7 +64,6 @@ export default function Signup() {
 
         {/* The three things a vendor worries about, answered before they ask */}
         <ul className="auth-points">
-          <li>7 days free. No card needed.</li>
           <li>Your own website address.</li>
           <li>Orders come straight to your WhatsApp.</li>
         </ul>
