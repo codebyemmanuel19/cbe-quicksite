@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import "./Legal.css";
 
 const SUPPORT = "https://wa.me/2349027090880?text=Hi%2C%20I%20have%20a%20question%20about%20CBE%20QuickSite";
-const UPDATED = "5 October 2026";
+const UPDATED = "6 October 2026";
 
 const PRIVACY = [
   {
@@ -44,7 +44,7 @@ const PRIVACY = [
   },
   {
     title: "Cookies and ads",
-    text: ["We use cookies and similar storage to keep you logged in and to remember a customer's cart. We may also use advertising tools from Meta (Facebook and Instagram) to measure how many people sign up after seeing our ads."],
+    text: ["We use cookies and similar storage to keep you logged in and to remember a customer's cart. We may also use advertising tools from Meta (Facebook and Instagram) to measure how many people sign up after seeing our ads. These tools may use your email address, in a scrambled form, to match you with your Meta account."],
   },
   {
     title: "Keeping your information safe",
