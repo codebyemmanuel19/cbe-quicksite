@@ -76,10 +76,10 @@ export default function Landing() {
 
       <section className="lp-hero">
         <span className="lp-pill">7 days free. No card needed.</span>
-        <h1>Get a real website for your shop in minutes</h1>
+        <h1>Create your own professional business website</h1>
         <p>
-          Your own website address, your products, and every order straight to your WhatsApp.
-          No coding and no developer.
+          Show your products, services, or properties online.
+          No coding. No developer needed.
         </p>
         <div className="lp-actions">
           <Link to="/signup" className="lp-btn">Start free</Link>
