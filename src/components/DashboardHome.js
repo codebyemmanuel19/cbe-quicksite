@@ -288,15 +288,6 @@ export default function DashboardHome() {
             <p className="month-sub">
               Share your link on your WhatsApp status to get your first order.
             </p>
-            <a
-              href={shareLink}
-              target="_blank"
-              rel="noreferrer"
-              className="month-share"
-              onClick={() => setShared(true)}
-            >
-              Share on WhatsApp
-            </a>
           </>
         )}
       </section>
