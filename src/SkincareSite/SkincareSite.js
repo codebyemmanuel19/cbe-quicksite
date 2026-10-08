@@ -133,7 +133,7 @@ function HomePage({ store, basePath, category, setCategory }) {
         style={store.hero.image ? { backgroundImage: `url(${store.hero.image})` } : {}}
       >
         <div className="sk-hero-text">
-          {store.hero.label && <p className="sk-hero-label">{store.hero.label}</p>}
+          
           <h1 className="sk-hero-title">{store.hero.headline || store.name}</h1>
           {store.about && <p className="sk-hero-about">{store.about}</p>}
           <Link className="sk-hero-btn" to={`${basePath}/#shop`}>Shop all products</Link>
