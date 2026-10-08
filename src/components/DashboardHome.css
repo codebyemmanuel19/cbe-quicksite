@@ -254,6 +254,30 @@
   color: #5a6384;
 }
 
+/* Keep Copy link, Open and Share on WhatsApp on one line */
+.live-actions { flex-wrap: nowrap; gap: 8px; }
+
+.live-actions button,
+.live-actions a {
+  white-space: nowrap;
+  text-align: center;
+  min-width: 0;
+}
+
+.live-actions .wa-btn { flex: 1 1 auto; }
+
+@media (max-width: 420px) {
+  .live-card { padding: 16px; }
+  .live-actions { gap: 6px; }
+  .live-actions button,
+  .live-actions a { padding: 10px 9px; font-size: 13px; }
+}
+
+@media (max-width: 350px) {
+  .live-actions button,
+  .live-actions a { padding: 10px 7px; font-size: 12px; }
+}
+
 .install-steps li:last-child {
   margin-bottom: 0;
 }
