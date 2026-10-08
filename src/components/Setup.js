@@ -20,6 +20,12 @@ const TYPES = [
     desc: "Wigs, bundles, frontals & extensions",
   },
   {
+    id: "realestate",
+    icon: "🏠",
+    name: "Real Estate",
+    desc: "Houses, flats & land for sale or rent",
+  },
+  {
     id: "skincare",
     icon: "🧴",
     name: "Skincare & Body Care",
@@ -43,12 +49,7 @@ const TYPES = [
     name: "Gadgets & Accessories",
     desc: "Phones, earbuds, chargers & accessories",
   },
-  {
-    id: "realestate",
-    icon: "🏠",
-    name: "Real Estate",
-    desc: "Houses, flats & land for sale or rent",
-  },
+  
 ];
 
 // Addresses no customer can take, because you need them
@@ -179,7 +180,7 @@ export default function Setup() {
         slug,
         whatsapp: selectedCountry.phoneCode + digits,
       });
-      navigate("/dashboard");
+      navigate("/welcome");
     } catch (err) {
       // They already made a shop on another tab or an earlier visit
       if (err.message === "You already have a site") return navigate("/dashboard");

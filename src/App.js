@@ -4,6 +4,7 @@ import Landing from "./components/Landing";
 import { Privacy, Terms } from "./components/Legal";
 import Signup from "./components/Signup";
 import Setup from "./components/Setup";
+import Welcome from "./components/Welcome";
 import Login from "./components/Login";
 import ForgotPassword from "./components/ForgotPassword";
 import ResetPassword from "./components/ResetPassword";
@@ -239,6 +240,7 @@ export default function App() {
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/verify-email" element={<VerifyEmail />} />
         <Route path="/setup" element={<Setup />} />
+        <Route path="/welcome" element={<Welcome />} />
 
         {/* Test the real subdomain behaviour on your laptop:
             /shop?slug=kemisboutique picks the template by business type */}

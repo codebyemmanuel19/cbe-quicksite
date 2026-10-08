@@ -1,0 +1,126 @@
+.wl-page {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 18px;
+  background: #f5f7ff;
+  box-sizing: border-box;
+}
+
+.wl-page * { box-sizing: border-box; }
+
+.wl-card {
+  width: 100%;
+  max-width: 420px;
+  text-align: center;
+}
+
+.wl-emoji { margin: 0 0 8px; font-size: 44px; line-height: 1; }
+
+.wl-title {
+  margin: 0 0 20px;
+  font-size: 26px;
+  font-weight: 800;
+  color: #111827;
+}
+
+/* Same look as the live website card on the dashboard */
+.wl-live {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 20px;
+  padding: 18px;
+  text-align: left;
+  color: #fff;
+  background: #111827;
+  border-radius: 16px;
+}
+
+.wl-live-label { font-size: 14px; font-weight: 600; color: #86efac; }
+.wl-live-url { font-size: 18px; font-weight: 700; word-break: break-all; }
+
+.wl-text {
+  margin: 0 0 18px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: #475569;
+}
+
+.wl-note {
+  margin: 0 0 14px;
+  padding: 12px 14px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #7a5a12;
+  background: #fffaf0;
+  border: 1px solid #f5d98a;
+  border-radius: 12px;
+}
+
+.wl-done {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #15803d;
+}
+
+.wl-btn {
+  display: block;
+  width: 100%;
+  padding: 16px;
+  border: 0;
+  border-radius: 12px;
+  background: #4f6bff;
+  color: #fff;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.wl-skip {
+  display: block;
+  width: 100%;
+  margin-top: 8px;
+  padding: 14px;
+  border: 0;
+  background: none;
+  color: #64748b;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* The steps that slide up for iPhone */
+.wl-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: flex-end;
+  background: rgba(15, 23, 42, 0.55);
+}
+
+.wl-sheet {
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 22px 20px calc(20px + env(safe-area-inset-bottom, 0px));
+  background: #fff;
+  border-radius: 20px 20px 0 0;
+}
+
+.wl-sheet-title { margin: 0 0 12px; font-size: 18px; color: #111827; }
+
+.wl-steps { margin: 0 0 18px; padding-left: 20px; }
+
+.wl-steps li {
+  margin-bottom: 9px;
+  font-size: 15px;
+  line-height: 1.55;
+  color: #334155;
+}
