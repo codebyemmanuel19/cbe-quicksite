@@ -6,7 +6,7 @@ const SUPPORT = "https://wa.me/2349027090880?text=Hi%2C%20I%20have%20a%20questio
 // Add a phone screenshot of each shop to your public/examples folder,
 // then set img to "/examples/kemi.png" and so on. Without img, a plain tile shows.
 const EXAMPLES = [
-  { type: "Clothing & fashion", name: "Kemi's Boutique", url: "https://kemisboutique.cbequicksite.com", img: "" },
+  //{ type: "Clothing & fashion", name: "Kemi's Boutique", url: "https://kemisboutique.cbequicksite.com", img: "" },
   { type: "Hair & wigs", name: "Luxe Hair", url: "https://hai1.cbequicksite.com", img: "" },
   { type: "Real estate", name: "Port Harcourt Homes", url: "https://realestate.cbequicksite.com", img: "" },
 ];
