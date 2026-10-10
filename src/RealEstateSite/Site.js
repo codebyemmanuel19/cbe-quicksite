@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Routes, Route, Link, useParams } from "react-router-dom";
 import { api } from "../api";
 import { formatPrice } from "../components/countries";
@@ -19,6 +19,163 @@ function socialUrl(site, value) {
   if (site === "instagram") return `https://www.instagram.com/${handle}`;
   if (site === "facebook") return `https://www.facebook.com/${handle}`;
   return "";
+}
+
+const SORTS = [
+  { id: "new", label: "Newest" },
+  { id: "low", label: "Price: low to high" },
+  { id: "high", label: "Price: high to low" },
+];
+
+// Small line icons for the new sections
+const ICONS = {
+  home: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 11l9-8 9 8" />
+      <path d="M5 10v10h14V10" />
+      <path d="M10 20v-6h4v6" />
+    </svg>
+  ),
+  chat: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21 12a8 8 0 0 1-11.8 7L3 21l2-5.6A8 8 0 1 1 21 12z" />
+    </svg>
+  ),
+  tag: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 12V4h8l10 10-8 8L3 12z" />
+      <circle cx="7.5" cy="8.5" r="1" />
+    </svg>
+  ),
+  key: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="8" cy="15" r="4" />
+      <path d="M11 12l9-9" />
+      <path d="M16 7l3 3" />
+    </svg>
+  ),
+  wa: (
+    <svg viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.2-1.4A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2z" />
+      <path d="M16.5 14.3c-.2-.1-1.4-.7-1.6-.8-.2-.1-.4-.1-.5.1l-.7.9c-.1.1-.3.2-.5.1a6.700 6.700 0 0 1-3.300-2.900c-.2-.4.2-.4.7-1.300.1-.1 0-.3 0-.4l-.7-1.600c-.2-.4-.3-.4-.5-.4h-.4a.8.8 0 0 0-.6.300 2.500 2.500 0 0 0-.8 1.900c0 1.100.8 2.200.9 2.300.1.200 1.600 2.500 3.900 3.500 1.400.6 2 .7 2.700.6.400-.1 1.400-.6 1.600-1.200.2-.5.2-1 .1-1.100l-.5-.2z" />
+    </svg>
+  ),
+};
+
+const WHY = [
+  {
+    icon: "home",
+    title: "Real listings",
+    text: "Every property is posted with its own photos, price and location, so you know what you are looking at.",
+  },
+  {
+    icon: "tag",
+    title: "Clear prices",
+    text: "The price is on every listing. No guessing, no surprises when you reach out.",
+  },
+  {
+    icon: "chat",
+    title: "Talk to the agent",
+    text: "Tap one button and you are chatting with the agent on WhatsApp, with the property already named.",
+  },
+  {
+    icon: "key",
+    title: "Easy viewing",
+    text: "Found one you like? Ask for a viewing and the agent will arrange a time with you.",
+  },
+];
+
+// Real numbers counted from the agent's own listings. Nothing is made up.
+function Stats({ properties }) {
+  const cells = useMemo(() => {
+    const open = properties.filter((p) => (p.status || "Available") === "Available");
+    const places = new Set(
+      open.map((p) => String(p.location || "").split(",")[0].trim().toLowerCase()).filter(Boolean)
+    );
+    const count = (kind) => open.filter((p) => String(p.listing).toLowerCase() === kind).length;
+    const out = [
+      { n: open.length, label: "Available now" },
+      { n: count("sale"), label: "For sale" },
+      { n: count("rent"), label: "To rent" },
+      { n: places.size, label: places.size === 1 ? "Area covered" : "Areas covered" },
+    ];
+    return out.filter((c) => c.n > 0);
+  }, [properties]);
+
+  if (cells.length === 0) return null;
+
+  return (
+    <section className="re-stats">
+      <div className="re-wrap re-stats-row">
+        {cells.map((c) => (
+          <div key={c.label} className="re-stat">
+            <b>{c.n}</b>
+            <span>{c.label}</span>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function Why({ name }) {
+  return (
+    <section className="re-why">
+      <div className="re-wrap">
+        <h2>Why choose {name}</h2>
+        <p className="re-why-sub">Finding a property should feel simple and safe. Here is how we make it that way.</p>
+
+        <div className="re-why-grid">
+          {WHY.map((w) => (
+            <div key={w.title} className="re-why-item">
+              <span className="re-why-ico">{ICONS[w.icon]}</span>
+              <h3>{w.title}</h3>
+              <p>{w.text}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// The agent's own About text, written in Business Info
+function AboutUs({ name, about }) {
+  if (!about) return null;
+
+  return (
+    <section className="re-aboutus">
+      <div className="re-wrap re-aboutus-in">
+        <h2>About {name}</h2>
+        <p>{about}</p>
+      </div>
+    </section>
+  );
+}
+
+function ContactBand({ name, phone }) {
+  if (!phone) return null;
+  const text = `Hello ${name}, I am looking for a property.`;
+
+  return (
+    <section className="re-contact">
+      <div className="re-wrap re-contact-in">
+        <div>
+          <h2>Looking for something specific?</h2>
+          <p>Tell the agent what you need and your budget. You will get a reply on WhatsApp.</p>
+        </div>
+        <a
+          className="re-contact-btn"
+          href={`https://wa.me/${phone}?text=${encodeURIComponent(text)}`}
+          target="_blank"
+          rel="noreferrer"
+        >
+          <span className="re-ico">{ICONS.wa}</span>
+          Chat on WhatsApp
+        </a>
+      </div>
+    </section>
+  );
 }
 
 // Keeps ?slug=... attached while you test on localhost
@@ -134,17 +291,26 @@ function Listing({ properties, busy, base, money, waLink, onInquire }) {
   const [type, setType] = useState("All");
   const [listing, setListing] = useState("All");
   const [q, setQ] = useState("");
+  const [sort, setSort] = useState("new");
 
   const search = q.trim().toLowerCase();
 
   // Match on small letters, so "House" and "house" both work
-  const shown = properties.filter((p) => {
+  const filtered = properties.filter((p) => {
     const okType = type === "All" || String(p.type || "").toLowerCase() === type.toLowerCase();
     const okListing =
       listing === "All" || String(p.listing || "").toLowerCase() === listing.toLowerCase();
     const text = `${p.title || ""} ${p.location || ""}`.toLowerCase();
     return okType && okListing && text.includes(search);
   });
+
+  // "Newest" keeps the order the server sends
+  const shown =
+    sort === "low"
+      ? [...filtered].sort((a, b) => Number(a.price) - Number(b.price))
+      : sort === "high"
+      ? [...filtered].sort((a, b) => Number(b.price) - Number(a.price))
+      : filtered;
 
   return (
     <>
@@ -179,11 +345,23 @@ function Listing({ properties, busy, base, money, waLink, onInquire }) {
         </div>
       </section>
 
+      {!busy && <Stats properties={properties} />}
+
       <main className="re-main">
         <div className="re-head-row">
           <h2>Properties</h2>
           {!busy && properties.length > 0 && (
-            <span className="re-found">{shown.length} shown</span>
+            <div className="re-tools">
+              <span className="re-found">{shown.length} shown</span>
+              <label className="re-sort">
+                <span>Sort by</span>
+                <select value={sort} onChange={(e) => setSort(e.target.value)}>
+                  {SORTS.map((s) => (
+                    <option key={s.id} value={s.id}>{s.label}</option>
+                  ))}
+                </select>
+              </label>
+            </div>
           )}
         </div>
 
@@ -396,7 +574,7 @@ export default function RealEstateSite({ basePath = "", slug: slugProp }) {
           path="/"
           element={
             <>
-              {/* Label and headline only. The About text lives in the footer. */}
+              {/* Label and headline only. The About text has its own section below. */}
               <section
                 className="re-hero"
                 style={
@@ -412,18 +590,32 @@ export default function RealEstateSite({ basePath = "", slug: slugProp }) {
               </section>
 
               <Listing {...shared} />
+
+              <Why name={store.name} />
+              <AboutUs name={store.name} about={store.about} />
+              <ContactBand name={store.name} phone={phone} />
+
+              {phone && (
+                <a
+                  className="re-float"
+                  href={`https://wa.me/${phone}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label="Chat on WhatsApp"
+                >
+                  {ICONS.wa}
+                </a>
+              )}
             </>
           }
         />
         <Route path="property/:id" element={<Detail {...shared} />} />
       </Routes>
 
-      {/* About, contact and socials, all stacked down the left */}
+      {/* Contact and socials, stacked down the left */}
       <footer className="re-foot">
         <div className="re-foot-in">
           <b className="re-foot-name">{store.name}</b>
-
-          {store.about && <p className="re-foot-about">{store.about}</p>}
 
           <div className="re-foot-contact">
             {store.address && <span>{store.address}</span>}
