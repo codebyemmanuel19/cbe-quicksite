@@ -1,3 +1,5 @@
+import Reveal from "../shop/Reveal";
+
 // Turns "@kemisboutique" or a full link into a proper URL
 function socialUrl(platform, value) {
   if (value.startsWith("http")) return value;
@@ -18,41 +20,45 @@ export default function ClothingFooter({ store }) {
 
   return (
     <footer className="cs-footer">
-      <div className="cs-footer-top">
-        <p className="cs-footer-name">{store.name}</p>
-        {store.about && <p className="cs-footer-about">{store.about}</p>}
-      </div>
-
-      <div className="cs-footer-cols">
-        <div>
-          <p className="cs-footer-head">Contact</p>
-          <a href={`https://wa.me/${store.whatsapp}`} target="_blank" rel="noreferrer">
-            WhatsApp
-          </a>
-          {store.phone && (
-            <a href={`tel:${store.phone.replace(/[^\d+]/g, "")}`}>{store.phone}</a>
-          )}
-          {store.email && <a href={`mailto:${store.email}`}>{store.email}</a>}
+      <Reveal>
+        <div className="cs-footer-top">
+          <p className="cs-footer-name">{store.name}</p>
+          {store.about && <p className="cs-footer-about">{store.about}</p>}
         </div>
+      </Reveal>
 
-        {socials.length > 0 && (
+      <Reveal delay={100}>
+        <div className="cs-footer-cols">
           <div>
-            <p className="cs-footer-head">Follow</p>
-            {socials.map((s) => (
-              <a key={s.id} href={socialUrl(s.id, s.value)} target="_blank" rel="noreferrer">
-                {s.label}
-              </a>
-            ))}
+            <p className="cs-footer-head">Contact</p>
+            <a href={`https://wa.me/${store.whatsapp}`} target="_blank" rel="noreferrer">
+              WhatsApp
+            </a>
+            {store.phone && (
+              <a href={`tel:${store.phone.replace(/[^\d+]/g, "")}`}>{store.phone}</a>
+            )}
+            {store.email && <a href={`mailto:${store.email}`}>{store.email}</a>}
           </div>
-        )}
 
-        {store.address && (
-          <div>
-            <p className="cs-footer-head">Visit</p>
-            <p className="cs-footer-address">{store.address}</p>
-          </div>
-        )}
-      </div>
+          {socials.length > 0 && (
+            <div>
+              <p className="cs-footer-head">Follow</p>
+              {socials.map((s) => (
+                <a key={s.id} href={socialUrl(s.id, s.value)} target="_blank" rel="noreferrer">
+                  {s.label}
+                </a>
+              ))}
+            </div>
+          )}
+
+          {store.address && (
+            <div>
+              <p className="cs-footer-head">Visit</p>
+              <p className="cs-footer-address">{store.address}</p>
+            </div>
+          )}
+        </div>
+      </Reveal>
 
       <div className="cs-footer-bottom">
         <span>© {year} {store.name}</span>

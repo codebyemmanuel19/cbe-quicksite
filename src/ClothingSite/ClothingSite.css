@@ -605,3 +605,51 @@
 
   .cs-related { grid-column: 1 / -1; }
 }
+
+/* ---- Motion ---- */
+.cs-hero-label { animation: qs-up .8s .15s ease both; }
+.cs-hero-title { animation: qs-up .9s .3s ease both; }
+.cs-hero-btn { animation: qs-up .9s .5s ease both; }
+
+.cs-header { animation: qs-fade .8s ease both; }
+
+/* Menu and bag open smoothly, links slide in one by one */
+.cs-overlay { animation: qs-fade .25s ease both; }
+
+.cs-drawer.open .cs-drawer-link { animation: qs-up .45s ease both; }
+.cs-drawer.open .cs-drawer-link:nth-child(2) { animation-delay: .08s; }
+.cs-drawer.open .cs-drawer-link:nth-child(3) { animation-delay: .14s; }
+.cs-drawer.open .cs-drawer-link:nth-child(4) { animation-delay: .2s; }
+.cs-drawer.open .cs-drawer-link:nth-child(5) { animation-delay: .26s; }
+.cs-drawer.open .cs-drawer-link:nth-child(6) { animation-delay: .32s; }
+.cs-drawer.open .cs-drawer-link:nth-child(n+7) { animation-delay: .38s; }
+
+.cs-bag-drawer.open .cs-bag-item { animation: qs-up .45s .1s ease both; }
+
+/* Product page: details slide in after the photos */
+.cs-product-info > * { animation: qs-up .6s ease both; }
+.cs-product-info > *:nth-child(1) { animation-delay: .1s; }
+.cs-product-info > *:nth-child(2) { animation-delay: .17s; }
+.cs-product-info > *:nth-child(3) { animation-delay: .24s; }
+.cs-product-info > *:nth-child(4) { animation-delay: .31s; }
+.cs-product-info > *:nth-child(5) { animation-delay: .38s; }
+.cs-product-info > *:nth-child(n+6) { animation-delay: .45s; }
+
+.cs-track img { transition: transform .7s ease; }
+
+@media (hover: hover) {
+  .cs-card:hover .cs-track img { transform: scale(1.05); }
+  .cs-card:hover .cs-name { letter-spacing: 0.09em; }
+}
+
+.cs-name { transition: letter-spacing .3s ease; }
+
+.cs-cat, .cs-chip { transition: background .2s, color .2s, border-color .2s, transform .15s; }
+.cs-btn { transition: transform .15s ease, opacity .2s ease; }
+.cs-btn:active:not(:disabled), .cs-cat:active, .cs-chip:active { transform: scale(.97); }
+
+@media (prefers-reduced-motion: reduce) {
+  .cs-hero-label, .cs-hero-title, .cs-hero-btn, .cs-header, .cs-overlay,
+  .cs-drawer .cs-drawer-link, .cs-bag-item, .cs-product-info > * { animation: none !important; }
+  .cs-track img, .cs-name { transition: none; }
+}
