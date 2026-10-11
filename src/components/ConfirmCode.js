@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../api";
+import { track } from "../pixel";
 import "./Login.css";
 
 const BrandHead = () => (
@@ -99,6 +100,10 @@ export default function ConfirmCode() {
     setChecking(true);
     try {
       await api.post("/auth/verify-code", { code: value });
+
+      // A real, confirmed person: this is the moment Facebook should count
+      track("CompleteRegistration");
+
       const me = await api.get("/auth/me");
       navigate(me.site ? "/dashboard" : "/setup", { replace: true });
     } catch (err) {

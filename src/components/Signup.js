@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { api } from "../api";
-import { track } from "../pixel";
 import "./Signup.css";
 
 export default function Signup() {
@@ -32,9 +31,8 @@ export default function Signup() {
         email: form.email.trim().toLowerCase(),
         password: form.password,
       });
-      // Tell Facebook a new account was made, so your ads can be measured
-      track("CompleteRegistration");
-      // They must confirm their email with a 6-digit code before anything else
+      // The Facebook signup event fires after they confirm their email, not here.
+      // They must confirm with a 6-digit code before anything else.
       navigate("/confirm-email");
     } catch (err) {
       setError(err.message);
