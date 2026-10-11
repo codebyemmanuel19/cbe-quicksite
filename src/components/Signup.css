@@ -280,6 +280,27 @@ html, body {
   text-decoration: underline;
 }
 
+/* Eye icon that shows or hides the password */
+.show-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: #64748b;
+  cursor: pointer;
+}
+
+.show-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+.show-btn:hover { color: #2d3f8f; }
+
 @media (max-width: 400px) {
   .auth-page {
     padding: 16px;
