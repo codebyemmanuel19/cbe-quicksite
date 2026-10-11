@@ -6,6 +6,7 @@ import { useCart, itemDetails } from "../shop/useCart";
 import PhotoCarousel from "../shop/PhotoCarousel";
 import Checkout from "../shop/Checkout";
 import Done from "../shop/Done";
+import Reveal from "../shop/Reveal";
 import HairFooter from "./HairFooter";
 import "./HairSite.css";
 
@@ -139,19 +140,22 @@ function HomePage({ store, basePath, category, setCategory }) {
 
       <section className="hs-shop" ref={shopRef}>
         {store.categories.length > 0 && (
-          <div className="hs-cats">
-            {["All", ...store.categories].map((c) => (
-              <button
-                key={c}
-                className={category === c ? "hs-cat active" : "hs-cat"}
-                onClick={() => setCategory(c)}
-              >
-                {c}
-              </button>
-            ))}
-          </div>
+          <Reveal>
+            <div className="hs-cats">
+              {["All", ...store.categories].map((c) => (
+                <button
+                  key={c}
+                  className={category === c ? "hs-cat active" : "hs-cat"}
+                  onClick={() => setCategory(c)}
+                >
+                  {c}
+                </button>
+              ))}
+            </div>
+          </Reveal>
         )}
 
+        <Reveal delay={80}>
         <div className="hs-bar">
           <span>{shown.length} {shown.length === 1 ? "style" : "styles"}</span>
           <label className="hs-sort">
@@ -163,13 +167,16 @@ function HomePage({ store, basePath, category, setCategory }) {
             </select>
           </label>
         </div>
+        </Reveal>
 
         {shown.length === 0 ? (
           <p className="hs-muted">No styles yet. Check back soon.</p>
         ) : (
           <div className="hs-grid">
-            {shown.map((p) => (
-              <ProductCard key={p.id} store={store} product={p} basePath={basePath} />
+            {shown.map((p, i) => (
+              <Reveal key={p.id} delay={(i % 2) * 90}>
+                <ProductCard store={store} product={p} basePath={basePath} />
+              </Reveal>
             ))}
           </div>
         )}
@@ -328,10 +335,14 @@ function ProductPage({ store, basePath, addToCart, openBag }) {
 
       {related.length > 0 && (
         <section className="hs-related">
-          <h2 className="hs-section-title">You may also like</h2>
+          <Reveal>
+            <h2 className="hs-section-title">You may also like</h2>
+          </Reveal>
           <div className="hs-grid">
-            {related.map((p) => (
-              <ProductCard key={p.id} store={store} product={p} basePath={basePath} />
+            {related.map((p, i) => (
+              <Reveal key={p.id} delay={(i % 2) * 90}>
+                <ProductCard store={store} product={p} basePath={basePath} />
+              </Reveal>
             ))}
           </div>
         </section>
@@ -435,6 +446,7 @@ export default function HairSite({ basePath = "/preview/hair", slug: slugProp })
       />
 
       <main className={isHome ? "" : "hs-main"}>
+        <div className="qs-page" key={location.pathname}>
         <Routes>
           <Route
             index
@@ -465,6 +477,7 @@ export default function HairSite({ basePath = "/preview/hair", slug: slugProp })
           />
           <Route path="done" element={<Done store={store} basePath={basePath} prefix="hs" />} />
         </Routes>
+        </div>
       </main>
 
       <HairFooter store={store} />

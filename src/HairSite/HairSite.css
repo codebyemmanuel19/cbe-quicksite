@@ -1024,3 +1024,50 @@
     margin-top: 40px;
   }
 }
+
+/* ---------- Motion ---------- */
+
+.hs-hero-label { animation: qs-up .8s .15s ease both; }
+.hs-hero-title { animation: qs-up .9s .3s ease both; }
+.hs-hero-btn { animation: qs-up .9s .5s ease both; }
+
+.hs-header { animation: qs-fade .8s ease both; }
+
+.hs-overlay { animation: qs-fade .25s ease both; }
+
+.hs-drawer.open .hs-drawer-link { animation: qs-up .45s ease both; }
+.hs-drawer.open .hs-drawer-link:nth-child(3) { animation-delay: .08s; }
+.hs-drawer.open .hs-drawer-link:nth-child(4) { animation-delay: .14s; }
+.hs-drawer.open .hs-drawer-link:nth-child(5) { animation-delay: .2s; }
+.hs-drawer.open .hs-drawer-link:nth-child(6) { animation-delay: .26s; }
+.hs-drawer.open .hs-drawer-link:nth-child(n+7) { animation-delay: .32s; }
+
+.hs-bag-drawer.open .hs-bag-item { animation: qs-up .45s .1s ease both; }
+
+/* Product page: details slide in after the photos */
+.hs-product-info > * { animation: qs-up .6s ease both; }
+.hs-product-info > *:nth-child(1) { animation-delay: .1s; }
+.hs-product-info > *:nth-child(2) { animation-delay: .17s; }
+.hs-product-info > *:nth-child(3) { animation-delay: .24s; }
+.hs-product-info > *:nth-child(4) { animation-delay: .31s; }
+.hs-product-info > *:nth-child(5) { animation-delay: .38s; }
+.hs-product-info > *:nth-child(n+6) { animation-delay: .45s; }
+
+.hs-track img { transition: transform .8s ease; }
+
+@media (hover: hover) {
+  .hs-card:hover .hs-track img { transform: scale(1.05); }
+  .hs-card:hover .hs-name { color: var(--gold-dark); }
+}
+
+.hs-name { transition: color .3s ease; }
+.hs-hero-btn { transition: background .25s, color .25s, transform .15s; }
+.hs-hero-btn:hover { background: var(--gold); color: var(--white); }
+.hs-btn:active:not(:disabled), .hs-hero-btn:active, .hs-cat:active,
+.hs-chip:active, .hs-length:active { transform: scale(.97); }
+
+@media (prefers-reduced-motion: reduce) {
+  .hs-hero-label, .hs-hero-title, .hs-hero-btn, .hs-header, .hs-overlay,
+  .hs-drawer .hs-drawer-link, .hs-bag-item, .hs-product-info > * { animation: none !important; }
+  .hs-track img, .hs-name { transition: none; }
+}
