@@ -23,6 +23,7 @@ export default function Login() {
     }
 
     setSaving(true);
+
     try {
       await api.post("/auth/login", {
         email: form.email.trim().toLowerCase(),
@@ -31,7 +32,6 @@ export default function Login() {
 
       const me = await api.get("/auth/me");
 
-      // Not confirmed yet: the code screen comes first
       if (!me.user.emailVerified) {
         navigate("/confirm-email");
       } else {
@@ -47,54 +47,91 @@ export default function Login() {
     <div className="auth-page">
       <form className="auth-card" onSubmit={handleSubmit}>
         <div className="brand-badge">
-          <svg viewBox="0 0 100 100" width="56" height="56">
-            <rect width="100" height="100" rx="22" fill="#2d3f8f" />
-            <path d="M20 47 L80 47 L74 88 L26 88 Z" fill="#ffffff" />
-            <path d="M38 47 Q38 28 50 28 Q62 28 62 47" fill="none" stroke="#ffffff" strokeWidth="6" strokeLinecap="round" />
-            <circle cx="41" cy="63" r="4" fill="#2d3f8f" />
-            <circle cx="59" cy="63" r="4" fill="#2d3f8f" />
-            <path d="M39 73 Q50 81 61 73" fill="none" stroke="#2d3f8f" strokeWidth="3.5" strokeLinecap="round" />
-          </svg>
+          <img src="/CBE-1.png" alt="CBEQuickSite" />
         </div>
 
         <p className="brand-wordmark">
-          <span className="brand-dark">CBE</span><span className="brand-blue">QuickSite</span>
+          <span className="brand-dark">CBE</span>
+          <span className="brand-blue">QuickSite</span>
         </p>
 
         <h1>Welcome back</h1>
         <p className="auth-sub">Log in to manage your website.</p>
 
         <label>Email</label>
+
         <div className="input-icon-row">
-          <svg className="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <svg
+            className="input-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
             <rect x="2" y="4" width="20" height="16" rx="2" />
             <path d="m22 7-10 5L2 7" />
           </svg>
-          <input name="email" type="email" placeholder="you@gmail.com"
-            value={form.email} onChange={handleChange} />
+
+          <input
+            name="email"
+            type="email"
+            placeholder="you@gmail.com"
+            value={form.email}
+            onChange={handleChange}
+          />
         </div>
 
         <label>Password</label>
+
         <div className="password-row">
-          <svg className="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <svg
+            className="input-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
             <rect x="3" y="11" width="18" height="11" rx="2" />
             <path d="M7 11V7a5 5 0 0 1 10 0v4" />
           </svg>
-          <input name="password" type={showPassword ? "text" : "password"}
+
+          <input
+            name="password"
+            type={showPassword ? "text" : "password"}
             placeholder="Your password"
-            value={form.password} onChange={handleChange} />
-          <button type="button" className="show-btn"
+            value={form.password}
+            onChange={handleChange}
+          />
+
+          <button
+            type="button"
+            className="show-btn"
             aria-label={showPassword ? "Hide password" : "Show password"}
-            onClick={() => setShowPassword(!showPassword)}>
+            onClick={() => setShowPassword(!showPassword)}
+          >
             {showPassword ? (
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
                 <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
                 <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" />
                 <path d="M14.12 14.12a3 3 0 1 1-4.24-4.24" />
                 <path d="M1 1l22 22" />
               </svg>
             ) : (
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
                 <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
                 <circle cx="12" cy="12" r="3" />
               </svg>
@@ -102,7 +139,9 @@ export default function Login() {
           </button>
         </div>
 
-        <Link to="/forgot-password" className="forgot-link">Forgot password?</Link>
+        <Link to="/forgot-password" className="forgot-link">
+          Forgot password?
+        </Link>
 
         {error && <p className="auth-error">{error}</p>}
 
@@ -111,7 +150,8 @@ export default function Login() {
         </button>
 
         <p className="auth-switch">
-          New here? <Link to="/signup">Create your website free</Link>
+          New here?{" "}
+          <Link to="/signup">Create your website free</Link>
         </p>
       </form>
     </div>

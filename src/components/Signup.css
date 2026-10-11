@@ -2,7 +2,8 @@
   box-sizing: border-box;
 }
 
-html, body {
+html,
+body {
   margin: 0;
   width: 100%;
   overflow-x: hidden;
@@ -57,14 +58,22 @@ html, body {
 }
 
 .brand-badge {
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 20px;
   display: flex;
+  align-items: center;
   justify-content: center;
-  margin-bottom: 20px;
+  overflow: hidden;
+  border-radius: 18px;
+  box-shadow: 0 8px 20px rgba(45, 63, 143, 0.3);
 }
 
-.brand-badge svg {
-  border-radius: 22%;
-  box-shadow: 0 8px 20px rgba(45, 63, 143, 0.3);
+.brand-badge img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 .auth-card h1 {
@@ -227,7 +236,6 @@ html, body {
   text-decoration: underline;
 }
 
-/* The three promises, answered before they have to ask */
 .auth-points {
   list-style: none;
   margin: 0 0 22px;
@@ -266,7 +274,6 @@ html, body {
   place-items: center;
 }
 
-/* Small, grey, easy to skip. Its job is to exist. */
 .auth-legal {
   margin: 14px 0 0;
   font-size: 12px;
@@ -280,7 +287,6 @@ html, body {
   text-decoration: underline;
 }
 
-/* Eye icon that shows or hides the password */
 .show-btn {
   display: flex;
   align-items: center;
@@ -299,7 +305,9 @@ html, body {
   height: 20px;
 }
 
-.show-btn:hover { color: #2d3f8f; }
+.show-btn:hover {
+  color: #2d3f8f;
+}
 
 @media (max-width: 400px) {
   .auth-page {
