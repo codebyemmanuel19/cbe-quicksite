@@ -136,3 +136,18 @@ body {
     padding: 24px;
   }
 }
+
+/* Our shopping-bag logo on login, signup and confirm pages */
+.brand-badge svg {
+  display: none;
+}
+
+.brand-badge {
+  display: block;
+  width: 72px;
+  height: 72px;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 18px;
+  background: url("./assets/logo192.png") center / cover no-repeat;
+}
