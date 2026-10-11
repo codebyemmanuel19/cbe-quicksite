@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Routes, Route, Link, useParams } from "react-router-dom";
 import { api } from "../api";
 import { formatPrice } from "../components/countries";
@@ -107,11 +107,11 @@ function Stats({ properties }) {
   return (
     <section className="re-stats">
       <div className="re-wrap re-stats-row">
-        {cells.map((c) => (
-          <div key={c.label} className="re-stat">
+        {cells.map((c, i) => (
+          <Reveal key={c.label} delay={i * 90} className="re-stat">
             <b>{c.n}</b>
             <span>{c.label}</span>
-          </div>
+          </Reveal>
         ))}
       </div>
     </section>
@@ -122,16 +122,18 @@ function Why({ name }) {
   return (
     <section className="re-why">
       <div className="re-wrap">
-        <h2>Why choose {name}</h2>
-        <p className="re-why-sub">Finding a property should feel simple and safe. Here is how we make it that way.</p>
+        <Reveal>
+          <h2>Why choose {name}</h2>
+          <p className="re-why-sub">Finding a property should feel simple and safe. Here is how we make it that way.</p>
+        </Reveal>
 
         <div className="re-why-grid">
-          {WHY.map((w) => (
-            <div key={w.title} className="re-why-item">
+          {WHY.map((w, i) => (
+            <Reveal key={w.title} delay={i * 100} className="re-why-item">
               <span className="re-why-ico">{ICONS[w.icon]}</span>
               <h3>{w.title}</h3>
               <p>{w.text}</p>
-            </div>
+            </Reveal>
           ))}
         </div>
       </div>
@@ -146,8 +148,10 @@ function AboutUs({ name, about }) {
   return (
     <section className="re-aboutus">
       <div className="re-wrap re-aboutus-in">
-        <h2>About {name}</h2>
-        <p>{about}</p>
+        <Reveal>
+          <h2>About {name}</h2>
+          <p>{about}</p>
+        </Reveal>
       </div>
     </section>
   );
@@ -160,10 +164,10 @@ function ContactBand({ name, phone }) {
   return (
     <section className="re-contact">
       <div className="re-wrap re-contact-in">
-        <div>
+        <Reveal>
           <h2>Looking for something specific?</h2>
           <p>Tell the agent what you need and your budget. You will get a reply on WhatsApp.</p>
-        </div>
+        </Reveal>
         <a
           className="re-contact-btn"
           href={`https://wa.me/${phone}?text=${encodeURIComponent(text)}`}
@@ -183,18 +187,38 @@ function withQuery(path) {
   return path + (typeof window !== "undefined" ? window.location.search : "");
 }
 
-// Detail page only: shows the whole photo whatever its shape. A blurred copy fills the leftover space.
-function Photo({ src, alt = "", eager = false }) {
+// Fades and slides an element up the first time it scrolls into view
+function Reveal({ children, delay = 0, className = "" }) {
+  const ref = useRef(null);
+  const [shown, setShown] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || typeof IntersectionObserver === "undefined") {
+      setShown(true);
+      return;
+    }
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setShown(true);
+          io.disconnect();
+        }
+      },
+      { threshold: 0.12, rootMargin: "0px 0px -40px 0px" }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
   return (
-    <>
-      <img className="re-img-bg" src={src} alt="" aria-hidden="true" loading="lazy" />
-      <img
-        className="re-img-main"
-        src={src}
-        alt={alt}
-        loading={eager ? "eager" : "lazy"}
-      />
-    </>
+    <div
+      ref={ref}
+      className={`rv ${shown ? "in" : ""} ${className}`}
+      style={{ transitionDelay: shown ? `${delay}ms` : "0ms" }}
+    >
+      {children}
+    </div>
   );
 }
 
@@ -217,7 +241,7 @@ function Gallery({ photos }) {
       <div className="re-gal-track" onScroll={handleScroll}>
         {photos.map((src, i) => (
           <div className="re-gal-slide" key={src + i}>
-            <Photo src={src} eager={i === 0} />
+            <img src={src} alt="" loading={i === 0 ? "eager" : "lazy"} />
           </div>
         ))}
       </div>
@@ -375,15 +399,16 @@ function Listing({ properties, busy, base, money, waLink, onInquire }) {
           </p>
         ) : (
           <div className="re-grid">
-            {shown.map((p) => (
-              <Card
-                key={p.id}
-                p={p}
-                base={base}
-                money={money}
-                waLink={waLink}
-                onInquire={onInquire}
-              />
+            {shown.map((p, i) => (
+              <Reveal key={p.id} delay={(i % 3) * 90}>
+                <Card
+                  p={p}
+                  base={base}
+                  money={money}
+                  waLink={waLink}
+                  onInquire={onInquire}
+                />
+              </Reveal>
             ))}
           </div>
         )}
@@ -420,7 +445,7 @@ function Detail({ properties, busy, base, money, waLink, onInquire }) {
   const hasFacts = p.bedrooms || p.bathrooms || p.size;
 
   return (
-    <>
+    <div className="re-page" key={id}>
       <Gallery photos={photos} />
 
       <main className="re-main re-detail">
@@ -453,19 +478,23 @@ function Detail({ properties, busy, base, money, waLink, onInquire }) {
         )}
 
         {p.description && (
-          <section className="re-about">
-            <h2>About this property</h2>
-            <p>{p.description}</p>
-          </section>
+          <Reveal>
+            <section className="re-about">
+              <h2>About this property</h2>
+              <p>{p.description}</p>
+            </section>
+          </Reveal>
         )}
 
         {p.features?.length > 0 && (
-          <section className="re-about">
-            <h2>What it has</h2>
-            <div className="re-feats">
-              {p.features.map((f) => <span key={f}>{f}</span>)}
-            </div>
-          </section>
+          <Reveal delay={80}>
+            <section className="re-about">
+              <h2>What it has</h2>
+              <div className="re-feats">
+                {p.features.map((f) => <span key={f}>{f}</span>)}
+              </div>
+            </section>
+          </Reveal>
         )}
       </main>
 
@@ -485,7 +514,7 @@ function Detail({ properties, busy, base, money, waLink, onInquire }) {
           <span className="re-wa off">No longer available</span>
         )}
       </div>
-    </>
+    </div>
   );
 }
 

@@ -326,10 +326,10 @@
 
 .re-wa.off { background: #e2e8f0; color: #64748b; }
 
-/* ---- Gallery: the full photo, never cropped, soft blurred background ---- */
+/* ---- Gallery: the photo fills the whole width, no bars ---- */
 .re-gal { position: relative; background: #0b1220; }
 
-.re-gal.empty { aspect-ratio: 4 / 3; background: linear-gradient(135deg, #dbeef3, #c3e0e7); }
+.re-gal.empty { aspect-ratio: 4 / 5; background: linear-gradient(135deg, #dbeef3, #c3e0e7); }
 
 .re-gal-track {
   display: flex;
@@ -345,27 +345,17 @@
   position: relative;
   flex: 0 0 100%;
   width: 100%;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 4 / 5;
   scroll-snap-align: start;
   overflow: hidden;
   background: #0b1220;
 }
 
-.re-gal-slide .re-img-bg {
-  position: absolute;
-  inset: 0;
+.re-gal-slide img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: blur(22px) brightness(.8);
-  transform: scale(1.25);
-}
-
-.re-gal-slide .re-img-main {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
+  object-position: center;
   display: block;
 }
 
@@ -835,4 +825,65 @@
 
 @media (min-width: 1040px) {
   .re-why-grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+/* ---- Motion: scroll reveal, page fade, hover ---- */
+.rv {
+  opacity: 0;
+  transform: translateY(26px);
+  transition: opacity .7s ease, transform .7s cubic-bezier(.2, .7, .2, 1);
+}
+
+.rv.in { opacity: 1; transform: none; }
+
+.re-grid > .rv { display: flex; }
+.re-grid > .rv > .re-card { width: 100%; }
+
+.re-page { animation: re-page .45s ease both; }
+
+@keyframes re-page {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes re-up {
+  from { opacity: 0; transform: translateY(22px); }
+  to { opacity: 1; transform: none; }
+}
+
+.re-badge { animation: re-up .7s .1s ease both; }
+.re-hero h1 { animation: re-up .8s .25s ease both; }
+.re-search { animation: re-up .7s .45s ease both; }
+
+.re-card { transition: transform .3s ease, box-shadow .3s ease; }
+
+.re-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 30px rgba(15, 23, 42, .12);
+}
+
+.re-img img { transition: transform .6s ease; }
+.re-card:hover .re-img img { transform: scale(1.06); }
+
+.re-gal-slide img { animation: re-zoom 1.2s ease both; }
+
+@keyframes re-zoom {
+  from { transform: scale(1.08); }
+  to { transform: scale(1); }
+}
+
+.re-wa, .re-view, .re-cta, .re-contact-btn { transition: transform .15s ease, opacity .2s ease; }
+.re-wa:active, .re-view:active, .re-cta:active, .re-contact-btn:active { transform: scale(.97); }
+
+.re-float { animation: re-pop .5s .8s cubic-bezier(.3, 1.6, .5, 1) both; }
+
+@keyframes re-pop {
+  from { opacity: 0; transform: scale(.4); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rv { opacity: 1; transform: none; transition: none; }
+  .re-page, .re-badge, .re-hero h1, .re-search, .re-float, .re-gal-slide img { animation: none; }
+  .re-card, .re-img img { transition: none; }
 }
