@@ -183,7 +183,7 @@ function withQuery(path) {
   return path + (typeof window !== "undefined" ? window.location.search : "");
 }
 
-// Shows the whole photo whatever its shape. A blurred copy fills the leftover space.
+// Detail page only: shows the whole photo whatever its shape. A blurred copy fills the leftover space.
 function Photo({ src, alt = "", eager = false }) {
   return (
     <>
@@ -245,7 +245,7 @@ function Card({ p, base, money, waLink, onInquire }) {
     <article className="re-card">
       <Link className="re-card-top" to={withQuery(`${base}/property/${p.id}`)}>
         <div className="re-img">
-          {photos[0] ? <Photo src={photos[0]} alt={p.title} /> : <span className="re-noimg" />}
+          {photos[0] ? <img src={photos[0]} alt={p.title} loading="lazy" /> : <span className="re-noimg" />}
           {p.listing && <span className="re-tag">For {String(p.listing).toLowerCase()}</span>}
           {status !== "Available" && <span className="re-sold">{status}</span>}
           {photos.length > 1 && <span className="re-shots">{photos.length} photos</span>}
@@ -638,7 +638,7 @@ export default function RealEstateSite({ basePath = "", slug: slugProp }) {
         </div>
 
         <div className="re-foot-bottom">
-          <small>©️ {new Date().getFullYear()} {store.name}</small>
+          <small>© {new Date().getFullYear()} {store.name}</small>
           <small>Powered by CBE QuickSite</small>
         </div>
       </footer>

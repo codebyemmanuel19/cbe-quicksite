@@ -230,10 +230,11 @@
 
 .re-card-top { text-decoration: none; color: inherit; }
 
-/* Tall on a phone, so the photo fills the card the way the gallery does */
+/* Card photo fills the whole frame. No bars. Tall photos are trimmed a little. */
 .re-img {
   position: relative;
-  aspect-ratio: 4 / 5;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
   background: #e2eef1;
 }
 
@@ -325,10 +326,10 @@
 
 .re-wa.off { background: #e2e8f0; color: #64748b; }
 
-/* ---- Gallery: the photo fills the whole width, no bars ---- */
+/* ---- Gallery: the full photo, never cropped, soft blurred background ---- */
 .re-gal { position: relative; background: #0b1220; }
 
-.re-gal.empty { aspect-ratio: 4 / 5; background: linear-gradient(135deg, #dbeef3, #c3e0e7); }
+.re-gal.empty { aspect-ratio: 4 / 3; background: linear-gradient(135deg, #dbeef3, #c3e0e7); }
 
 .re-gal-track {
   display: flex;
@@ -344,21 +345,32 @@
   position: relative;
   flex: 0 0 100%;
   width: 100%;
-  aspect-ratio: 4 / 5;
+  aspect-ratio: 4 / 3;
   scroll-snap-align: start;
   overflow: hidden;
   background: #0b1220;
 }
 
-.re-gal-slide img {
+.re-gal-slide .re-img-bg {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center;
+  filter: blur(22px) brightness(.8);
+  transform: scale(1.25);
+}
+
+.re-gal-slide .re-img-main {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
   display: block;
 }
 
 .re-gal-count {
+  z-index: 2;
   position: absolute;
   top: 14px;
   right: 14px;
@@ -371,6 +383,7 @@
 }
 
 .re-gal-dots {
+  z-index: 2;
   position: absolute;
   left: 0;
   right: 0;
@@ -565,9 +578,6 @@
   .re-grid { grid-template-columns: repeat(2, 1fr); }
   .re-detail { padding: 24px 16px 40px; }
 
-  /* Wider frames suit a laptop, where cards sit side by side */
-  .re-img { aspect-ratio: 4 / 3; }
-
   .re-gal-slide,
   .re-gal.empty { aspect-ratio: 3 / 2; }
 
@@ -585,51 +595,6 @@
   .re-grid { grid-template-columns: repeat(3, 1fr); }
 }
 
-/* ADD THIS AT THE VERY BOTTOM OF Site.css so it overrides the old image rules */
-
-/* Card image and gallery slide: same shape every time */
-.re-img,
-.re-gal-slide {
-  position: relative;
-  aspect-ratio: 4 / 3;
-  overflow: hidden;
-  background: #0f172a;
-}
-
-.re-gal-slide {
-  flex: 0 0 100%;
-  scroll-snap-align: start;
-}
-
-/* Blurred copy fills the empty space */
-.re-img .re-img-bg,
-.re-gal-slide .re-img-bg {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  filter: blur(22px) brightness(0.8);
-  transform: scale(1.25);
-}
-
-/* The real photo is never cropped */
-.re-img .re-img-main,
-.re-gal-slide .re-img-main {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-
-/* Tags stay above the images */
-.re-tag,
-.re-sold,
-.re-shots,
-.re-gal-count,
-.re-gal-dots {
-  z-index: 2;
-}
 /* ---- New: wider content frame ---- */
 .re-wrap {
   max-width: 1040px;
