@@ -30,7 +30,13 @@ export default function Login() {
       });
 
       const me = await api.get("/auth/me");
-      navigate(me.site ? "/dashboard" : "/setup");
+
+      // Not confirmed yet: the code screen comes first
+      if (!me.user.emailVerified) {
+        navigate("/confirm-email");
+      } else {
+        navigate(me.site ? "/dashboard" : "/setup");
+      }
     } catch (err) {
       setError(err.message);
       setSaving(false);

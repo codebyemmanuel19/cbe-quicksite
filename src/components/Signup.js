@@ -34,7 +34,8 @@ export default function Signup() {
       });
       // Tell Facebook a new account was made, so your ads can be measured
       track("CompleteRegistration");
-      navigate("/setup");
+      // They must confirm their email with a 6-digit code before anything else
+      navigate("/confirm-email");
     } catch (err) {
       setError(err.message);
       setSaving(false);
@@ -61,9 +62,6 @@ export default function Signup() {
 
         <h1>Create your account</h1>
         <p className="auth-sub">Get your business website live in minutes.</p>
-
-        {/* The three things a vendor worries about, answered before they ask */}
-        
 
         <label>Email</label>
         <div className="input-icon-row">

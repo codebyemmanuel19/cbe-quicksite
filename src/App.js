@@ -9,6 +9,7 @@ import Login from "./components/Login";
 import ForgotPassword from "./components/ForgotPassword";
 import ResetPassword from "./components/ResetPassword";
 import VerifyEmail from "./components/VerifyEmail";
+import ConfirmCode from "./components/ConfirmCode";
 import DashboardHome from "./components/DashboardHome";
 import BusinessInfo from "./components/BusinessInfo";
 import Products from "./components/Products";
@@ -54,6 +55,24 @@ function PixelTracker() {
   }, [location.pathname]);
 
   return null;
+}
+
+// Lets in only people who are signed in AND have confirmed their email.
+// Everyone else is sent to log in, or to type their 6-digit code.
+function RequireConfirmed({ children }) {
+  const [state, setState] = useState("loading"); // loading | ok | confirm | login
+
+  useEffect(() => {
+    api.get("/auth/me")
+      .then((res) => setState(res.user.emailVerified ? "ok" : "confirm"))
+      // If the server could not be reached, do not lock people out; each page shows its own error
+      .catch((err) => setState(err.status === 401 ? "login" : "ok"));
+  }, []);
+
+  if (state === "loading") return null;
+  if (state === "login") return <Navigate to="/login" replace />;
+  if (state === "confirm") return <Navigate to="/confirm-email" replace />;
+  return children;
 }
 
 const Brand = () => (
@@ -239,8 +258,11 @@ export default function App() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/verify-email" element={<VerifyEmail />} />
-        <Route path="/setup" element={<Setup />} />
-        <Route path="/welcome" element={<Welcome />} />
+        <Route path="/confirm-email" element={<ConfirmCode />} />
+
+        {/* Only for people who have confirmed their email */}
+        <Route path="/setup" element={<RequireConfirmed><Setup /></RequireConfirmed>} />
+        <Route path="/welcome" element={<RequireConfirmed><Welcome /></RequireConfirmed>} />
 
         {/* Test the real subdomain behaviour on your laptop:
             /shop?slug=kemisboutique picks the template by business type */}
@@ -254,7 +276,7 @@ export default function App() {
         <Route path="/preview/jewellery/*" element={<JewellerySite basePath="/preview/jewellery" />} />
         <Route path="/preview/gadgets/*" element={<GadgetsSite basePath="/preview/gadgets" />} />
 
-        <Route path="/dashboard" element={<DashboardLayout />}>
+        <Route path="/dashboard" element={<RequireConfirmed><DashboardLayout /></RequireConfirmed>}>
           <Route index element={<HomeRouter />} />
           <Route path="business" element={<BusinessInfo />} />
           <Route path="products" element={<Products />} />
