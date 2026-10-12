@@ -3,13 +3,23 @@ import "./Landing.css";
 
 const SUPPORT = "https://wa.me/2349027090880?text=Hi%2C%20I%20have%20a%20question%20about%20CBE%20QuickSite";
 
-// Add a phone screenshot of each shop to your public/examples folder,
-// then set img to "/examples/kemi.png" and so on. Without img, a plain tile shows.
+// To add a website: copy one line, change the details. The card is built for you.
+//   type  = the business type shown on the card
+//   name  = the business name
+//   url   = the live website
+//   top   = the colour behind the preview (the shop's main colour)
+//   dark  = true if "top" is a dark colour
+//   img   = optional phone screenshot, like "/examples/kemi.png" (put it in public/examples)
 const EXAMPLES = [
-  //{ type: "Clothing & fashion", name: "Kemi's Boutique", url: "https://kemisboutique.cbequicksite.com", img: "" },
-  { type: "Hair & wigs", name: "Luxe Hair", url: "https://hai1.cbequicksite.com", img: "" },
-  { type: "Real estate", name: "Port Harcourt Homes", url: "https://realestate.cbequicksite.com", img: "" },
+  { type: "Hair & wigs", name: "Luxe Hair", url: "https://hai1.cbequicksite.com", top: "#16130f", accent: "#b08d4f", dark: true, img: "" },
+  { type: "Real estate", name: "Prime Estates", url: "https://realestate.cbequicksite.com", top: "#0f4c5c", accent: "#f2b04a", dark: true, img: "" },
+  //{ type: "Clothing & fashion", name: "Kemi's Boutique", url: "https://kemisboutique.cbequicksite.com", top: "#111111", accent: "#ffffff", dark: true, img: "" },
 ];
+
+// "https://hai1.cbequicksite.com" becomes "hai1.cbequicksite.com"
+function hostOf(url) {
+  return String(url).replace(/^https?:\/\//, "").replace(/\/$/, "");
+}
 
 const TRUST = [
   "Orders go to your WhatsApp",
@@ -135,17 +145,41 @@ export default function Landing() {
         <h2>See real websites</h2>
         <p className="lp-sub">Open them on your phone. Every business type looks different.</p>
 
-        <div className="lp-examples">
+        <div className="lp-showcase">
           {EXAMPLES.map((e) => (
-            <a key={e.url} className="lp-example" href={e.url} target="_blank" rel="noreferrer">
-              <span className="lp-shot">
-                {e.img ? <img src={e.img} alt={`${e.name} website`} loading="lazy" /> : e.name.charAt(0)}
+            <a key={e.url} className="lp-site" href={e.url} target="_blank" rel="noreferrer">
+              <span className="lp-site-frame">
+                <span className="lp-site-bar">
+                  <i /><i /><i />
+                  <em>{hostOf(e.url)}</em>
+                </span>
+
+                {e.img ? (
+                  <img className="lp-site-img" src={e.img} alt={`${e.name} website`} loading="lazy" />
+                ) : (
+                  <span className="lp-site-mock" style={{ background: e.top, color: e.dark ? "#fff" : "#111" }}>
+                    <span className="lp-site-name">{e.name}</span>
+                    <span className="lp-site-line" style={{ background: e.accent }} />
+                    <span className="lp-site-blocks">
+                      <i /><i /><i />
+                    </span>
+                  </span>
+                )}
               </span>
-              <span className="lp-ex-type">{e.type}</span>
-              <span className="lp-ex-name">{e.name}</span>
-              <span className="lp-ex-go">Open website</span>
+
+              <span className="lp-site-info">
+                <span className="lp-site-type">{e.type}</span>
+                <span className="lp-site-title">{e.name}</span>
+                <span className="lp-site-go">Visit website →</span>
+              </span>
             </a>
           ))}
+
+          <Link to="/signup" className="lp-site lp-site-next">
+            <span className="lp-site-plus">+</span>
+            <span className="lp-site-title">Your business</span>
+            <span className="lp-site-go">Start free →</span>
+          </Link>
         </div>
       </section>
 
