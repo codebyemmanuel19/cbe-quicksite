@@ -142,6 +142,14 @@ body {
   display: none;
 }
 
+/* Stop iPhone from zooming when you tap a box */
+input,
+select,
+textarea {
+  font-size: 16px !important;
+  max-width: 100%;
+}
+
 .brand-badge {
   display: block;
   width: 72px;
