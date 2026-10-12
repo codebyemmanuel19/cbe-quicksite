@@ -65,23 +65,23 @@ const ICONS = {
 const WHY = [
   {
     icon: "home",
-    title: "Real listings",
-    text: "Every property is posted with its own photos, price and location, so you know what you are looking at.",
+    title: "Real photos, real details",
+    text: "Every property comes with its own photos, exact price and full location, so nothing is hidden.",
   },
   {
     icon: "tag",
-    title: "Clear prices",
-    text: "The price is on every listing. No guessing, no surprises when you reach out.",
+    title: "Clear pricing",
+    text: "The price is shown on every listing. Rent is quoted per year, so you know what to expect before you reach out.",
   },
   {
     icon: "chat",
-    title: "Talk to the agent",
-    text: "Tap one button and you are chatting with the agent on WhatsApp, with the property already named.",
+    title: "Direct to the agent",
+    text: "No middlemen. One tap opens WhatsApp and you are talking to the agent about that exact property.",
   },
   {
     icon: "key",
-    title: "Easy viewing",
-    text: "Found one you like? Ask for a viewing and the agent will arrange a time with you.",
+    title: "Easy inspections",
+    text: "Found a place you like? Ask for an inspection and the agent will confirm a date and time with you.",
   },
 ];
 
@@ -102,7 +102,9 @@ function Stats({ properties }) {
     return out.filter((c) => c.n > 0);
   }, [properties]);
 
-  if (cells.length === 0) return null;
+  // "1 area covered" looks weak. Show the strip once there is enough to count.
+  const openCount = properties.filter((p) => (p.status || "Available") === "Available").length;
+  if (openCount < 3 || cells.length === 0) return null;
 
   return (
     <section className="re-stats">
@@ -124,7 +126,7 @@ function Why({ name }) {
       <div className="re-wrap">
         <Reveal>
           <h2>Why choose {name}</h2>
-          <p className="re-why-sub">Finding a property should feel simple and safe. Here is how we make it that way.</p>
+          <p className="re-why-sub">Buying or renting a home is a big step. Here is what you can expect when you deal with us.</p>
         </Reveal>
 
         <div className="re-why-grid">
@@ -159,14 +161,14 @@ function AboutUs({ name, about }) {
 
 function ContactBand({ name, phone }) {
   if (!phone) return null;
-  const text = `Hello ${name}, I am looking for a property.`;
+  const text = `Hello ${name}, I visited your website and I am looking for a property. Can you help me?`;
 
   return (
     <section className="re-contact">
       <div className="re-wrap re-contact-in">
         <Reveal>
-          <h2>Looking for something specific?</h2>
-          <p>Tell the agent what you need and your budget. You will get a reply on WhatsApp.</p>
+          <h2>Can't find what you need?</h2>
+          <p>Tell the agent the area, type of property and budget you have in mind. You will get a reply on WhatsApp.</p>
         </Reveal>
         <a
           className="re-contact-btn"
@@ -180,6 +182,12 @@ function ContactBand({ name, phone }) {
       </div>
     </section>
   );
+}
+
+// A bare number like "12" means nothing. Add the unit so it reads "12 sqm".
+function sizeText(v) {
+  const t = String(v || "").trim();
+  return /^\d+(\.\d+)?$/.test(t) ? `${t} sqm` : t;
 }
 
 // Keeps ?slug=... attached while you test on localhost
@@ -285,7 +293,7 @@ function Card({ p, base, money, waLink, onInquire }) {
           <div className="re-meta">
             {p.bedrooms ? <span>{p.bedrooms} bed</span> : null}
             {p.bathrooms ? <span>{p.bathrooms} bath</span> : null}
-            {p.size ? <span>{p.size}</span> : null}
+            {p.size ? <span>{sizeText(p.size)}</span> : null}
           </div>
         </div>
       </Link>
@@ -347,7 +355,7 @@ function Listing({ properties, busy, base, money, waLink, onInquire }) {
           <input
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="Search by location or title"
+            placeholder="Search by area or property name"
           />
         </div>
 
@@ -394,8 +402,8 @@ function Listing({ properties, busy, base, money, waLink, onInquire }) {
         ) : shown.length === 0 ? (
           <p className="re-empty">
             {properties.length === 0
-              ? "No properties to show yet. Check back soon."
-              : "Nothing matches that. Try another search."}
+              ? "No properties are listed yet. Please check back soon."
+              : "No property matches your search. Try a different area or clear the filters."}
           </p>
         ) : (
           <div className="re-grid">
@@ -473,7 +481,7 @@ function Detail({ properties, busy, base, money, waLink, onInquire }) {
             {p.bathrooms ? (
               <span><b>{p.bathrooms}</b> {p.bathrooms === 1 ? "bath" : "baths"}</span>
             ) : null}
-            {p.size ? <span><b>{p.size}</b></span> : null}
+            {p.size ? <span><b>{sizeText(p.size)}</b></span> : null}
           </div>
         )}
 
@@ -489,7 +497,7 @@ function Detail({ properties, busy, base, money, waLink, onInquire }) {
         {p.features?.length > 0 && (
           <Reveal delay={80}>
             <section className="re-about">
-              <h2>What it has</h2>
+              <h2>Features</h2>
               <div className="re-feats">
                 {p.features.map((f) => <span key={f}>{f}</span>)}
               </div>
@@ -508,7 +516,7 @@ function Detail({ properties, busy, base, money, waLink, onInquire }) {
             rel="noreferrer"
             onClick={() => onInquire(p)}
           >
-            Ask the agent on WhatsApp
+            Enquire on WhatsApp
           </a>
         ) : (
           <span className="re-wa off">No longer available</span>
@@ -570,7 +578,7 @@ export default function RealEstateSite({ basePath = "", slug: slugProp }) {
   ].filter((s) => s.url);
 
   function waLink(p) {
-    const text = `Hello ${store.name}, I am interested in "${p.title}" (${money(p.price)}) in ${p.location}. Is it still available?`;
+    const text = `Hello ${store.name}, I saw "${p.title}" (${money(p.price)}) in ${p.location} on your website. Is it still available, and can I arrange an inspection?`;
     return `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
   }
 
@@ -614,7 +622,7 @@ export default function RealEstateSite({ basePath = "", slug: slugProp }) {
               >
                 <div className="re-hero-in">
                   {hero.label && <span className="re-badge">{hero.label}</span>}
-                  <h1>{hero.headline || "Find a home you will love"}</h1>
+                  <h1>{hero.headline || "Find your next home"}</h1>
                 </div>
               </section>
 
