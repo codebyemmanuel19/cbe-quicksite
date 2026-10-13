@@ -11,8 +11,8 @@ const STATUS_INFO = {
   trial_not_started: { label: "Free trial not started", tone: "blue" },
   trial: { label: "Free trial", tone: "blue" },
   active: { label: "Active", tone: "green" },
-  locked: { label: "Editing locked", tone: "orange" },
-  offline: { label: "Website offline", tone: "red" },
+  locked: { label: "Your free trial has ended", tone: "orange" },
+  offline: { label: "Your website is offline", tone: "red" },
   suspended: { label: "Account on hold", tone: "red" },
 };
 
@@ -42,7 +42,7 @@ const BENEFITS = [
 
 const RULES = [
   "Your 7 free days start when you add your first product.",
-  "After your trial, your website stays live but editing locks until you pay.",
+  "After your trial, your dashboard locks until you pay. Your website stays live for a while.",
   "If your website stays unpaid for 30 days, it goes offline until you pay.",
   "Paying early never loses you days. New time is added on top.",
 ];
@@ -85,7 +85,11 @@ export default function Billing() {
           setVerifying(true);
           try {
             await api.post("/billing/verify", { reference });
-            if (!cancelled) setMessage("Payment received. Your days have been added.");
+            if (!cancelled) {
+              setMessage("Payment received. Taking you to your dashboard...");
+              // A full reload, so the dashboard unlocks straight away
+              setTimeout(() => window.location.replace("/dashboard"), 1200);
+            }
           } catch (err) {
             if (!cancelled) setError(err.message);
           } finally {
@@ -140,9 +144,11 @@ export default function Billing() {
     }
     if (billing.status === "active") return `Paid until ${formatDay(billing.paidUntil)}.`;
     if (billing.status === "locked") {
-      return "Your website is live, but you can't make changes until you pay.";
+      return "Pay to get back into your dashboard and keep your website online. If it stays unpaid for 30 days, your website goes offline.";
     }
-    if (billing.status === "offline") return "Your website is offline. Pay to bring it back instantly.";
+    if (billing.status === "offline") {
+      return "Pay to bring your website back online and get back into your dashboard. It comes back instantly.";
+    }
     return "Please contact support.";
   }
 

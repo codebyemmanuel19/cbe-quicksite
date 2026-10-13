@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { BrowserRouter, Routes, Route, NavLink, Outlet, Navigate, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, NavLink, Outlet, Navigate, useLocation, useNavigate } from "react-router-dom";
 import Landing from "./components/Landing";
 import { Privacy, Terms } from "./components/Legal";
 import Signup from "./components/Signup";
@@ -175,6 +175,14 @@ const realEstateMenu = [
   ]},
 ];
 
+// What a vendor sees once the free trial has ended and they have not paid
+const lockedMenu = [
+  { group: "ACCOUNT", items: [
+    { to: "/dashboard/billing", label: "Plans & Billing", icon: icons.billing },
+    { to: "/dashboard/support", label: "Support", icon: icons.support },
+  ]},
+];
+
 // Shows the right home page for the shop's type
 function HomeRouter() {
   const [type, setType] = useState(null);
@@ -192,12 +200,35 @@ function HomeRouter() {
 function DashboardLayout() {
   const [open, setOpen] = useState(false);
   const [type, setType] = useState("");
+  const [billingStatus, setBillingStatus] = useState(null); // null while loading
+  const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     api.get("/sites/me")
       .then((res) => setType(res.site.businessType || ""))
       .catch(() => {});
   }, []);
+
+  // After the free trial, an unpaid vendor sees the payment page and nothing else
+  useEffect(() => {
+    api.get("/billing/status")
+      .then((res) => setBillingStatus(res.billing.status))
+      .catch(() => setBillingStatus("ok")); // no shop yet, or the server is down: do not lock anyone out
+  }, []);
+
+  const lockedOut = billingStatus === "locked" || billingStatus === "offline";
+  const onSupport = location.pathname.startsWith("/dashboard/support");
+  const activeMenu = lockedOut ? lockedMenu : type === "realestate" ? realEstateMenu : menu;
+
+  async function logout() {
+    try {
+      await api.post("/auth/logout", {});
+    } catch (e) {
+      // Leave anyway
+    }
+    navigate("/login");
+  }
 
   return (
     <div className="layout">
@@ -218,7 +249,7 @@ function DashboardLayout() {
           </button>
         </div>
 
-        {(type === "realestate" ? realEstateMenu : menu).map((section) => (
+        {activeMenu.map((section) => (
           <div key={section.group || "main"} className="menu-group">
             {section.group && <p className="menu-label">{section.group}</p>}
             {section.items.map((item) => (
@@ -236,8 +267,21 @@ function DashboardLayout() {
           </div>
         ))}
 
+        {lockedOut && (
+          <div className="menu-group">
+            <button
+              type="button"
+              className="menu-link"
+              onClick={logout}
+              style={{ width: "100%", background: "none", border: "none", font: "inherit", textAlign: "left", cursor: "pointer" }}
+            >
+              <span>Log out</span>
+            </button>
+          </div>
+        )}
+
         {/* Opens the WhatsApp group. Hidden until COMMUNITY_URL is filled in. */}
-        {COMMUNITY_URL && (
+        {COMMUNITY_URL && !lockedOut && (
           <div className="menu-group">
             <p className="menu-label">COMMUNITY</p>
             <a
@@ -255,7 +299,7 @@ function DashboardLayout() {
       </aside>
 
       <main className="content">
-        <Outlet />
+        {billingStatus === null ? null : lockedOut && !onSupport ? <Billing /> : <Outlet />}
       </main>
     </div>
   );

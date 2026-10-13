@@ -3,20 +3,11 @@ import "./Landing.css";
 
 const SUPPORT = "https://wa.me/2349027090880?text=Hi%2C%20I%20have%20a%20question%20about%20CBE%20QuickSite";
 
-// To add a website: copy one line, change the details. The card is built for you.
-//   type  = the business type shown on the card
-//   name  = the business name
-//   url   = the live website
-//   top   = the colour behind the preview (the shop's main colour)
-//   dark  = true if "top" is a dark colour
-//   img   = optional phone screenshot, like "/examples/kemi.png" (put it in public/examples)
 const EXAMPLES = [
   { type: "Hair & wigs", name: "Luxe Hair", url: "https://hai1.cbequicksite.com", top: "#16130f", accent: "#b08d4f", dark: true, img: "" },
   { type: "Real estate", name: "Prime Estates", url: "https://realestate.cbequicksite.com", top: "#0f4c5c", accent: "#f2b04a", dark: true, img: "" },
-  //{ type: "Clothing & fashion", name: "Kemi's Boutique", url: "https://kemisboutique.cbequicksite.com", top: "#111111", accent: "#ffffff", dark: true, img: "" },
 ];
 
-// "https://hai1.cbequicksite.com" becomes "hai1.cbequicksite.com"
 function hostOf(url) {
   return String(url).replace(/^https?:\/\//, "").replace(/\/$/, "");
 }
@@ -27,7 +18,6 @@ const TRUST = [
   "Edit everything from your phone",
 ];
 
-// The phone drawing uses dollars, so it makes sense to visitors anywhere in the world
 const MOCK_ITEMS = [
   { name: "Summer dress", price: 19, color: "#fdba74" },
   { name: "Linen set", price: 24, color: "#a5b4fc" },
@@ -78,14 +68,13 @@ const PLANS = [
 ];
 
 const FAQ = [
-  { q: "How much does it cost?", a: "Seven days free first, and no card needed. After that, shops are ₦5,000 a month and real estate is ₦10,000 a month. Pay for 3, 6 or 12 months and it costs less." },
+  { q: "How much does it cost?", a: "24 hours free first, and no card needed. After that, shops are ₦5,000 a month and real estate is ₦10,000 a month. Pay for 3, 6 or 12 months and it costs less." },
   { q: "Do I need to know coding?", a: "No. You fill in simple forms, and your website is ready. If you get stuck, message us on WhatsApp." },
   { q: "How do my customers pay me?", a: "Your customers order and pay you directly. Set your bank account and delivery areas in your dashboard, and your details show at checkout. The money goes straight to your bank, not to us." },
-  { q: "What happens after the 7 free days?", a: "Your website stays live. You pay to keep editing it. If it stays unpaid for 30 days, it goes offline until you pay." },
+  { q: "What happens after the 24 free hours?", a: "Your website stays live. You pay to keep editing it. If it stays unpaid for 30 days, it goes offline until you pay." },
   { q: "Can I change my products later?", a: "Yes. You can add, edit or remove products, prices and photos as often as you like." },
 ];
 
-// A small drawing of a finished shop, with the WhatsApp order arriving
 function PhoneMock() {
   return (
     <div className="lp-phone" aria-hidden="true">
@@ -126,14 +115,15 @@ export default function Landing() {
         <div className="lp-top-text">
           <h1>Your shop online in 5 minutes. Orders go straight to your WhatsApp.</h1>
           <p>
-            Make a website for your clothes, hair, perfume or property business.
+            Make a website for your business.
+            Whatever you sell or do, we’ve got you covered.
             No coding, no developer.
           </p>
           <div className="lp-actions">
             <Link to="/signup" className="lp-btn">Start free</Link>
             <a href="#examples" className="lp-btn ghost">See real websites</a>
           </div>
-          <p className="lp-free">7 days free. No card needed.</p>
+          <p className="lp-free">24 hours free. No card needed.</p>
         </div>
         <PhoneMock />
       </section>
@@ -211,7 +201,7 @@ export default function Landing() {
 
       <section className="lp-section grey" id="pricing">
         <h2>Simple pricing</h2>
-        <p className="lp-sub">Seven days free first. No card needed.</p>
+        <p className="lp-sub">24 hours free first. No card needed.</p>
 
         <div className="lp-plans">
           {PLANS.map((p) => (
@@ -246,7 +236,7 @@ export default function Landing() {
 
       <section className="lp-final">
         <h2>Ready to put your business online?</h2>
-        <p>Seven days free. No card needed.</p>
+        <p>24 hours free. No card needed.</p>
         <Link to="/signup" className="lp-btn light">Start free</Link>
       </section>
 
@@ -259,7 +249,7 @@ export default function Landing() {
           <Link to="/privacy">Privacy Policy</Link>
           <Link to="/terms">Terms of Service</Link>
         </div>
-        <small>© {new Date().getFullYear()} CBE QuickSite</small>
+        <small>©️ {new Date().getFullYear()} CBE QuickSite</small>
       </footer>
 
       <a className="lp-float" href={SUPPORT} target="_blank" rel="noreferrer">Need help?</a>
