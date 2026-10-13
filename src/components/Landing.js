@@ -27,11 +27,12 @@ const TRUST = [
   "Edit everything from your phone",
 ];
 
+// The phone drawing uses dollars, so it makes sense to visitors anywhere in the world
 const MOCK_ITEMS = [
-  { name: "Ankara gown", price: "₦19,000", color: "#fdba74" },
-  { name: "Lace set", price: "₦24,500", color: "#a5b4fc" },
-  { name: "Senator wear", price: "₦32,000", color: "#86efac" },
-  { name: "Ankara skirt", price: "₦12,000", color: "#f9a8d4" },
+  { name: "Summer dress", price: 19, color: "#fdba74" },
+  { name: "Linen set", price: 24, color: "#a5b4fc" },
+  { name: "Wrap blazer", price: 32, color: "#86efac" },
+  { name: "Pleated skirt", price: 12, color: "#f9a8d4" },
 ];
 
 const STEPS = [
@@ -89,20 +90,20 @@ function PhoneMock() {
   return (
     <div className="lp-phone" aria-hidden="true">
       <div className="lp-screen">
-        <div className="lp-shophead">Kemi's Boutique</div>
+        <div className="lp-shophead">Ella's Boutique</div>
         <div className="lp-mockgrid">
           {MOCK_ITEMS.map((i) => (
             <div key={i.name} className="lp-mockitem">
               <span className="lp-mockimg" style={{ background: i.color }} />
               <span className="lp-mockname">{i.name}</span>
-              <span className="lp-mockprice">{i.price}</span>
+              <span className="lp-mockprice">${i.price}</span>
             </div>
           ))}
         </div>
       </div>
       <div className="lp-toast">
         <b>New order on WhatsApp</b>
-        <span>2 × Ankara gown, ₦38,000</span>
+        <span>2 × {MOCK_ITEMS[0].name}, ${MOCK_ITEMS[0].price * 2}</span>
       </div>
     </div>
   );
