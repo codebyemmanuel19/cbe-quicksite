@@ -135,7 +135,7 @@ function HomePage({ store, basePath, category, setCategory }) {
         <div className="gd-hero-text">
           {store.hero.label && <p className="gd-hero-label">{store.hero.label}</p>}
           <h1 className="gd-hero-title">{store.hero.headline || store.name}</h1>
-          {store.about && <p className="gd-hero-about">{store.about}</p>}
+          
           <Link className="gd-hero-btn" to={`${basePath}/#shop`}>Shop now</Link>
         </div>
       </section>
