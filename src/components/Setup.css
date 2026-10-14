@@ -128,21 +128,35 @@ html, body {
   align-items: flex-end;
   justify-content: center;
   background: rgba(15, 26, 60, 0.45);
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+  overscroll-behavior: contain;
   animation: sheet-fade 0.2s ease;
 }
 
+/* Fixed height, so the sheet does not jump while they search */
 .sheet {
   width: 100%;
   max-width: 560px;
-  max-height: 85vh;
-  max-height: 85dvh;
+  height: 82vh;
+  height: 82dvh;
+  max-height: 720px;
   display: flex;
   flex-direction: column;
   background: #fff;
   border-radius: 22px 22px 0 0;
   box-shadow: 0 -10px 40px rgba(15, 26, 60, 0.25);
-  animation: sheet-up 0.25s cubic-bezier(0.2, 0.8, 0.3, 1);
+  animation: sheet-up 0.28s cubic-bezier(0.2, 0.8, 0.3, 1);
   overflow: hidden;
+}
+
+.sheet-grip {
+  flex-shrink: 0;
+  width: 40px;
+  height: 4px;
+  margin: 10px auto 0;
+  border-radius: 4px;
+  background: #d9deef;
 }
 
 .sheet-head {
@@ -150,14 +164,18 @@ html, body {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 18px 18px 14px;
-  border-bottom: 1px solid #eef0f8;
+  padding: 14px 18px 12px;
+  transition: box-shadow 0.2s ease;
+}
+
+.sheet-head.shadow {
+  box-shadow: 0 6px 12px -8px rgba(15, 26, 60, 0.18);
 }
 
 .sheet-head h3 {
   flex: 1;
   margin: 0;
-  font-size: 17px;
+  font-size: 18px;
   font-weight: 800;
   color: #0f1a3c;
 }
@@ -167,24 +185,109 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
   padding: 0;
   color: #6b7488;
   background: #f2f4fb;
   border: none;
   border-radius: 50%;
   cursor: pointer;
+  transition: background 0.15s ease;
 }
 
+.sheet-close:hover { background: #e7eaf7; }
 .sheet-close svg { width: 17px; height: 17px; }
 
-.sheet-list {
-  flex: 1;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  padding: 0 18px calc(14px + env(safe-area-inset-bottom, 0px));
+/* ---- Search box ---- */
+.sheet-search {
+  position: relative;
+  flex-shrink: 0;
+  padding: 0 18px 12px;
 }
+
+.sheet-search svg {
+  position: absolute;
+  left: 32px;
+  top: 50%;
+  margin-top: -6px;
+  width: 18px;
+  height: 18px;
+  color: #9aa2bd;
+  pointer-events: none;
+}
+
+.sheet-search input {
+  width: 100%;
+  padding: 12px 14px 12px 42px;
+  font-size: 16px; /* 16px stops iPhone from zooming in */
+  font-family: inherit;
+  color: #0f1a3c;
+  background: #f4f6fc;
+  border: 1.5px solid transparent;
+  border-radius: 12px;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.sheet-search input::placeholder { color: #9aa2bd; }
+
+.sheet-search input:focus {
+  outline: none;
+  background: #fff;
+  border-color: #4f6bff;
+  box-shadow: 0 0 0 3px rgba(79, 107, 255, 0.15);
+}
+
+/* ---- The scrolling list ---- */
+.sheet-body {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+}
+
+/* Soft fade at the bottom so people see there is more to scroll */
+.sheet-body::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 28px;
+  pointer-events: none;
+  background: linear-gradient(to top, #fff, rgba(255, 255, 255, 0));
+}
+
+.sheet-list {
+  height: 100%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+  padding: 0 18px calc(28px + env(safe-area-inset-bottom, 0px));
+}
+
+.sheet-list::-webkit-scrollbar { width: 6px; }
+.sheet-list::-webkit-scrollbar-thumb { background: #d9deef; border-radius: 6px; }
+
+.sheet-count {
+  margin: 4px 0 6px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #9aa2bd;
+}
+
+.sheet-empty {
+  padding: 36px 8px;
+  text-align: center;
+  font-size: 14px;
+  color: #8a92a6;
+  line-height: 1.5;
+}
+
+.sheet-empty a { color: #22a06b; font-weight: 700; }
 
 /* ---- One row in the list ---- */
 .type-row {
@@ -193,28 +296,35 @@ html, body {
   align-items: center;
   gap: 14px;
   width: 100%;
-  padding: 15px 2px;
+  padding: 13px 10px;
+  margin: 2px 0;
   text-align: left;
   background: none;
   border: none;
-  border-bottom: 1px solid #eef0f8;
+  border-radius: 14px;
   cursor: pointer;
   font: inherit;
   transition: background 0.15s ease;
 }
 
-.type-row:last-child { border-bottom: none; }
-.type-row:active { background: #f7f9ff; }
+.type-row:hover { background: #f7f9ff; }
+.type-row:active { background: #eef2ff; }
+
+.type-row:disabled {
+  cursor: default;
+  opacity: 0.55;
+}
+.type-row:disabled:hover { background: none; }
 
 .type-icon {
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 38px;
-  height: 38px;
-  font-size: 20px;
-  border-radius: 10px;
+  width: 42px;
+  height: 42px;
+  font-size: 21px;
+  border-radius: 12px;
   background: #f2f5ff;
 }
 
@@ -239,6 +349,16 @@ html, body {
   margin-top: 2px;
 }
 
+.type-soon {
+  flex-shrink: 0;
+  padding: 4px 9px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #6b7488;
+  background: #eef0f8;
+  border-radius: 20px;
+}
+
 /* The tick on the right, hidden until picked */
 .type-mark {
   flex-shrink: 0;
@@ -255,9 +375,18 @@ html, body {
 
 .type-mark svg { width: 20px; height: 20px; }
 
+.type-row.selected { background: #f3f6ff; }
 .type-row.selected .type-mark { opacity: 1; transform: scale(1); }
 .type-row.selected .type-name { font-weight: 700; color: #2a44d8; }
 .type-row.selected .type-icon { background: #e4eaff; }
+
+/* On a big screen it sits in the middle like a normal pop-up */
+@media (min-width: 700px) {
+  .sheet-backdrop { align-items: center; }
+  .sheet { border-radius: 22px; height: 640px; }
+  .sheet-grip { display: none; }
+  .sheet-head { padding-top: 22px; }
+}
 
 @keyframes sheet-up {
   from { transform: translateY(100%); }
@@ -267,6 +396,11 @@ html, body {
 @keyframes sheet-fade {
   from { opacity: 0; }
   to { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sheet, .sheet-backdrop { animation: none; }
+  .sheet-list { scroll-behavior: auto; }
 }
 
 .setup-card label {

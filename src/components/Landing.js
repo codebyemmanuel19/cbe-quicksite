@@ -5,7 +5,7 @@ const SUPPORT = "https://wa.me/2349027090880?text=Hi%2C%20I%20have%20a%20questio
 
 const EXAMPLES = [
   { type: "Hair & wigs", name: "Luxe Hair", url: "https://hai1.cbequicksite.com", top: "#16130f", accent: "#b08d4f", dark: true, img: "" },
-  { type: "Real estate", name: "Prime Estates", url: "https://realestate.cbequicksite.com", top: "#0f4c5c", accent: "#f2b04a", dark: true, img: "" },
+  { type: "Real estate", name: "Prime Estates", url: "https://real00.cbequicksite.com", top: "#0f4c5c", accent: "#f2b04a", dark: true, img: "" },
 ];
 
 function hostOf(url) {

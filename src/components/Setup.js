@@ -1,55 +1,64 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../api";
 
 import { COUNTRIES } from "./countries";
 import "./Setup.css";
 
-// Every template that is built can be picked here
+// Every template that is built can be picked here.
+// Adding a new business type later = add one more block to this list.
+// Add  soon: true  to show it as "Coming soon" (it can't be picked yet).
+// Add  keywords: "word word"  so the search box can find it by other words.
 const TYPES = [
   {
     id: "clothing",
     icon: "👗",
     name: "Clothing & Fashion",
     desc: "Clothing, shoes, native wear & accessories",
+    keywords: "fashion boutique shoes bags tailor native wear ankara",
   },
   {
     id: "hair",
     icon: "💇",
     name: "Hair & Wigs",
     desc: "Wigs, bundles, frontals & extensions",
+    keywords: "hair wig bundle frontal braids salon",
   },
   {
     id: "realestate",
     icon: "🏠",
     name: "Real Estate",
     desc: "Houses, flats & land for sale or rent",
+    keywords: "property house flat land agent rent sale apartment",
   },
   {
     id: "skincare",
     icon: "🧴",
     name: "Skincare & Body Care",
     desc: "Creams, serums, soaps & oils",
+    keywords: "beauty cream serum soap oil cosmetics body",
   },
   {
     id: "perfume",
     icon: "🌸",
     name: "Perfume & Fragrance",
     desc: "Perfumes, oils & body mists",
+    keywords: "fragrance scent oil spray",
   },
   {
     id: "jewellery",
     icon: "💍",
     name: "Jewellery & Accessories",
     desc: "Watches, bracelets, glasses & more",
+    keywords: "jewelry watch ring necklace bracelet glasses",
   },
   {
     id: "gadgets",
     icon: "🎧",
     name: "Gadgets & Accessories",
     desc: "Phones, earbuds, chargers & accessories",
+    keywords: "phone earbuds charger electronics laptop tech",
   },
-  
 ];
 
 // Addresses no customer can take, because you need them
@@ -81,6 +90,20 @@ export default function Setup() {
 
   // The business type list that slides up from the bottom
   const [sheetOpen, setSheetOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const [scrolled, setScrolled] = useState(false);
+  const listRef = useRef(null);
+
+  // Search is only worth showing once the list gets longer
+  const showSearch = TYPES.length > 6;
+
+  const shownTypes = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return TYPES;
+    return TYPES.filter((t) =>
+      `${t.name} ${t.desc} ${t.keywords || ""}`.toLowerCase().includes(q)
+    );
+  }, [query]);
 
   // What the server says about this link: null while we haven't asked
   const [slugCheck, setSlugCheck] = useState(null);
@@ -131,6 +154,20 @@ export default function Setup() {
       document.body.style.overflow = previous;
       window.removeEventListener("keydown", handleKey);
     };
+  }, [sheetOpen]);
+
+  // Every time the list opens: clear the search and show the picked one
+  useEffect(() => {
+    if (!sheetOpen) return;
+    setQuery("");
+    setScrolled(false);
+
+    const timer = setTimeout(() => {
+      const picked = listRef.current && listRef.current.querySelector(".type-row.selected");
+      if (picked) picked.scrollIntoView({ block: "center" });
+    }, 280);
+
+    return () => clearTimeout(timer);
   }, [sheetOpen]);
 
   function pickType(id) {
@@ -286,7 +323,9 @@ export default function Setup() {
       {sheetOpen && (
         <div className="sheet-backdrop" onClick={() => setSheetOpen(false)}>
           <div className="sheet" onClick={(e) => e.stopPropagation()}>
-            <div className="sheet-head">
+            <div className="sheet-grip" aria-hidden="true" />
+
+            <div className={scrolled ? "sheet-head shadow" : "sheet-head"}>
               <h3>Which one describes your business?</h3>
               <button
                 type="button"
@@ -300,26 +339,72 @@ export default function Setup() {
               </button>
             </div>
 
-            <div className="sheet-list">
-              {TYPES.map((t) => (
-                <button
-                  key={t.id}
-                  type="button"
-                  className={type === t.id ? "type-row selected" : "type-row"}
-                  onClick={() => pickType(t.id)}
-                >
-                  <span className="type-icon">{t.icon}</span>
-                  <span className="type-text">
-                    <span className="type-name">{t.name}</span>
-                    <span className="type-desc">{t.desc}</span>
-                  </span>
-                  <span className="type-mark" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-                      <path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  </span>
-                </button>
-              ))}
+            {showSearch && (
+              <div className="sheet-search">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                  <circle cx="11" cy="11" r="7" />
+                  <path d="M20 20l-3.5-3.5" strokeLinecap="round" />
+                </svg>
+                <input
+                  type="search"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Search your business type"
+                  aria-label="Search business types"
+                />
+              </div>
+            )}
+
+            <div className="sheet-body">
+              <div
+                className="sheet-list"
+                ref={listRef}
+                onScroll={(e) => setScrolled(e.currentTarget.scrollTop > 4)}
+              >
+                {shownTypes.length > 0 ? (
+                  <>
+                    <p className="sheet-count">
+                      {shownTypes.length} business {shownTypes.length === 1 ? "type" : "types"}
+                    </p>
+                    {shownTypes.map((t) => (
+                      <button
+                        key={t.id}
+                        type="button"
+                        disabled={t.soon}
+                        className={type === t.id ? "type-row selected" : "type-row"}
+                        onClick={() => pickType(t.id)}
+                      >
+                        <span className="type-icon">{t.icon}</span>
+                        <span className="type-text">
+                          <span className="type-name">{t.name}</span>
+                          <span className="type-desc">{t.desc}</span>
+                        </span>
+                        {t.soon ? (
+                          <span className="type-soon">Coming soon</span>
+                        ) : (
+                          <span className="type-mark" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                              <path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                          </span>
+                        )}
+                      </button>
+                    ))}
+                  </>
+                ) : (
+                  <p className="sheet-empty">
+                    We don't have "{query.trim()}" yet.
+                    <br />
+                    <a
+                      href="https://wa.me/2349027090880?text=Hi%2C%20I%20want%20a%20website%20for%20a%20business%20type%20you%20don%27t%20have%20yet"
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      Tell us what you need
+                    </a>
+                  </p>
+                )}
+              </div>
             </div>
           </div>
         </div>
