@@ -4,6 +4,7 @@ import { formatPrice } from "../components/countries";
 import { useShop } from "../shop/useShop";
 import { useCart, itemDetails } from "../shop/useCart";
 import PhotoCarousel from "../shop/PhotoCarousel";
+import Reveal from "../shop/Reveal";
 import Checkout from "../shop/Checkout";
 import Done from "../shop/Done";
 import GadgetsFooter from "./GadgetsFooter";
@@ -142,53 +143,65 @@ function HomePage({ store, basePath, category, setCategory }) {
 
       {/* Quiet reassurance, the thing that sells a ₦450,000 phone */}
       <section className="gd-trust">
-        <div className="gd-trust-item">
-          <span className="gd-trust-icon">✓</span>
-          <p>Genuine products</p>
-        </div>
-        <div className="gd-trust-item">
-          <span className="gd-trust-icon">⚡</span>
-          <p>Fast delivery</p>
-        </div>
-        <div className="gd-trust-item">
-          <span className="gd-trust-icon">💬</span>
-          <p>We answer on WhatsApp</p>
-        </div>
+        <Reveal>
+          <div className="gd-trust-item">
+            <span className="gd-trust-icon">✓</span>
+            <p>Genuine products</p>
+          </div>
+        </Reveal>
+        <Reveal delay={90}>
+          <div className="gd-trust-item">
+            <span className="gd-trust-icon">⚡</span>
+            <p>Fast delivery</p>
+          </div>
+        </Reveal>
+        <Reveal delay={180}>
+          <div className="gd-trust-item">
+            <span className="gd-trust-icon">💬</span>
+            <p>We answer on WhatsApp</p>
+          </div>
+        </Reveal>
       </section>
 
       <section className="gd-shop" ref={shopRef}>
         {store.categories.length > 0 && (
-          <div className="gd-cats">
-            {["All", ...store.categories].map((c) => (
-              <button
-                key={c}
-                className={category === c ? "gd-cat active" : "gd-cat"}
-                onClick={() => setCategory(c)}
-              >
-                {c}
-              </button>
-            ))}
-          </div>
+          <Reveal>
+            <div className="gd-cats">
+              {["All", ...store.categories].map((c) => (
+                <button
+                  key={c}
+                  className={category === c ? "gd-cat active" : "gd-cat"}
+                  onClick={() => setCategory(c)}
+                >
+                  {c}
+                </button>
+              ))}
+            </div>
+          </Reveal>
         )}
 
-        <div className="gd-bar">
-          <span>{shown.length} {shown.length === 1 ? "item" : "items"}</span>
-          <label className="gd-sort">
-            Sort
-            <select value={sort} onChange={(e) => setSort(e.target.value)}>
-              {SORTS.map((s) => (
-                <option key={s.id} value={s.id}>{s.label}</option>
-              ))}
-            </select>
-          </label>
-        </div>
+        <Reveal delay={80}>
+          <div className="gd-bar">
+            <span>{shown.length} {shown.length === 1 ? "item" : "items"}</span>
+            <label className="gd-sort">
+              Sort
+              <select value={sort} onChange={(e) => setSort(e.target.value)}>
+                {SORTS.map((s) => (
+                  <option key={s.id} value={s.id}>{s.label}</option>
+                ))}
+              </select>
+            </label>
+          </div>
+        </Reveal>
 
         {shown.length === 0 ? (
           <p className="gd-muted gd-empty">No items yet. Check back soon.</p>
         ) : (
           <div className="gd-grid">
-            {shown.map((p) => (
-              <ProductCard key={p.id} store={store} product={p} basePath={basePath} />
+            {shown.map((p, i) => (
+              <Reveal key={p.id} delay={(i % 4) * 80}>
+                <ProductCard store={store} product={p} basePath={basePath} />
+              </Reveal>
             ))}
           </div>
         )}
@@ -351,10 +364,14 @@ function ProductPage({ store, basePath, addToCart, openBag }) {
 
       {related.length > 0 && (
         <section className="gd-related">
-          <h2 className="gd-section-title">Similar items</h2>
+          <Reveal>
+            <h2 className="gd-section-title">Similar items</h2>
+          </Reveal>
           <div className="gd-grid">
-            {related.map((p) => (
-              <ProductCard key={p.id} store={store} product={p} basePath={basePath} />
+            {related.map((p, i) => (
+              <Reveal key={p.id} delay={(i % 4) * 80}>
+                <ProductCard store={store} product={p} basePath={basePath} />
+              </Reveal>
             ))}
           </div>
         </section>
@@ -448,36 +465,38 @@ export default function GadgetsSite({ basePath = "/preview/gadgets", slug: slugP
       />
 
       <main className="gd-main">
-        <Routes>
-          <Route
-            index
-            element={<HomePage store={store} basePath={basePath} category={category} setCategory={setCategory} />}
-          />
-          <Route
-            path="product/:id"
-            element={
-              <ProductPage
-                store={store}
-                basePath={basePath}
-                addToCart={addToCart}
-                openBag={() => setBagOpen(true)}
-              />
-            }
-          />
-          <Route
-            path="checkout"
-            element={
-              <Checkout
-                store={store}
-                basePath={basePath}
-                cart={cart}
-                clearCart={clearCart}
-                prefix="gd"
-              />
-            }
-          />
-          <Route path="done" element={<Done store={store} basePath={basePath} prefix="gd" />} />
-        </Routes>
+        <div className="qs-page" key={location.pathname}>
+          <Routes>
+            <Route
+              index
+              element={<HomePage store={store} basePath={basePath} category={category} setCategory={setCategory} />}
+            />
+            <Route
+              path="product/:id"
+              element={
+                <ProductPage
+                  store={store}
+                  basePath={basePath}
+                  addToCart={addToCart}
+                  openBag={() => setBagOpen(true)}
+                />
+              }
+            />
+            <Route
+              path="checkout"
+              element={
+                <Checkout
+                  store={store}
+                  basePath={basePath}
+                  cart={cart}
+                  clearCart={clearCart}
+                  prefix="gd"
+                />
+              }
+            />
+            <Route path="done" element={<Done store={store} basePath={basePath} prefix="gd" />} />
+          </Routes>
+        </div>
       </main>
 
       <GadgetsFooter store={store} />

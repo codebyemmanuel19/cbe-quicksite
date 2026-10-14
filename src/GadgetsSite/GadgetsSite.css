@@ -336,12 +336,16 @@
   display: none;
 }
 
+/* Show the WHOLE product, never crop it. Padding gives it breathing room.
+   multiply makes a white photo background melt into the frame colour. */
 .gd-track img {
   flex: 0 0 100%;
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  object-position: center top;
+  padding: 7% 7% 12%;
+  object-fit: contain;
+  object-position: center;
+  mix-blend-mode: multiply;
   scroll-snap-align: start;
   display: block;
 }
@@ -738,8 +742,9 @@
 .gd-bag-img img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  object-position: center top;
+  padding: 4px;
+  object-fit: contain;
+  mix-blend-mode: multiply;
 }
 
 .gd-bag-info .gd-name {
@@ -1084,6 +1089,58 @@
 .gd-footer-bottom a {
   color: #7b8090;
   text-decoration: none;
+}
+
+/* ---------- Motion ---------- */
+
+.gd-hero-label { animation: qs-up .8s .15s ease both; }
+.gd-hero-title { animation: qs-up .9s .3s ease both; }
+.gd-hero-btn { animation: qs-up .9s .5s ease both; }
+
+.gd-header { animation: qs-fade .8s ease both; }
+
+/* Cards in a row stay the same height even though each one is wrapped for the reveal */
+.gd-grid > .qs-rv { display: flex; }
+.gd-grid > .qs-rv > .gd-card { flex: 1; min-width: 0; }
+
+.gd-trust > .qs-rv { display: block; }
+
+/* Menu and bag open smoothly, links slide in one by one */
+.gd-overlay { animation: qs-fade .25s ease both; }
+
+.gd-drawer.open .gd-drawer-link { animation: qs-up .45s ease both; }
+.gd-drawer.open .gd-drawer-link:nth-child(2) { animation-delay: .08s; }
+.gd-drawer.open .gd-drawer-link:nth-child(3) { animation-delay: .14s; }
+.gd-drawer.open .gd-drawer-link:nth-child(4) { animation-delay: .2s; }
+.gd-drawer.open .gd-drawer-link:nth-child(5) { animation-delay: .26s; }
+.gd-drawer.open .gd-drawer-link:nth-child(6) { animation-delay: .32s; }
+.gd-drawer.open .gd-drawer-link:nth-child(n+7) { animation-delay: .38s; }
+
+.gd-bag-drawer.open .gd-bag-item { animation: qs-up .45s .1s ease both; }
+
+/* Product page: details slide in after the photos */
+.gd-product-info > * { animation: qs-up .6s ease both; }
+.gd-product-info > *:nth-child(1) { animation-delay: .1s; }
+.gd-product-info > *:nth-child(2) { animation-delay: .17s; }
+.gd-product-info > *:nth-child(3) { animation-delay: .24s; }
+.gd-product-info > *:nth-child(4) { animation-delay: .31s; }
+.gd-product-info > *:nth-child(5) { animation-delay: .38s; }
+.gd-product-info > *:nth-child(n+6) { animation-delay: .45s; }
+
+.gd-track img { transition: transform .6s ease; }
+
+@media (hover: hover) {
+  .gd-card:hover .gd-track img { transform: scale(1.05); }
+}
+
+.gd-cat, .gd-chip, .gd-spec { transition: background .2s, color .2s, border-color .2s, transform .15s; }
+.gd-btn { transition: background .2s ease, transform .15s ease; }
+.gd-btn:active:not(:disabled), .gd-cat:active, .gd-chip:active, .gd-spec:active { transform: scale(.97); }
+
+@media (prefers-reduced-motion: reduce) {
+  .gd-hero-label, .gd-hero-title, .gd-hero-btn, .gd-header, .gd-overlay,
+  .gd-drawer .gd-drawer-link, .gd-bag-item, .gd-product-info > * { animation: none !important; }
+  .gd-track img { transition: none; }
 }
 
 /* ---------- Bigger screens ---------- */
