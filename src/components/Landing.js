@@ -71,7 +71,7 @@ const FAQ = [
   { q: "How much does it cost?", a: "24 hours free first, and no card needed. After that, shops are ₦5,000 a month and real estate is ₦10,000 a month. Pay for 3, 6 or 12 months and it costs less." },
   { q: "Do I need to know coding?", a: "No. You fill in simple forms, and your website is ready. If you get stuck, message us on WhatsApp." },
   { q: "How do my customers pay me?", a: "Your customers order and pay you directly. Set your bank account and delivery areas in your dashboard, and your details show at checkout. The money goes straight to your bank, not to us." },
-  { q: "What happens after the 24 free hours?", a: "Your website stays live. You pay to keep editing it. If it stays unpaid for 30 days, it goes offline until you pay." },
+  { q: "What happens after the 24 free hours?", a: "Your website stays live. You pay to keep editing it. If it stays unpaid for 7 days, it goes offline until you pay." },
   { q: "Can I change my products later?", a: "Yes. You can add, edit or remove products, prices and photos as often as you like." },
 ];
 

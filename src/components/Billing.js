@@ -41,9 +41,9 @@ const BENEFITS = [
 ];
 
 const RULES = [
-  "Your 7 free days start when you add your first product.",
-  "After your trial, your dashboard locks until you pay. Your website stays live for a while.",
-  "If your website stays unpaid for 30 days, it goes offline until you pay.",
+  "Your 24-hour free trial starts when you add your first product.",
+  "After your trial, your website stays live but editing locks until you pay.",
+  "If your website stays unpaid for 7 days, it goes offline until you pay.",
   "Paying early never loses you days. New time is added on top.",
 ];
 
@@ -137,17 +137,21 @@ export default function Billing() {
     const word = d === 1 ? "day" : "days";
 
     if (billing.status === "trial_not_started") {
-      return "Your 7 free days start the day you add your first product.";
+      return "Your 24-hour free trial starts when you add your first product.";
     }
     if (billing.status === "trial") {
-      return `${d} ${word} left. Pay any time to keep editing after your trial.`;
+      // The trial is short, so show hours when under 2 days are left
+      const ms = billing.trialEndsAt ? new Date(billing.trialEndsAt).getTime() - Date.now() : 0;
+      const hours = Math.max(1, Math.ceil(ms / 3600000));
+      const left = ms > 0 && hours < 48 ? `${hours} ${hours === 1 ? "hour" : "hours"}` : `${d} ${word}`;
+      return `${left} left. Pay any time to keep editing after your trial.`;
     }
     if (billing.status === "active") return `Paid until ${formatDay(billing.paidUntil)}.`;
     if (billing.status === "locked") {
-      return "Pay to get back into your dashboard and keep your website online. If it stays unpaid for 30 days, your website goes offline.";
+      return "Your website is live, but you can't make changes until you pay. If it stays unpaid for 7 days, your website goes offline.";
     }
     if (billing.status === "offline") {
-      return "Pay to bring your website back online and get back into your dashboard. It comes back instantly.";
+      return "Your website is offline. Pay to bring it back instantly.";
     }
     return "Please contact support.";
   }

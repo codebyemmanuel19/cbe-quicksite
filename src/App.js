@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { BrowserRouter, Routes, Route, NavLink, Outlet, Navigate, useLocation, useNavigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, NavLink, Outlet, Navigate, useLocation } from "react-router-dom";
 import Landing from "./components/Landing";
 import { Privacy, Terms } from "./components/Legal";
 import Signup from "./components/Signup";
@@ -175,14 +175,6 @@ const realEstateMenu = [
   ]},
 ];
 
-// What a vendor sees once the free trial has ended and they have not paid
-const lockedMenu = [
-  { group: "ACCOUNT", items: [
-    { to: "/dashboard/billing", label: "Plans & Billing", icon: icons.billing },
-    { to: "/dashboard/support", label: "Support", icon: icons.support },
-  ]},
-];
-
 // Shows the right home page for the shop's type
 function HomeRouter() {
   const [type, setType] = useState(null);
@@ -200,9 +192,8 @@ function HomeRouter() {
 function DashboardLayout() {
   const [open, setOpen] = useState(false);
   const [type, setType] = useState("");
-  const [billingStatus, setBillingStatus] = useState(null); // null while loading
+  const [billingStatus, setBillingStatus] = useState("ok");
   const location = useLocation();
-  const navigate = useNavigate();
 
   useEffect(() => {
     api.get("/sites/me")
@@ -210,7 +201,8 @@ function DashboardLayout() {
       .catch(() => {});
   }, []);
 
-  // After the free trial, an unpaid vendor sees the payment page and nothing else
+  // After the free trial, an unpaid vendor can look around but cannot change anything.
+  // The server enforces that. This only tells them why, and how to fix it.
   useEffect(() => {
     api.get("/billing/status")
       .then((res) => setBillingStatus(res.billing.status))
@@ -218,17 +210,7 @@ function DashboardLayout() {
   }, []);
 
   const lockedOut = billingStatus === "locked" || billingStatus === "offline";
-  const onSupport = location.pathname.startsWith("/dashboard/support");
-  const activeMenu = lockedOut ? lockedMenu : type === "realestate" ? realEstateMenu : menu;
-
-  async function logout() {
-    try {
-      await api.post("/auth/logout", {});
-    } catch (e) {
-      // Leave anyway
-    }
-    navigate("/login");
-  }
+  const onBilling = location.pathname.startsWith("/dashboard/billing");
 
   return (
     <div className="layout">
@@ -249,7 +231,7 @@ function DashboardLayout() {
           </button>
         </div>
 
-        {activeMenu.map((section) => (
+        {(type === "realestate" ? realEstateMenu : menu).map((section) => (
           <div key={section.group || "main"} className="menu-group">
             {section.group && <p className="menu-label">{section.group}</p>}
             {section.items.map((item) => (
@@ -267,21 +249,8 @@ function DashboardLayout() {
           </div>
         ))}
 
-        {lockedOut && (
-          <div className="menu-group">
-            <button
-              type="button"
-              className="menu-link"
-              onClick={logout}
-              style={{ width: "100%", background: "none", border: "none", font: "inherit", textAlign: "left", cursor: "pointer" }}
-            >
-              <span>Log out</span>
-            </button>
-          </div>
-        )}
-
         {/* Opens the WhatsApp group. Hidden until COMMUNITY_URL is filled in. */}
-        {COMMUNITY_URL && !lockedOut && (
+        {COMMUNITY_URL && (
           <div className="menu-group">
             <p className="menu-label">COMMUNITY</p>
             <a
@@ -299,7 +268,31 @@ function DashboardLayout() {
       </aside>
 
       <main className="content">
-        {billingStatus === null ? null : lockedOut && !onSupport ? <Billing /> : <Outlet />}
+        {lockedOut && !onBilling && (
+          <div
+            style={{
+              margin: "0 0 18px",
+              padding: "14px 16px",
+              background: billingStatus === "offline" ? "#fef2f2" : "#fff7ed",
+              border: `1px solid ${billingStatus === "offline" ? "#fecaca" : "#fed7aa"}`,
+              borderRadius: 12,
+              color: "#7c2d12",
+              fontSize: 14,
+              lineHeight: 1.5,
+            }}
+          >
+            <b>
+              {billingStatus === "offline" ? "Your website is offline." : "Your free trial has ended."}
+            </b>{" "}
+            {billingStatus === "offline"
+              ? "Pay to bring it back online."
+              : "Your website is live, but you can't make changes until you pay."}{" "}
+            <NavLink to="/dashboard/billing" style={{ fontWeight: 700, color: "#1d4ed8" }}>
+              Choose a plan
+            </NavLink>
+          </div>
+        )}
+        <Outlet />
       </main>
     </div>
   );
