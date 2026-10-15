@@ -22,6 +22,10 @@ import RealEstateHome from "./RealEstateSite/dashboard/Home";
 import Properties from "./RealEstateSite/dashboard/Properties";
 import AddProperty from "./RealEstateSite/dashboard/AddProperty";
 import Inquiries from "./RealEstateSite/dashboard/Inquiries";
+import CarHome from "./CarSite/dashboard/Home";
+import Cars from "./CarSite/dashboard/Cars";
+import AddCar from "./CarSite/dashboard/AddCar";
+import CarInquiries from "./CarSite/dashboard/Inquiries";
 import ClothingSite from "./ClothingSite/ClothingSite";
 import HairSite from "./HairSite/HairSite";
 import SkincareSite from "./SkincareSite/SkincareSite";
@@ -175,6 +179,22 @@ const realEstateMenu = [
   ]},
 ];
 
+// The menu a car dealer sees
+const carMenu = [
+  { group: "WEBSITE", items: [
+    { to: "/dashboard", label: "Dashboard", end: true, icon: icons.dashboard },
+    { to: "/dashboard/business", label: "Business Info", icon: icons.business },
+    { to: "/dashboard/cars", label: "Cars", icon: icons.products },
+  ]},
+  { group: "SALES", items: [
+    { to: "/dashboard/car-inquiries", label: "Inquiries", icon: icons.orders },
+  ]},
+  { group: "ACCOUNT", items: [
+    { to: "/dashboard/billing", label: "Plans & Billing", icon: icons.billing },
+    { to: "/dashboard/support", label: "Support", icon: icons.support },
+  ]},
+];
+
 // Shows the right home page for the shop's type
 function HomeRouter() {
   const [type, setType] = useState(null);
@@ -186,6 +206,7 @@ function HomeRouter() {
   }, []);
 
   if (type === null) return null;
+  if (type === "cars") return <CarHome />;
   return type === "realestate" ? <RealEstateHome /> : <DashboardHome />;
 }
 
@@ -231,7 +252,7 @@ function DashboardLayout() {
           </button>
         </div>
 
-        {(type === "realestate" ? realEstateMenu : menu).map((section) => (
+        {(type === "realestate" ? realEstateMenu : type === "cars" ? carMenu : menu).map((section) => (
           <div key={section.group || "main"} className="menu-group">
             {section.group && <p className="menu-label">{section.group}</p>}
             {section.items.map((item) => (
@@ -351,6 +372,9 @@ export default function App() {
           <Route path="properties" element={<Properties />} />
           <Route path="properties/:id" element={<AddProperty />} />
           <Route path="inquiries" element={<Inquiries />} />
+          <Route path="cars" element={<Cars />} />
+          <Route path="cars/:id" element={<AddCar />} />
+          <Route path="car-inquiries" element={<CarInquiries />} />
           <Route path="billing" element={<Billing />} />
           <Route path="support" element={<Support />} />
         </Route>

@@ -32,6 +32,13 @@ const TYPES = [
     keywords: "property house flat land agent rent sale apartment",
   },
   {
+    id: "cars",
+    icon: "🚗",
+    name: "Car Dealer",
+    desc: "New & used cars for sale",
+    keywords: "car auto motors dealer vehicle toyota used foreign showroom",
+  },
+  {
     id: "skincare",
     icon: "🧴",
     name: "Skincare & Body Care",

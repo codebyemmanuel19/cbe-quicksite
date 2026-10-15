@@ -16,7 +16,7 @@ export default function CarHome() {
     async function load() {
       try {
         const mine = await api.get("/sites/me");
-        const [c, i] = await Promise.all([api.get("/cars"), api.get("/inquiries")]);
+        const [c, i] = await Promise.all([api.get("/cars"), api.get("/cars/inquiries/all")]);
         if (cancelled) return;
         setSite(mine.site);
         setCars(c.cars);
@@ -43,7 +43,24 @@ export default function CarHome() {
   const thisMonth = inquiries.filter((i) => new Date(i.createdAt) >= monthStart).length;
   const newOnes = inquiries.filter((i) => i.status === "new").length;
   const count = (s) => cars.filter((c) => c.status === s).length;
-  const d = site.billing.daysLeft;
+  const b = site.billing;
+  const hoursLeft = b.trialEndsAt ? Math.max(0, Math.ceil((new Date(b.trialEndsAt).getTime() - Date.now()) / 3600000)) : 0;
+  let planText = `${b.daysLeft} ${b.daysLeft === 1 ? "day" : "days"} left on your plan`;
+  let urgent = b.daysLeft <= 3;
+  let planBtn = "Add more time";
+  if (b.status === "trial_not_started") {
+    planText = "Your 24-hour free trial starts when you add your first car.";
+    urgent = false;
+    planBtn = "See plans";
+  } else if (b.status === "trial") {
+    planText = hoursLeft <= 48 ? `${hoursLeft} ${hoursLeft === 1 ? "hour" : "hours"} left on your free trial` : planText;
+    urgent = hoursLeft <= 6;
+    planBtn = "Choose a plan";
+  } else if (b.status === "locked" || b.status === "offline") {
+    planText = "Your free trial has ended. Pay to keep editing your website.";
+    urgent = true;
+    planBtn = "Choose a plan";
+  }
 
   async function copy() {
     try { await navigator.clipboard.writeText(url); setCopied(true); setTimeout(() => setCopied(false), 2000); } catch { /* ignore */ }
@@ -76,10 +93,11 @@ export default function CarHome() {
         <div className="rd-kpi"><b>{count("Sold")}</b><span>Sold</span></div>
       </section>
 
-      <section className={d <= 3 ? "rd-plan urgent" : "rd-plan"}>
-        <p>{d} {d === 1 ? "day" : "days"} left on your plan</p>
-        <Link className="rd-btn" to="/dashboard/billing">Add more time</Link>
+      <section className={urgent ? "rd-plan urgent" : "rd-plan"}>
+        <p>{planText}</p>
+        <Link className="rd-btn" to="/dashboard/billing">{planBtn}</Link>
       </section>
     </div>
   );
+
 }
