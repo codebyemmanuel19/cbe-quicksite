@@ -33,7 +33,6 @@ function withQuery(path) {
 
 const km = (n) => Number(n).toLocaleString("en-NG") + " km";
 const isUsed = (c) => String(c.condition || "").toLowerCase().includes("used");
-const isAvailable = (c) => (c.status || "Available") === "Available";
 
 // Small line icons
 const ICONS = {
