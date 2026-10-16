@@ -115,24 +115,46 @@ const STEPS = [
   { title: "Pay and drive", text: "Agree the price, pay, collect your documents and the keys." },
 ];
 
-// Shows the whole photo whatever its shape. A blurred copy fills the leftover space.
-function Photo({ src, alt = "", eager = false }) {
+// The frame follows the photo, so the whole picture always shows.
+// Very tall or very wide photos are limited, and a soft blurred copy fills the spare edges.
+const MIN_RATIO = 0.8;
+const MAX_RATIO = 1.78;
+
+function clamp(r) {
+  return Math.min(MAX_RATIO, Math.max(MIN_RATIO, r));
+}
+
+function Frame({ src, alt = "", eager = false, ratio, onRatio, className = "cr-img", children }) {
+  const [own, setOwn] = useState(null);
+  const shape = ratio || own || 4 / 3;
+
+  function handleLoad(e) {
+    const { naturalWidth: w, naturalHeight: h } = e.currentTarget;
+    if (!w || !h) return;
+    const r = clamp(w / h);
+    setOwn(r);
+    if (onRatio) onRatio(r);
+  }
+
   return (
-    <>
+    <div className={className} style={{ aspectRatio: String(shape) }}>
       <img className="cr-img-bg" src={src} alt="" aria-hidden="true" loading="lazy" />
       <img
         className="cr-img-main"
         src={src}
         alt={alt}
         loading={eager ? "eager" : "lazy"}
+        onLoad={handleLoad}
       />
-    </>
+      {children}
+    </div>
   );
 }
 
 // Swipe through every photo, with a counter and dots
 function Gallery({ photos }) {
   const [active, setActive] = useState(0);
+  const [ratio, setRatio] = useState(null);
 
   if (!photos.length) {
     return <div className="cr-gal empty" />;
@@ -148,9 +170,14 @@ function Gallery({ photos }) {
     <div className="cr-gal">
       <div className="cr-gal-track" onScroll={handleScroll}>
         {photos.map((src, i) => (
-          <div className="cr-gal-slide" key={src + i}>
-            <Photo src={src} eager={i === 0} />
-          </div>
+          <Frame
+            key={src + i}
+            src={src}
+            eager={i === 0}
+            ratio={ratio}
+            onRatio={i === 0 ? setRatio : undefined}
+            className="cr-gal-slide"
+          />
         ))}
       </div>
 
@@ -177,11 +204,14 @@ function Card({ c, base, money, waLink, onInquire }) {
   return (
     <article className="cr-card">
       <Link className="cr-card-top" to={withQuery(`${base}/car/${c.id}`)}>
-        <div className="cr-img">
-          {photos[0] ? <Photo src={photos[0]} alt={c.title} /> : <span className="cr-noimg" />}
-          {status !== "Available" && <span className="cr-sold">{status}</span>}
-          {photos.length > 1 && <span className="cr-shots">{photos.length} photos</span>}
-        </div>
+        {photos[0] ? (
+          <Frame src={photos[0]} alt={c.title}>
+            {status !== "Available" && <span className="cr-sold">{status}</span>}
+            {photos.length > 1 && <span className="cr-shots">{photos.length} photos</span>}
+          </Frame>
+        ) : (
+          <div className="cr-img"><span className="cr-noimg" /></div>
+        )}
 
         <div className="cr-body">
           <p className="cr-price">{money(c.price)}</p>

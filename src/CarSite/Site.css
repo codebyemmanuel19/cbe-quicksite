@@ -281,11 +281,18 @@
 
 .cr-empty { color: var(--muted); }
 
-/* Two columns on a phone, like the apps people already use */
-.cr-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+/* Cards fall into columns, each as tall as its own photo (masonry) */
+.cr-grid { column-count: 2; column-gap: 12px; }
 
-.cr-grid > .qs-rv { display: flex; }
-.cr-grid > .qs-rv > .cr-card { flex: 1; min-width: 0; }
+.cr-grid > .qs-rv {
+  display: block;
+  break-inside: avoid;
+  margin-bottom: 12px;
+}
+
+.cr-grid > .qs-rv > .cr-card { width: 100%; }
+
+.cr-card { flex: 1; min-width: 0; }
 
 .cr-card {
   display: flex;
@@ -298,7 +305,7 @@
 
 .cr-card-top { color: inherit; text-decoration: none; flex: 1; display: block; }
 
-/* Card image and gallery slide: same shape every time */
+/* Card image and gallery slide: the frame shape is set from the photo */
 .cr-img,
 .cr-gal-slide {
   position: relative;
@@ -306,20 +313,18 @@
   background: #0d1117;
 }
 
-.cr-img { aspect-ratio: 1 / 1; }
-.cr-gal-slide { aspect-ratio: 4 / 3; }
+.cr-noimg { display: block; aspect-ratio: 4 / 3; background: linear-gradient(135deg, #e3e7ee, #cfd6e0); }
 
-.cr-noimg {
-  display: block;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(135deg, #e3e7ee, #cfd6e0);
-}
-
-/* The photo fills the whole frame, like Jiji. No side bars. */
+/* A soft blurred copy fills any spare edge. The real photo is never cut. */
 .cr-img .cr-img-bg,
 .cr-gal-slide .cr-img-bg {
-  display: none;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: blur(22px) brightness(.85);
+  transform: scale(1.25);
 }
 
 .cr-img .cr-img-main,
@@ -328,7 +333,7 @@
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
 }
 
 .cr-sold,
@@ -711,7 +716,8 @@
 
   .cr-sort span { display: inline; }
 
-  .cr-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+  .cr-grid { column-count: 3; column-gap: 18px; }
+  .cr-grid > .qs-rv { margin-bottom: 18px; }
 
   .cr-find { grid-template-columns: 1fr 320px; align-items: center; }
 
@@ -730,18 +736,20 @@
 
   .cr-bar .cr-wa { margin: 0; max-width: 360px; }
 
-  .cr-gal-slide,
   .cr-gal.empty { aspect-ratio: 16 / 9; }
+
+  /* On a laptop the photo does not stretch across the whole page */
+  .cr-gal-track { max-width: 900px; margin: 0 auto; }
 }
 
 @media (min-width: 1040px) {
-  .cr-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .cr-grid { column-count: 4; }
 
   .cr-steps-list { grid-template-columns: repeat(4, 1fr); }
 }
 /* Very small phones */
 @media (max-width: 360px) {
-  .cr-grid { gap: 8px; }
+  .cr-grid { column-gap: 8px; }
   .cr-body .cr-price { font-size: 19px; }
   .cr-body h3 { font-size: 15px; }
 }
