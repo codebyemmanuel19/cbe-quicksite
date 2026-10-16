@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
-import { Routes, Route, Link, useParams } from "react-router-dom";
+import { Routes, Route, Link, useParams, useLocation } from "react-router-dom";
 import { api } from "../api";
 import { formatPrice } from "../components/countries";
 import { useShop } from "../shop/useShop";
+import Reveal from "../shop/Reveal";
 import "./Site.css";
 
 const SORTS = [
@@ -94,6 +95,11 @@ const ICONS = {
       <path d="M8 8h4" />
     </svg>
   ),
+  pin: (
+    <svg viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.500A2.500 2.500 0 1 1 12 6.500a2.500 2.500 0 0 1 0 5z" />
+    </svg>
+  ),
   wa: (
     <svg viewBox="0 0 24 24" fill="currentColor">
       <path d="M12 2a10 10 0 0 0-8.600 15L2 22l5.200-1.400A10 10 0 1 0 12 2zm0 18.200a8.200 8.200 0 0 1-4.200-1.200l-.3-.2-3 .8.8-2.900-.2-.3A8.200 8.200 0 1 1 12 20.200z" />
@@ -163,32 +169,32 @@ function Gallery({ photos }) {
   );
 }
 
-// One car in the list
+// One car in the list. Price first, then name, place and condition.
 function Card({ c, base, money, waLink, onInquire }) {
   const status = c.status || "Available";
   const photos = c.photos || [];
+  const line = [c.year, c.mileage ? km(c.mileage) : "", c.transmission].filter(Boolean).join(" · ");
 
   return (
     <article className="cr-card">
       <Link className="cr-card-top" to={withQuery(`${base}/car/${c.id}`)}>
         <div className="cr-img">
           {photos[0] ? <Photo src={photos[0]} alt={c.title} /> : <span className="cr-noimg" />}
-          {c.condition && <span className="cr-tag">{c.condition}</span>}
           {status !== "Available" && <span className="cr-sold">{status}</span>}
           {photos.length > 1 && <span className="cr-shots">{photos.length} photos</span>}
-          <span className="cr-pricetag">{money(c.price)}</span>
         </div>
 
         <div className="cr-body">
+          <p className="cr-price">{money(c.price)}</p>
           <h3>{c.title}</h3>
-          <p className="cr-loc">{c.location}</p>
-
-          <div className="cr-specs">
-            {c.year ? <span><i>{ICONS.year}</i>{c.year}</span> : null}
-            {c.mileage ? <span><i>{ICONS.road}</i>{km(c.mileage)}</span> : null}
-            {c.transmission ? <span><i>{ICONS.gear}</i>{c.transmission}</span> : null}
-            {c.fuel ? <span><i>{ICONS.fuel}</i>{c.fuel}</span> : null}
-          </div>
+          {c.location && (
+            <p className="cr-loc">
+              <i>{ICONS.pin}</i>
+              <span>{c.location}</span>
+            </p>
+          )}
+          {line && <p className="cr-line">{line}</p>}
+          {c.condition && <span className="cr-tag">{c.condition}</span>}
         </div>
       </Link>
 
@@ -202,42 +208,13 @@ function Card({ c, base, money, waLink, onInquire }) {
             onClick={() => onInquire(c)}
           >
             <span className="cr-ico">{ICONS.wa}</span>
-            Ask about this car
+            WhatsApp
           </a>
         ) : (
           <span className="cr-wa off">Not available</span>
         )}
       </div>
     </article>
-  );
-}
-
-// Real numbers counted from the dealer's own cars. Nothing is made up.
-function Stats({ cars }) {
-  const cells = useMemo(() => {
-    const open = cars.filter(isAvailable);
-    const makes = new Set(open.map((c) => String(c.make || "").trim().toLowerCase()).filter(Boolean));
-    return [
-      { n: open.length, label: "Cars available" },
-      { n: open.filter((c) => !isUsed(c)).length, label: "Brand new" },
-      { n: open.filter(isUsed).length, label: "Used" },
-      { n: makes.size, label: makes.size === 1 ? "Brand" : "Brands" },
-    ].filter((s) => s.n > 0);
-  }, [cars]);
-
-  if (cells.length === 0) return null;
-
-  return (
-    <section className="cr-stats">
-      <div className="cr-wrap cr-stats-row">
-        {cells.map((s) => (
-          <div key={s.label} className="cr-stat">
-            <b>{s.n}</b>
-            <span>{s.label}</span>
-          </div>
-        ))}
-      </div>
-    </section>
   );
 }
 
@@ -345,56 +322,53 @@ function Listing({ cars, busy, base, money, waLink, onInquire, hero }) {
         className="cr-hero"
         style={
           hero.image
-            ? { backgroundImage: `linear-gradient(rgba(10,12,16,.7),rgba(10,12,16,.92)),url(${hero.image})` }
+            ? { backgroundImage: `linear-gradient(90deg,rgba(8,9,12,.82),rgba(8,9,12,.35)),linear-gradient(0deg,rgba(8,9,12,.65),rgba(8,9,12,0) 45%),url(${hero.image})` }
             : {}
         }
       >
         <div className="cr-hero-in">
           {hero.label && <span className="cr-badge">{hero.label}</span>}
           <h1>{hero.headline || "Find the car you have been looking for"}</h1>
-
-          <div className="cr-find">
-            <div className="cr-field">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="11" cy="11" r="7" />
-                <path d="m20 20-3.5-3.5" strokeLinecap="round" />
-              </svg>
-              <input
-                value={q}
-                onChange={(e) => setQ(e.target.value)}
-                placeholder="Search make, model or location"
-              />
-            </div>
-
-            <div className="cr-seg">
-              {["All", "New", "Used"].map((l) => {
-                const value = l === "New" ? "Brand new" : l;
-                return (
-                  <button key={l} className={cond === value ? "on" : ""} onClick={() => setCond(value)}>
-                    {l === "New" ? "Brand new" : l}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
+          <a className="cr-hero-btn" href="#cars">Browse cars</a>
         </div>
       </section>
 
-      {makes.length > 1 && (
-        <div className="cr-makes">
-          <div className="cr-makes-in">
+      <main id="cars" className="cr-main">
+        <div className="cr-find">
+          <div className="cr-field">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="11" cy="11" r="7" />
+              <path d="m20 20-3.5-3.5" strokeLinecap="round" />
+            </svg>
+            <input
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              placeholder="Search make, model or location"
+            />
+          </div>
+
+          <div className="cr-seg">
+            {["All", "New", "Used"].map((l) => {
+              const value = l === "New" ? "Brand new" : l;
+              return (
+                <button key={l} className={cond === value ? "on" : ""} onClick={() => setCond(value)}>
+                  {l === "New" ? "Brand new" : l}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {makes.length > 1 && (
+          <div className="cr-makes">
             {["All", ...makes].map((m) => (
               <button key={m} className={make === m ? "on" : ""} onClick={() => setMake(m)}>
                 {m}
               </button>
             ))}
           </div>
-        </div>
-      )}
+        )}
 
-      {!busy && <Stats cars={cars} />}
-
-      <main id="cars" className="cr-main">
         <div className="cr-head-row">
           <h2>Cars</h2>
           {!busy && cars.length > 0 && (
@@ -422,15 +396,16 @@ function Listing({ cars, busy, base, money, waLink, onInquire, hero }) {
           </p>
         ) : (
           <div className="cr-grid">
-            {shown.map((c) => (
-              <Card
-                key={c.id}
-                c={c}
-                base={base}
-                money={money}
-                waLink={waLink}
-                onInquire={onInquire}
-              />
+            {shown.map((c, i) => (
+              <Reveal key={c.id} delay={(i % 4) * 70}>
+                <Card
+                  c={c}
+                  base={base}
+                  money={money}
+                  waLink={waLink}
+                  onInquire={onInquire}
+                />
+              </Reveal>
             ))}
           </div>
         )}
@@ -532,6 +507,7 @@ function Detail({ cars, busy, base, money, waLink, onInquire }) {
 // The public website for a car dealer. It loads its own data, like your other sites.
 export default function CarSite({ basePath = "", slug: slugProp }) {
   const { slug, store, loading, notFound } = useShop(slugProp);
+  const location = useLocation();
   const [cars, setCars] = useState([]);
   const [busy, setBusy] = useState(true);
 
@@ -609,6 +585,7 @@ export default function CarSite({ basePath = "", slug: slugProp }) {
         </a>
       </header>
 
+      <div className="qs-page" key={location.pathname}>
       <Routes>
         <Route
           path="/"
@@ -636,6 +613,7 @@ export default function CarSite({ basePath = "", slug: slugProp }) {
         />
         <Route path="car/:id" element={<Detail {...shared} />} />
       </Routes>
+      </div>
 
       <footer className="cr-foot">
         <div className="cr-foot-in">
@@ -662,7 +640,7 @@ export default function CarSite({ basePath = "", slug: slugProp }) {
         </div>
 
         <div className="cr-foot-bottom">
-          <small>© {new Date().getFullYear()} {store.name}</small>
+          <small>©️ {new Date().getFullYear()} {store.name}</small>
           <small>Powered by CBE QuickSite</small>
         </div>
       </footer>
