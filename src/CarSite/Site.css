@@ -316,25 +316,19 @@
   background: linear-gradient(135deg, #e3e7ee, #cfd6e0);
 }
 
-/* Blurred copy fills the empty space */
+/* The photo fills the whole frame, like Jiji. No side bars. */
 .cr-img .cr-img-bg,
 .cr-gal-slide .cr-img-bg {
+  display: none;
+}
+
+.cr-img .cr-img-main,
+.cr-gal-slide .cr-img-main {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: blur(22px) brightness(.8);
-  transform: scale(1.25);
-}
-
-/* The real photo is never cropped */
-.cr-img .cr-img-main,
-.cr-gal-slide .cr-img-main {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
 }
 
 .cr-sold,
