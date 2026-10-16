@@ -115,30 +115,22 @@ const STEPS = [
   { title: "Pay and drive", text: "Agree the price, pay, collect your documents and the keys." },
 ];
 
-// The frame follows the photo, so the whole picture always shows.
-// Very tall or very wide photos are limited, and a soft blurred copy fills the spare edges.
-const MIN_RATIO = 0.8;
-const MAX_RATIO = 1.78;
-
-function clamp(r) {
-  return Math.min(MAX_RATIO, Math.max(MIN_RATIO, r));
+// The frame follows the photo, so the whole picture always shows. No blur, no cropping.
+// Very tall or very wide photos are limited, and sit on a plain background.
+function clamp(r, lo = 0.75, hi = 1.6) {
+  return Math.min(hi, Math.max(lo, r));
 }
 
-function Frame({ src, alt = "", eager = false, ratio, onRatio, className = "cr-img", children }) {
-  const [own, setOwn] = useState(null);
-  const shape = ratio || own || 4 / 3;
+function Frame({ src, alt = "", eager = false, className = "cr-img", children }) {
+  const [shape, setShape] = useState(null);
 
   function handleLoad(e) {
     const { naturalWidth: w, naturalHeight: h } = e.currentTarget;
-    if (!w || !h) return;
-    const r = clamp(w / h);
-    setOwn(r);
-    if (onRatio) onRatio(r);
+    if (w && h) setShape(clamp(w / h));
   }
 
   return (
-    <div className={className} style={{ aspectRatio: String(shape) }}>
-      <img className="cr-img-bg" src={src} alt="" aria-hidden="true" loading="lazy" />
+    <div className={className} style={{ aspectRatio: String(shape || 4 / 3) }}>
       <img
         className="cr-img-main"
         src={src}
@@ -151,45 +143,70 @@ function Frame({ src, alt = "", eager = false, ratio, onRatio, className = "cr-i
   );
 }
 
-// Swipe through every photo, with a counter and dots
+// One big photo in its own shape, with arrows, swipe and thumbnails
 function Gallery({ photos }) {
   const [active, setActive] = useState(0);
-  const [ratio, setRatio] = useState(null);
+  const [ratios, setRatios] = useState({});
+  const [startX, setStartX] = useState(null);
 
   if (!photos.length) {
     return <div className="cr-gal empty" />;
   }
 
-  function handleScroll(e) {
-    const el = e.currentTarget;
-    const i = Math.round(el.scrollLeft / el.clientWidth);
-    if (i !== active) setActive(i);
+  const total = photos.length;
+  const go = (n) => setActive((n + total) % total);
+  const shape = clamp(ratios[active] || 4 / 3, 0.75, 1.78);
+
+  function handleLoad(e) {
+    const { naturalWidth: w, naturalHeight: h } = e.currentTarget;
+    if (w && h) setRatios((r) => ({ ...r, [active]: w / h }));
+  }
+
+  function handleEnd(e) {
+    if (startX === null) return;
+    const dx = e.changedTouches[0].clientX - startX;
+    setStartX(null);
+    if (Math.abs(dx) > 40) go(active + (dx < 0 ? 1 : -1));
   }
 
   return (
     <div className="cr-gal">
-      <div className="cr-gal-track" onScroll={handleScroll}>
-        {photos.map((src, i) => (
-          <Frame
-            key={src + i}
-            src={src}
-            eager={i === 0}
-            ratio={ratio}
-            onRatio={i === 0 ? setRatio : undefined}
-            className="cr-gal-slide"
-          />
-        ))}
+      <div
+        className="cr-gal-stage"
+        style={{ aspectRatio: String(shape) }}
+        onTouchStart={(e) => setStartX(e.touches[0].clientX)}
+        onTouchEnd={handleEnd}
+      >
+        <img
+          key={photos[active]}
+          className="cr-gal-img"
+          src={photos[active]}
+          alt=""
+          onLoad={handleLoad}
+        />
+
+        {total > 1 && (
+          <>
+            <button className="cr-gal-nav prev" aria-label="Previous photo" onClick={() => go(active - 1)}>‹</button>
+            <button className="cr-gal-nav next" aria-label="Next photo" onClick={() => go(active + 1)}>›</button>
+            <span className="cr-gal-count">{active + 1} / {total}</span>
+          </>
+        )}
       </div>
 
-      {photos.length > 1 && (
-        <>
-          <span className="cr-gal-count">{active + 1} / {photos.length}</span>
-          <div className="cr-gal-dots">
-            {photos.map((src, i) => (
-              <i key={src + i} className={i === active ? "on" : ""} />
-            ))}
-          </div>
-        </>
+      {total > 1 && (
+        <div className="cr-thumbs">
+          {photos.map((src, i) => (
+            <button
+              key={src + i}
+              className={i === active ? "on" : ""}
+              aria-label={`Photo ${i + 1}`}
+              onClick={() => setActive(i)}
+            >
+              <img src={src} alt="" loading="lazy" />
+            </button>
+          ))}
+        </div>
       )}
     </div>
   );
