@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { api, uploadPhoto } from "../api";
+import { ListSkeleton } from "./Skeleton";
 import "./Products.css";
 
 const MAX_PHOTOS = 4;
@@ -41,14 +42,6 @@ const emptyForm = {
 
 function formatNaira(amount) {
   return "₦" + Number(amount).toLocaleString("en-NG");
-}
-
-function formatDay(value) {
-  return new Date(value).toLocaleDateString("en-NG", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
 }
 
 // Type a value and press Enter or Add. Tap × to remove. Presets add a whole set at once.
@@ -218,7 +211,7 @@ export default function Products() {
   const [loading, setLoading] = useState(true);
   const [pageError, setPageError] = useState("");
   const [locked, setLocked] = useState(false);
-  const [notice, setNotice] = useState("");
+  const [lockedMsg, setLockedMsg] = useState("");
 
   const [filter, setFilter] = useState("All");
   const [search, setSearch] = useState("");
@@ -278,8 +271,10 @@ export default function Products() {
   function handleWriteError(err, setMessage) {
     if (err.status === 401) return navigate("/login");
     if (err.locked) {
+      // The server says exactly why: the 3 free items are used, or the plan has ended
       setLocked(true);
-      setMessage("You have used your 3 free items. Choose a plan to add more.");
+      setLockedMsg(err.message);
+      setMessage(err.message);
       return;
     }
     setMessage(err.message);
@@ -386,10 +381,6 @@ export default function Products() {
       if (editingId === "new") {
         const res = await api.post("/products", payload);
         setProducts([withCategoryName(res.product), ...products]);
-        // The 7 free days begin on the very first product
-        if (res.trialStartedAt) {
-          setNotice(`Your 7 free days have started. They end on ${formatDay(res.trialStartedAt)}.`);
-        }
       } else {
         const res = await api.put(`/products/${editingId}`, payload);
         setProducts(products.map((p) => (p.id === editingId ? withCategoryName(res.product) : p)));
@@ -443,7 +434,7 @@ export default function Products() {
   if (loading) {
     return (
       <div className="prod">
-        <p>Loading your products...</p>
+        <ListSkeleton rows={5} />
       </div>
     );
   }
@@ -460,11 +451,9 @@ export default function Products() {
         <button className="add-btn" onClick={openAdd}>+ Add product</button>
       </div>
 
-      {notice && <p className="prod-sub">{notice}</p>}
-
       {locked && (
         <p className="prod-error">
-          Your trial has ended. <Link to="/dashboard/billing">Pay to keep editing</Link>.
+          {lockedMsg || "Your plan has ended."} <Link to="/dashboard/billing">Choose a plan</Link>
         </p>
       )}
 

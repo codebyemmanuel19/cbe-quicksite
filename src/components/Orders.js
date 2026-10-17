@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../api";
 import { formatPrice } from "./countries";
+import { ListSkeleton } from "./Skeleton";
 import "./Orders.css";
 
 const STATUS_LABELS = {
@@ -63,7 +64,7 @@ export default function Orders() {
       try {
         const res = await api.get("/orders");
         if (cancelled) return;
-        setOrders(res.orders);
+        setOrders(Array.isArray(res?.orders) ? res.orders : []);
       } catch (err) {
         if (cancelled) return;
         if (err.status === 401) return navigate("/login");
@@ -129,7 +130,7 @@ export default function Orders() {
   if (loading) {
     return (
       <div className="orders">
-        <p>Loading your orders...</p>
+        <ListSkeleton rows={5} />
       </div>
     );
   }

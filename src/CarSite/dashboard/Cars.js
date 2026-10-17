@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { api } from "../../api";
+import { ListSkeleton } from "../../components/Skeleton";
 import "../../RealEstateSite/dashboard/dashboard.css";
 
 const FILTERS = ["All", "Available", "Reserved", "Sold"];
@@ -20,7 +21,7 @@ export default function Cars() {
   useEffect(() => {
     let cancelled = false;
     api.get("/cars")
-      .then((res) => { if (!cancelled) setItems(res.cars); })
+      .then((res) => { if (!cancelled) setItems(Array.isArray(res?.cars) ? res.cars : []); })
       .catch((err) => {
         if (cancelled) return;
         if (err.status === 401) return navigate("/login");
@@ -46,7 +47,7 @@ export default function Cars() {
       `${c.title} ${c.location}`.toLowerCase().includes(q.trim().toLowerCase())
   );
 
-  if (loading) return <div className="rd"><p>Loading cars...</p></div>;
+  if (loading) return <div className="rd"><ListSkeleton rows={5} /></div>;
 
   return (
     <div className="rd">

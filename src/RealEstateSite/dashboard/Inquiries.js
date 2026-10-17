@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../../api";
+import { ListSkeleton } from "../../components/Skeleton";
 import "./dashboard.css";
 
 const STATUSES = [
@@ -51,7 +52,7 @@ export default function Inquiries() {
     }
   }
 
-  if (loading) return <div className="rd"><p>Loading inquiries...</p></div>;
+  if (loading) return <div className="rd"><ListSkeleton rows={4} /></div>;
 
   return (
     <div className="rd">

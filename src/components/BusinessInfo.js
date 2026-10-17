@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { Link, useNavigate } from "react-router-dom";
 import { api, uploadPhoto } from "../api";
+import { FormSkeleton } from "./Skeleton";
 import "./BusinessInfo.css";
 
 const emptyInfo = {
@@ -121,7 +122,7 @@ export default function BusinessInfo() {
       if (err.status === 401) return navigate("/login");
       if (err.locked) {
         setLocked(true);
-        setError("Your trial has ended. Pay to keep editing your website.");
+        setError("Your plan has ended. Pay to keep editing your website.");
       } else {
         setError(err.message);
       }
@@ -133,7 +134,7 @@ export default function BusinessInfo() {
   if (loading) {
     return (
       <div className="biz">
-        <p>Loading your business info...</p>
+        <FormSkeleton fields={5} />
       </div>
     );
   }
@@ -145,7 +146,7 @@ export default function BusinessInfo() {
 
       {locked && (
         <p className="biz-error">
-          Your trial has ended. <Link to="/dashboard/billing">Pay to keep editing</Link>.
+          Your plan has ended. <Link to="/dashboard/billing">Pay to keep editing</Link>.
         </p>
       )}
 
