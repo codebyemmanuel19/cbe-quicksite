@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { api } from "../../api";
+import DashboardSkeleton from "../../components/Skeleton";
 import "../../RealEstateSite/dashboard/dashboard.css";
 
 export default function CarHome() {
@@ -33,7 +34,7 @@ export default function CarHome() {
   }, [navigate]);
 
   if (error) return <div className="rd"><p className="rd-err">{error}</p></div>;
-  if (!site) return <div className="rd"><p>Loading your dashboard...</p></div>;
+  if (!site) return <div className="rd"><DashboardSkeleton /></div>;
 
   const url = site.url;
   const shareLink = `https://wa.me/?text=${encodeURIComponent(`Check out the cars I have for sale: ${url}`)}`;

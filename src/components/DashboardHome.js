@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import InstallCard from "./InstallCard";
+import DashboardSkeleton from "./Skeleton";
 import { api } from "../api";
 import "./DashboardHome.css";
 import "./MonthCard.css";
@@ -148,7 +149,7 @@ export default function DashboardHome() {
   if (loading) {
     return (
       <div className="home">
-        <p>Loading your dashboard...</p>
+        <DashboardSkeleton />
       </div>
     );
   }

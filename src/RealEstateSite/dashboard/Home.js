@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { api } from "../../api";
+import DashboardSkeleton from "../../components/Skeleton";
 import "./dashboard.css";
 
 // One line about the plan, whatever state the account is in
@@ -74,7 +75,7 @@ export default function RealEstateHome() {
   }, [navigate]);
 
   if (error) return <div className="rd"><p className="rd-err">{error}</p></div>;
-  if (!site) return <div className="rd"><p>Loading your dashboard...</p></div>;
+  if (!site) return <div className="rd"><DashboardSkeleton /></div>;
 
   const url = site.url;
   const shareLink = `https://wa.me/?text=${encodeURIComponent(`Check out my properties: ${url}`)}`;
