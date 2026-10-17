@@ -135,9 +135,6 @@ export default function Billing() {
   const popularId = popularPlan ? popularPlan.id : "";
 
   function statusText() {
-    const d = billing.daysLeft;
-    const word = d === 1 ? "day" : "days";
-
     if (["free", "trial", "trial_not_started"].includes(billing.status)) {
       const used = Math.min(billing.items || 0, billing.freeItems || 3);
       return `You are using ${used} of ${billing.freeItems || 3} free items. Choose a plan to add more.`;
