@@ -158,7 +158,7 @@ export default function OrderSettings() {
       if (err.status === 401) return navigate("/login");
       if (err.locked) {
         setLocked(true);
-        setError("Your trial has ended. Pay to keep editing your website.");
+        setError("Your plan has ended. Pay to keep editing your website.");
       } else {
         setError(err.message);
       }
@@ -182,7 +182,7 @@ export default function OrderSettings() {
 
       {locked && (
         <p className="os-error">
-          Your trial has ended. <Link to="/dashboard/billing">Pay to keep editing</Link>.
+          Your plan has ended. <Link to="/dashboard/billing">Pay to keep editing</Link>.
         </p>
       )}
 

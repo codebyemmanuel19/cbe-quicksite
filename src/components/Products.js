@@ -279,7 +279,7 @@ export default function Products() {
     if (err.status === 401) return navigate("/login");
     if (err.locked) {
       setLocked(true);
-      setMessage("Your trial has ended. Pay to keep editing your website.");
+      setMessage("You have used your 3 free items. Choose a plan to add more.");
       return;
     }
     setMessage(err.message);

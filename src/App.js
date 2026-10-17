@@ -222,7 +222,7 @@ function DashboardLayout() {
       .catch(() => {});
   }, []);
 
-  // After the free trial, an unpaid vendor can look around but cannot change anything.
+  // When a paid plan ends, a vendor with more than 3 items can look around but cannot change anything.
   // The server enforces that. This only tells them why, and how to fix it.
   useEffect(() => {
     api.get("/billing/status")
@@ -303,7 +303,7 @@ function DashboardLayout() {
             }}
           >
             <b>
-              {billingStatus === "offline" ? "Your website is offline." : "Your free trial has ended."}
+              {billingStatus === "offline" ? "Your website is offline." : "Your plan has ended."}
             </b>{" "}
             {billingStatus === "offline"
               ? "Pay to bring it back online."

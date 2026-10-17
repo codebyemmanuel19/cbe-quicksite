@@ -44,20 +44,16 @@ export default function CarHome() {
   const newOnes = inquiries.filter((i) => i.status === "new").length;
   const count = (s) => cars.filter((c) => c.status === s).length;
   const b = site.billing;
-  const hoursLeft = b.trialEndsAt ? Math.max(0, Math.ceil((new Date(b.trialEndsAt).getTime() - Date.now()) / 3600000)) : 0;
   let planText = `${b.daysLeft} ${b.daysLeft === 1 ? "day" : "days"} left on your plan`;
   let urgent = b.daysLeft <= 3;
   let planBtn = "Add more time";
-  if (b.status === "trial_not_started") {
-    planText = "Your 24-hour free trial starts when you add your first car.";
-    urgent = false;
-    planBtn = "See plans";
-  } else if (b.status === "trial") {
-    planText = hoursLeft <= 48 ? `${hoursLeft} ${hoursLeft === 1 ? "hour" : "hours"} left on your free trial` : planText;
-    urgent = hoursLeft <= 6;
+  if (["free", "trial", "trial_not_started"].includes(b.status)) {
+    const used = Math.min(b.items || 0, b.freeItems || 3);
+    planText = `Free plan: ${used} of ${b.freeItems || 3} cars used. Choose a plan to add more.`;
+    urgent = used >= (b.freeItems || 3);
     planBtn = "Choose a plan";
   } else if (b.status === "locked" || b.status === "offline") {
-    planText = "Your free trial has ended. Pay to keep editing your website.";
+    planText = "Your plan has ended. Pay to keep editing your website.";
     urgent = true;
     planBtn = "Choose a plan";
   }

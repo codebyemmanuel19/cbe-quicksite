@@ -38,22 +38,15 @@ function statusCard(billing) {
   const d = billing.daysLeft;
   const word = d === 1 ? "day" : "days";
 
-  if (billing.status === "trial_not_started") {
+  if (["free", "trial", "trial_not_started"].includes(billing.status)) {
+    const max = billing.freeItems || 3;
+    const used = Math.min(billing.items || 0, max);
     return {
-      title: "Your 7 free days haven't started",
-      sub: "They start the day you add your first product.",
-      urgent: false,
-      to: "/dashboard/products",
-      action: "Add product",
-    };
-  }
-  if (billing.status === "trial") {
-    return {
-      title: `Free trial: ${d} ${word} left`,
-      sub: "After your trial, pay to keep editing your website.",
-      urgent: d <= 2,
+      title: `Free plan: ${used} of ${max} products used`,
+      sub: used >= max ? "Choose a plan to add more products." : "Choose a plan any time to add more.",
+      urgent: used >= max,
       to: "/dashboard/billing",
-      action: "Pay now",
+      action: "Choose a plan",
     };
   }
   if (billing.status === "active") {
@@ -67,7 +60,7 @@ function statusCard(billing) {
   }
   if (billing.status === "locked") {
     return {
-      title: "Your trial has ended",
+      title: "Your plan has ended",
       sub: "Your website is still live, but you can't edit it until you pay.",
       urgent: true,
       to: "/dashboard/billing",

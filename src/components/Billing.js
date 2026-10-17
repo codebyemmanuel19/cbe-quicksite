@@ -8,10 +8,11 @@ import "./Billing.css";
 const POPULAR_MONTHS = 3;
 
 const STATUS_INFO = {
-  trial_not_started: { label: "Free trial not started", tone: "blue" },
-  trial: { label: "Free trial", tone: "blue" },
+  free: { label: "Free plan", tone: "blue" },
+  trial_not_started: { label: "Free plan", tone: "blue" },
+  trial: { label: "Free plan", tone: "blue" },
   active: { label: "Active", tone: "green" },
-  locked: { label: "Your free trial has ended", tone: "orange" },
+  locked: { label: "Your plan has ended", tone: "orange" },
   offline: { label: "Your website is offline", tone: "red" },
   suspended: { label: "Account on hold", tone: "red" },
 };
@@ -41,9 +42,10 @@ const BENEFITS = [
 ];
 
 const RULES = [
-  "Your 24-hour free trial starts when you add your first product.",
-  "After your trial, your website stays live but editing locks until you pay.",
-  "If your website stays unpaid for 7 days, it goes offline until you pay.",
+  "You can add 3 items for free, and your website stays live.",
+  "To add a 4th item, you choose a plan.",
+  "If a paid plan ends, your website stays live but editing locks until you pay.",
+  "If it stays unpaid for 7 days, your website goes offline until you pay.",
   "Paying early never loses you days. New time is added on top.",
 ];
 
@@ -136,15 +138,9 @@ export default function Billing() {
     const d = billing.daysLeft;
     const word = d === 1 ? "day" : "days";
 
-    if (billing.status === "trial_not_started") {
-      return "Your 24-hour free trial starts when you add your first product.";
-    }
-    if (billing.status === "trial") {
-      // The trial is short, so show hours when under 2 days are left
-      const ms = billing.trialEndsAt ? new Date(billing.trialEndsAt).getTime() - Date.now() : 0;
-      const hours = Math.max(1, Math.ceil(ms / 3600000));
-      const left = ms > 0 && hours < 48 ? `${hours} ${hours === 1 ? "hour" : "hours"}` : `${d} ${word}`;
-      return `${left} left. Pay any time to keep editing after your trial.`;
+    if (["free", "trial", "trial_not_started"].includes(billing.status)) {
+      const used = Math.min(billing.items || 0, billing.freeItems || 3);
+      return `You are using ${used} of ${billing.freeItems || 3} free items. Choose a plan to add more.`;
     }
     if (billing.status === "active") return `Paid until ${formatDay(billing.paidUntil)}.`;
     if (billing.status === "locked") {

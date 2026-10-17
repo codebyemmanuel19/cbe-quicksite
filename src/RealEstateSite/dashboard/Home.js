@@ -8,22 +8,21 @@ function planCard(billing) {
   const d = billing.daysLeft;
   const word = d === 1 ? "day" : "days";
 
-  if (billing.status === "trial_not_started") {
+  if (["free", "trial", "trial_not_started"].includes(billing.status)) {
+    const max = billing.freeItems || 3;
+    const used = Math.min(billing.items || 0, max);
     return {
-      text: "Your 7 free days start when you add your first property",
-      action: "Add property",
-      to: "/dashboard/properties/new",
-      urgent: false,
+      text: `Free plan: ${used} of ${max} properties used. Choose a plan to add more.`,
+      action: "Choose a plan",
+      to: "/dashboard/billing",
+      urgent: used >= max,
     };
-  }
-  if (billing.status === "trial") {
-    return { text: `Free trial: ${d} ${word} left`, action: "Pay now", to: "/dashboard/billing", urgent: d <= 2 };
   }
   if (billing.status === "active") {
     return { text: `${d} ${word} left on your plan`, action: "Add more time", to: "/dashboard/billing", urgent: d <= 3 };
   }
   if (billing.status === "locked") {
-    return { text: "Your trial has ended. Pay to keep editing your website.", action: "Pay now", to: "/dashboard/billing", urgent: true };
+    return { text: "Your plan has ended. Pay to keep editing your website.", action: "Pay now", to: "/dashboard/billing", urgent: true };
   }
   if (billing.status === "offline") {
     return { text: "Your website is offline. Pay now and it comes back.", action: "Pay now", to: "/dashboard/billing", urgent: true };
