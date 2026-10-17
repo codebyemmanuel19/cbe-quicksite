@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { api } from "../../api";
+import { ListSkeleton } from "../../components/Skeleton";
 import "./dashboard.css";
 
 const FILTERS = ["All", "Available", "Sold", "Rented"];
@@ -49,7 +50,7 @@ export default function Properties() {
       `${p.title} ${p.location}`.toLowerCase().includes(q.trim().toLowerCase())
   );
 
-  if (loading) return <div className="rd"><p>Loading properties...</p></div>;
+  if (loading) return <div className="rd"><ListSkeleton rows={5} /></div>;
 
   return (
     <div className="rd">

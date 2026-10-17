@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { api } from "../api";
 import { formatPrice } from "./countries";
+import { ListSkeleton } from "./Skeleton";
 import "./Billing.css";
 
 // The plan with this many months is pre-selected and marked Popular
@@ -164,10 +165,18 @@ export default function Billing() {
     }
   }
 
-  if (loading || verifying) {
+  if (verifying) {
     return (
       <div className="billing">
-        <p>{verifying ? "Confirming your payment..." : "Loading your plan..."}</p>
+        <p>Confirming your payment...</p>
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="billing">
+        <ListSkeleton rows={3} />
       </div>
     );
   }

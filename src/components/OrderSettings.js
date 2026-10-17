@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { api } from "../api";
 import { formatPrice } from "./countries";
+import { FormSkeleton } from "./Skeleton";
 import "./OrderSettings.css";
 
 const emptySettings = {
@@ -170,7 +171,7 @@ export default function OrderSettings() {
   if (loading) {
     return (
       <div className="os">
-        <p>Loading your order settings...</p>
+        <FormSkeleton fields={5} />
       </div>
     );
   }
