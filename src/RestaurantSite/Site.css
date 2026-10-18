@@ -1,0 +1,815 @@
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=DM+Sans:wght@400;500;600;700&display=swap");
+
+/* Colours and fonts for the whole site */
+.rs {
+  --cream: #fbf6ee;
+  --card: #ffffff;
+  --ink: #24160e;
+  --green: #1f4d3a;
+  --green-2: #173b2c;
+  --gold: #e9a21b;
+  --muted: #7a6a5c;
+  --line: #eadfce;
+  --red: #b3261e;
+  --wa: #22c55e;
+  --head: 60px;
+  font-family: "DM Sans", system-ui, sans-serif;
+  color: var(--ink);
+  background: var(--cream);
+  min-height: 100vh;
+  line-height: 1.5;
+}
+
+.rs * { box-sizing: border-box; }
+
+.rs h1,
+.rs h2,
+.rs h3 { margin: 0; }
+
+.rs button { font-family: inherit; cursor: pointer; }
+
+/* A warm serif for the big words, so it feels like a restaurant and not a shop */
+.rs h1,
+.rs h2,
+.rs .rs-logo span,
+.rs .rs-foot-name {
+  font-family: "Fraunces", Georgia, serif;
+}
+
+.rs-wrap {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+.rs-ico {
+  display: inline-flex;
+  width: 18px;
+  height: 18px;
+}
+
+.rs-ico svg { width: 100%; height: 100%; }
+
+.rs-loading {
+  min-height: 60vh;
+  display: grid;
+  place-content: center;
+  text-align: center;
+  gap: 6px;
+  padding: 24px;
+  font-family: "DM Sans", system-ui, sans-serif;
+  color: #7a6a5c;
+}
+
+/* ---- Header ---- */
+.rs-head {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  height: var(--head);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 0 16px;
+  background: var(--cream);
+  border-bottom: 1px solid var(--line);
+}
+
+.rs-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.rs-logo img,
+.rs-logo i {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  object-fit: cover;
+  flex: none;
+}
+
+.rs-logo i {
+  display: grid;
+  place-items: center;
+  background: var(--green);
+  color: #fff;
+  font-style: normal;
+  font-weight: 700;
+}
+
+.rs-logo span {
+  font-size: 19px;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* The bag button in the header */
+.rs-cart {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 14px;
+  border: 1.5px solid var(--green);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--green);
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.rs-cart b {
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--green);
+  color: #fff;
+  font-size: 12px;
+}
+
+/* ---- Hero ---- */
+.rs-hero {
+  background: var(--green) center / cover no-repeat;
+  color: #fbf6ee;
+}
+
+.rs-hero-in {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 48px 16px 52px;
+}
+
+.rs-badge {
+  display: inline-block;
+  margin-bottom: 14px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: rgba(233, 162, 27, .18);
+  color: var(--gold);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.rs-hero h1 {
+  max-width: 14em;
+  font-size: clamp(34px, 8vw, 58px);
+  line-height: 1.08;
+  font-weight: 700;
+}
+
+.rs-hero-acts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.rs-hero-main,
+.rs-hero-alt {
+  display: inline-flex;
+  align-items: center;
+  height: 46px;
+  padding: 0 22px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.rs-hero-main {
+  border: 0;
+  background: var(--gold);
+  color: #2a1b04;
+}
+
+.rs-hero-alt {
+  border: 1.5px solid rgba(251, 246, 238, .5);
+  background: transparent;
+  color: #fbf6ee;
+}
+
+/* ---- Category bar and search ---- */
+.rs-menu-top { scroll-margin-top: var(--head); }
+
+.rs-cats {
+  position: sticky;
+  top: var(--head);
+  z-index: 20;
+  background: var(--cream);
+  border-bottom: 1px solid var(--line);
+}
+
+.rs-cats-in {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 10px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.rs-find {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 42px;
+  padding: 0 12px;
+  border: 1.5px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--muted);
+}
+
+.rs-find input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  font-family: inherit;
+  font-size: 15px;
+  color: var(--ink);
+}
+
+.rs-cat-list {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding-bottom: 2px;
+}
+
+.rs-cat-list::-webkit-scrollbar { display: none; }
+
+.rs-cat-list button {
+  flex: none;
+  height: 36px;
+  padding: 0 16px;
+  border: 1.5px solid var(--line);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.rs-cat-list button.on {
+  border-color: var(--green);
+  background: var(--green);
+  color: #fff;
+}
+
+/* ---- Menu ---- */
+.rs-main {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 8px 16px 110px;
+}
+
+.rs-group {
+  /* Keeps the heading clear of the two sticky bars when you jump to it */
+  scroll-margin-top: 150px;
+  padding-top: 22px;
+}
+
+.rs-group h2 {
+  margin-bottom: 12px;
+  font-size: 26px;
+  font-weight: 700;
+}
+
+.rs-dishes {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+.rs-empty {
+  padding: 48px 0;
+  text-align: center;
+  color: var(--muted);
+}
+
+/* One dish: words on the left, photo and Add button on the right */
+.rs-dish {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--card);
+}
+
+.rs-dish.off { opacity: .6; }
+
+.rs-dish-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.rs-dish h3 {
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.rs-dish-text p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.rs-price {
+  display: inline-block;
+  margin-top: 8px;
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--green);
+}
+
+.rs-dish-side {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.rs-dish-img {
+  position: relative;
+  width: 104px;
+  height: 104px;
+  border-radius: 14px;
+  background: #efe6d6 center / cover no-repeat;
+}
+
+.rs-out {
+  position: absolute;
+  left: 6px;
+  bottom: 6px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: rgba(36, 22, 14, .85);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.rs-out.plain {
+  position: static;
+  color: var(--red);
+  background: #fde8e6;
+}
+
+/* Add button, and the - 1 + control it turns into */
+.rs-add {
+  width: 104px;
+  height: 38px;
+  border: 1.5px solid var(--green);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--green);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.rs-step {
+  width: 104px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 10px;
+  background: var(--green);
+  color: #fff;
+}
+
+.rs-step button {
+  width: 36px;
+  height: 38px;
+  border: 0;
+  background: transparent;
+  color: #fff;
+  font-size: 20px;
+  line-height: 1;
+}
+
+.rs-step b { font-size: 15px; }
+
+/* ---- How ordering works ---- */
+.rs-steps {
+  background: var(--green);
+  color: #fbf6ee;
+  padding: 44px 0;
+}
+
+.rs-steps h2 {
+  margin-bottom: 22px;
+  font-size: clamp(24px, 5vw, 32px);
+}
+
+.rs-steps-list {
+  display: grid;
+  gap: 18px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rs-steps-list li {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.rs-step-n {
+  flex: none;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--gold);
+  color: #2a1b04;
+  font-weight: 700;
+}
+
+.rs-steps-list h3 {
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.rs-steps-list p {
+  margin: 2px 0 0;
+  color: rgba(251, 246, 238, .78);
+  font-size: 15px;
+}
+
+/* ---- About and address ---- */
+.rs-about { padding: 44px 0; }
+
+.rs-about-in {
+  display: grid;
+  gap: 22px;
+}
+
+.rs-about h2 {
+  margin-bottom: 10px;
+  font-size: clamp(24px, 5vw, 32px);
+}
+
+.rs-about p {
+  margin: 0;
+  max-width: 44em;
+  color: #4a3a2e;
+  font-size: 16px;
+  line-height: 1.65;
+  white-space: pre-line;
+}
+
+.rs-where {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: #fff;
+  color: var(--ink);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.rs-where .rs-ico {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  padding: 9px;
+  border-radius: 12px;
+  background: #e8f1ec;
+  color: var(--green);
+}
+
+.rs-where small {
+  display: block;
+  color: var(--muted);
+  font-weight: 500;
+  font-size: 12px;
+}
+
+/* ---- Footer ---- */
+.rs-foot {
+  background: #1b120b;
+  color: #e9dfd0;
+  padding-bottom: 80px;
+}
+
+.rs-foot-in {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 32px 16px 18px;
+  display: grid;
+  gap: 14px;
+}
+
+.rs-foot-name { font-size: 22px; }
+
+.rs-foot-contact,
+.rs-foot-social {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+}
+
+.rs-foot a {
+  color: #e9dfd0;
+  font-size: 14px;
+  text-decoration: none;
+  opacity: .85;
+}
+
+.rs-foot-bottom {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 14px 16px 18px;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  border-top: 1px solid rgba(233, 223, 208, .15);
+  color: rgba(233, 223, 208, .6);
+}
+
+/* ---- Pinned order bar ---- */
+.rs-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 40;
+  padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+  background: linear-gradient(to top, var(--cream) 60%, rgba(251, 246, 238, 0));
+}
+
+.rs-bar button {
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+  height: 54px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 14px;
+  background: var(--green);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  box-shadow: 0 8px 24px rgba(31, 77, 58, .35);
+}
+
+.rs-bar button span:nth-child(2) { flex: 1; text-align: left; }
+
+.rs-bar-count {
+  min-width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  background: var(--gold);
+  color: #2a1b04;
+  font-size: 14px;
+}
+
+/* ---- Order sheet ---- */
+.rs-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  min-height: 0;
+  background: transparent;
+}
+
+.rs-shade {
+  position: absolute;
+  inset: 0;
+  background: rgba(20, 12, 6, .55);
+}
+
+.rs-sheet {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  max-width: 560px;
+  margin: 0 auto;
+  max-height: 92vh;
+  display: flex;
+  flex-direction: column;
+  border-radius: 22px 22px 0 0;
+  background: var(--cream);
+}
+
+.rs-sheet-head {
+  flex: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 18px 10px;
+}
+
+.rs-sheet-head h2 { font-size: 24px; }
+
+.rs-sheet-head button {
+  width: 38px;
+  height: 38px;
+  border: 0;
+  border-radius: 50%;
+  background: #efe6d6;
+  color: var(--ink);
+  font-size: 22px;
+  line-height: 1;
+}
+
+.rs-sheet-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 18px 16px;
+}
+
+.rs-lines {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rs-lines li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+/* Only the name and price block, not the + and - buttons */
+.rs-lines li > div:first-child {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.rs-lines li span {
+  color: var(--green);
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.rs-lines .rs-step { width: 96px; }
+
+.rs-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 14px 0 2px;
+  font-size: 16px;
+}
+
+.rs-total b { font-size: 22px; }
+
+.rs-hint {
+  margin: 0 0 6px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.rs-sheet label {
+  display: block;
+  margin: 16px 0 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #4a3a2e;
+}
+
+.rs-sheet input,
+.rs-sheet textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1.5px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 16px;
+  outline: none;
+}
+
+.rs-sheet input:focus,
+.rs-sheet textarea:focus { border-color: var(--green); }
+
+.rs-sheet textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.rs-seg {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.rs-seg button {
+  height: 44px;
+  border: 1.5px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.rs-seg button.on {
+  border-color: var(--green);
+  background: #e8f1ec;
+  color: var(--green);
+}
+
+/* Send button stays pinned at the bottom of the sheet */
+.rs-sheet-bar {
+  flex: none;
+  padding: 12px 18px calc(14px + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--line);
+  background: var(--cream);
+}
+
+.rs-err {
+  margin: 0 0 8px;
+  color: var(--red);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.rs-send {
+  width: 100%;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 0;
+  border-radius: 14px;
+  background: var(--wa);
+  color: #05290f;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.rs-send .rs-ico { width: 22px; height: 22px; }
+
+/* ---- Wider screens ---- */
+@media (min-width: 760px) {
+  .rs-cats-in {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .rs-find { width: 280px; flex: none; }
+
+  .rs-dishes { grid-template-columns: 1fr 1fr; }
+
+  .rs-hero-in { padding: 80px 16px 84px; }
+
+  .rs-steps-list { grid-template-columns: repeat(3, 1fr); }
+
+  .rs-about-in {
+    grid-template-columns: 1.4fr 1fr;
+    align-items: start;
+  }
+
+  .rs-sheet {
+    bottom: 50%;
+    transform: translateY(50%);
+    border-radius: 22px;
+    max-height: 86vh;
+  }
+}

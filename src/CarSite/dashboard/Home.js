@@ -48,7 +48,11 @@ export default function CarHome() {
   let planText = `${b.daysLeft} ${b.daysLeft === 1 ? "day" : "days"} left on your plan`;
   let urgent = b.daysLeft <= 3;
   let planBtn = "Add more time";
-  if (["free", "trial", "trial_not_started"].includes(b.status)) {
+  if (b.status === "trial") {
+    planText = `Free trial: ${b.daysLeft} ${b.daysLeft === 1 ? "day" : "days"} left. Add as many cars as you like. After that you keep 3 free, or choose a plan.`;
+    urgent = b.daysLeft <= 5;
+    planBtn = "Choose a plan";
+  } else if (["free", "trial_not_started"].includes(b.status)) {
     const used = Math.min(b.items || 0, b.freeItems || 3);
     planText = `Free plan: ${used} of ${b.freeItems || 3} cars used. Choose a plan to add more.`;
     urgent = used >= (b.freeItems || 3);
