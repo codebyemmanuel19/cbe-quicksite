@@ -48,17 +48,8 @@ function statusCard(billing) {
       action: "Choose a plan",
     };
   }
-  if (["free", "trial_not_started"].includes(billing.status)) {
-    const max = billing.freeItems || 3;
-    const used = Math.min(billing.items || 0, max);
-    return {
-      title: `Free plan: ${used} of ${max} products used`,
-      sub: used >= max ? "Choose a plan to add more products." : "Choose a plan any time to add more.",
-      urgent: used >= max,
-      to: "/dashboard/billing",
-      action: "Choose a plan",
-    };
-  }
+  // Never paid: no card. The message only appears when they try to go past 3.
+  if (["free", "trial_not_started"].includes(billing.status)) return null;
   if (billing.status === "active") {
     return {
       title: `${d} ${word} left on your plan`,
@@ -70,8 +61,8 @@ function statusCard(billing) {
   }
   if (billing.status === "locked") {
     return {
-      title: "Your plan has ended",
-      sub: "Your website is still live, but you can't edit it until you pay.",
+      title: "Subscription finished",
+      sub: "Upgrade your website so you can make changes. It stays live for now.",
       urgent: true,
       to: "/dashboard/billing",
       action: "Pay now",
@@ -295,13 +286,15 @@ export default function DashboardHome() {
         )}
       </section>
 
-      <section className={card.urgent ? "trial-card urgent" : "trial-card"}>
-        <div>
-          <p className="trial-title">{card.title}</p>
-          <p className="trial-sub">{card.sub}</p>
-        </div>
-        <Link to={card.to} className="pay-btn">{card.action}</Link>
-      </section>
+      {card && (
+        <section className={card.urgent ? "trial-card urgent" : "trial-card"}>
+          <div>
+            <p className="trial-title">{card.title}</p>
+            <p className="trial-sub">{card.sub}</p>
+          </div>
+          <Link to={card.to} className="pay-btn">{card.action}</Link>
+        </section>
+      )}
 
       <section className="stats">
         <div className="stat">

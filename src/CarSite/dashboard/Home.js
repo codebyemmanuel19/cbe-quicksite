@@ -53,14 +53,12 @@ export default function CarHome() {
     urgent = b.daysLeft <= 5;
     planBtn = "Choose a plan";
   } else if (["free", "trial_not_started"].includes(b.status)) {
-    const used = Math.min(b.items || 0, b.freeItems || 3);
-    planText = `Free plan: ${used} of ${b.freeItems || 3} cars used. Choose a plan to add more.`;
-    urgent = used >= (b.freeItems || 3);
-    planBtn = "Choose a plan";
+    // Never paid: no card. The message only appears when they try to go past 3.
+    planText = "";
   } else if (b.status === "locked" || b.status === "offline") {
-    planText = "Your plan has ended. Pay to keep editing your website.";
+    planText = "Subscription finished. Upgrade your website so you can make changes.";
     urgent = true;
-    planBtn = "Choose a plan";
+    planBtn = "Upgrade";
   }
 
   async function copy() {
@@ -94,10 +92,12 @@ export default function CarHome() {
         <div className="rd-kpi"><b>{count("Sold")}</b><span>Sold</span></div>
       </section>
 
-      <section className={urgent ? "rd-plan urgent" : "rd-plan"}>
-        <p>{planText}</p>
-        <Link className="rd-btn" to="/dashboard/billing">{planBtn}</Link>
-      </section>
+      {planText && (
+        <section className={urgent ? "rd-plan urgent" : "rd-plan"}>
+          <p>{planText}</p>
+          <Link className="rd-btn" to="/dashboard/billing">{planBtn}</Link>
+        </section>
+      )}
     </div>
   );
 

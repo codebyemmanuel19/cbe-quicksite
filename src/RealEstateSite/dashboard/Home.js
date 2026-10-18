@@ -17,21 +17,13 @@ function planCard(billing) {
       urgent: d <= 5,
     };
   }
-  if (["free", "trial_not_started"].includes(billing.status)) {
-    const max = billing.freeItems || 3;
-    const used = Math.min(billing.items || 0, max);
-    return {
-      text: `Free plan: ${used} of ${max} properties used. Choose a plan to add more.`,
-      action: "Choose a plan",
-      to: "/dashboard/billing",
-      urgent: used >= max,
-    };
-  }
+  // Never paid: no card. The message only appears when they try to go past 3.
+  if (["free", "trial_not_started"].includes(billing.status)) return null;
   if (billing.status === "active") {
     return { text: `${d} ${word} left on your plan`, action: "Add more time", to: "/dashboard/billing", urgent: d <= 3 };
   }
   if (billing.status === "locked") {
-    return { text: "Your plan has ended. Pay to keep editing your website.", action: "Pay now", to: "/dashboard/billing", urgent: true };
+    return { text: "Subscription finished. Upgrade your website so you can make changes.", action: "Upgrade", to: "/dashboard/billing", urgent: true };
   }
   if (billing.status === "offline") {
     return { text: "Your website is offline. Pay now and it comes back.", action: "Pay now", to: "/dashboard/billing", urgent: true };
@@ -133,10 +125,12 @@ export default function RealEstateHome() {
         <div className="rd-kpi"><b>{count("Sold") + count("Rented")}</b><span>Sold or rented</span></div>
       </section>
 
-      <section className={plan.urgent ? "rd-plan urgent" : "rd-plan"}>
-        <p>{plan.text}</p>
-        <Link className="rd-btn" to={plan.to}>{plan.action}</Link>
-      </section>
+      {plan && (
+        <section className={plan.urgent ? "rd-plan urgent" : "rd-plan"}>
+          <p>{plan.text}</p>
+          <Link className="rd-btn" to={plan.to}>{plan.action}</Link>
+        </section>
+      )}
     </div>
   );
 }

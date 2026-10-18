@@ -11,9 +11,9 @@ const POPULAR_MONTHS = 3;
 const STATUS_INFO = {
   free: { label: "Free plan", tone: "blue" },
   trial_not_started: { label: "Free plan", tone: "blue" },
-  trial: { label: "Free plan", tone: "blue" },
+  trial: { label: "Free trial", tone: "blue" },
   active: { label: "Active", tone: "green" },
-  locked: { label: "Your plan has ended", tone: "orange" },
+  locked: { label: "Subscription finished", tone: "orange" },
   offline: { label: "Your website is offline", tone: "red" },
   suspended: { label: "Account on hold", tone: "red" },
 };
@@ -136,13 +136,17 @@ export default function Billing() {
   const popularId = popularPlan ? popularPlan.id : "";
 
   function statusText() {
-    if (["free", "trial", "trial_not_started"].includes(billing.status)) {
+    if (billing.status === "trial") {
+      const d = billing.daysLeft;
+      return `Your free trial has ${d} ${d === 1 ? "day" : "days"} left. Add as many as you like. After that you keep ${billing.freeItems || 3} items free, or choose a plan to add more.`;
+    }
+    if (["free", "trial_not_started"].includes(billing.status)) {
       const used = Math.min(billing.items || 0, billing.freeItems || 3);
       return `You are using ${used} of ${billing.freeItems || 3} free items. Choose a plan to add more.`;
     }
     if (billing.status === "active") return `Paid until ${formatDay(billing.paidUntil)}.`;
     if (billing.status === "locked") {
-      return "Your website is live, but you can't make changes until you pay. If it stays unpaid for 7 days, your website goes offline.";
+      return "Subscription finished. Upgrade your website so you can make changes. Your website stays live, but if it stays unpaid for 7 days it goes offline.";
     }
     if (billing.status === "offline") {
       return "Your website is offline. Pay to bring it back instantly.";
