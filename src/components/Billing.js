@@ -5,7 +5,7 @@ import { formatPrice } from "./countries";
 import { ListSkeleton } from "./Skeleton";
 import "./Billing.css";
 
-// The plan with this many months is pre-selected and marked Popular
+// The plan with ts many months is pre-selected and marked Popular
 const POPULAR_MONTHS = 3;
 
 const STATUS_INFO = {
