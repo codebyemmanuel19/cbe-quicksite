@@ -9,7 +9,15 @@ function planCard(billing) {
   const d = billing.daysLeft;
   const word = d === 1 ? "day" : "days";
 
-  if (["free", "trial", "trial_not_started"].includes(billing.status)) {
+  if (billing.status === "trial") {
+    return {
+      text: `Free trial: ${d} ${word} left. Add as many properties as you like. After that you keep 3 free, or choose a plan.`,
+      action: "Choose a plan",
+      to: "/dashboard/billing",
+      urgent: d <= 5,
+    };
+  }
+  if (["free", "trial_not_started"].includes(billing.status)) {
     const max = billing.freeItems || 3;
     const used = Math.min(billing.items || 0, max);
     return {

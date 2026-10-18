@@ -39,7 +39,16 @@ function statusCard(billing) {
   const d = billing.daysLeft;
   const word = d === 1 ? "day" : "days";
 
-  if (["free", "trial", "trial_not_started"].includes(billing.status)) {
+  if (billing.status === "trial") {
+    return {
+      title: `Free trial: ${d} ${word} left`,
+      sub: "Add as many products as you like. After that you keep 3 free, or choose a plan.",
+      urgent: d <= 5,
+      to: "/dashboard/billing",
+      action: "Choose a plan",
+    };
+  }
+  if (["free", "trial_not_started"].includes(billing.status)) {
     const max = billing.freeItems || 3;
     const used = Math.min(billing.items || 0, max);
     return {
