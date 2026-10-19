@@ -5,17 +5,18 @@ import { api, uploadPhoto } from "../../api";
 import { FormSkeleton } from "../../components/Skeleton";
 import "../../RealEstateSite/dashboard/dashboard.css";
 
-// Common sections. The owner can still type their own below.
-const CATEGORIES = ["Rice", "Soups & Swallow", "Grills", "Snacks", "Drinks", "Desserts"];
+// Ideas for a first dish. After that, the owner's own sections show instead.
+const IDEAS = ["Rice", "Grills", "Snacks", "Drinks", "Desserts"];
+const MAX_PHOTOS = 3;
 const STATUSES = ["Available", "Sold out"];
 
 const empty = {
   name: "",
-  category: "Rice",
+  category: "",
   price: "",
   description: "",
   status: "Available",
-  photo: "",
+  photos: [],
 };
 
 // One-tap choices
@@ -39,6 +40,18 @@ export default function AddDish() {
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
+  const [mine, setMine] = useState([]);
+
+  // The sections this owner already made, so the next dish is one tap
+  useEffect(() => {
+    api.get("/dishes")
+      .then((res) => {
+        const seen = [];
+        res.dishes.forEach((x) => { if (x.category && !seen.includes(x.category)) seen.push(x.category); });
+        setMine(seen);
+      })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     if (!editing) return;
@@ -47,7 +60,7 @@ export default function AddDish() {
       .then((res) => {
         if (cancelled) return;
         const x = res.dish;
-        setForm({ ...empty, ...x, price: String(x.price), photo: x.photo || "", description: x.description || "" });
+        setForm({ ...empty, ...x, price: String(x.price), photos: x.photos || [], description: x.description || "" });
       })
       .catch((err) => { if (!cancelled) setError(err.message); })
       .finally(() => { if (!cancelled) setLoading(false); });
@@ -65,7 +78,8 @@ export default function AddDish() {
     setError("");
     setUploading(true);
     try {
-      set("photo", await uploadPhoto(file));
+      const url = await uploadPhoto(file);
+      setForm((f) => ({ ...f, photos: [...f.photos, url].slice(0, MAX_PHOTOS) }));
     } catch (err) {
       setError(err.message);
     } finally {
@@ -82,6 +96,7 @@ export default function AddDish() {
 
     if (!name) return setError("Give the dish a name.");
     if (!category) return setError("Choose or type a section, for example Rice.");
+    if (uploading) return setError("Wait for the photo to finish uploading.");
     if (!form.price || !Number.isInteger(price) || price <= 0) return setError("Enter the price in whole naira.");
 
     const payload = { ...form, name, category, price, description: form.description.trim() };
@@ -104,14 +119,14 @@ export default function AddDish() {
     <form id="dish-form" className="rd rd-form" onSubmit={handleSave}>
       <h1>{editing ? "Edit dish" : "Add dish"}</h1>
 
-      <label>Photo{uploading ? " · uploading..." : ""}</label>
+      <label>Photos (up to {MAX_PHOTOS}){uploading ? " · uploading..." : ""}</label>
       <div className="rd-photos">
-        {form.photo && (
-          <div className="rd-photo" style={{ backgroundImage: `url(${form.photo})` }}>
-            <button type="button" onClick={() => set("photo", "")}>×</button>
+        {form.photos.map((u, i) => (
+          <div className="rd-photo" key={u} style={{ backgroundImage: `url(${u})` }}>
+            <button type="button" onClick={() => set("photos", form.photos.filter((_, n) => n !== i))}>×</button>
           </div>
-        )}
-        {!form.photo && (
+        ))}
+        {form.photos.length < MAX_PHOTOS && !uploading && (
           <label className="rd-add">+<input type="file" accept="image/*" hidden onChange={handlePhoto} /></label>
         )}
       </div>
@@ -120,8 +135,8 @@ export default function AddDish() {
       <input value={form.name} onChange={(e) => set("name", e.target.value)} maxLength={60} placeholder="Party jollof rice" />
 
       <label>Section</label>
-      <Options value={form.category} list={CATEGORIES} onPick={(v) => set("category", v)} />
-      <input value={form.category} onChange={(e) => set("category", e.target.value)} maxLength={30} placeholder="Or type your own section" />
+      <Options value={form.category} list={mine.length ? mine : IDEAS} onPick={(v) => set("category", v)} />
+      <input value={form.category} onChange={(e) => set("category", e.target.value)} maxLength={30} placeholder="Type a section, e.g. Pizza, Cakes, Smoothies" />
 
       <label>Price (₦)</label>
       <input type="number" inputMode="numeric" value={form.price} onChange={(e) => set("price", e.target.value)} placeholder="3500" />

@@ -113,8 +113,11 @@ function Adder({ qty, onChange, name }) {
 }
 
 // One dish on the menu
-function Dish({ d, qty, money, onChange }) {
+const picsOf = (d) => (d.photos && d.photos.length ? d.photos : d.photo ? [d.photo] : []);
+
+function Dish({ d, qty, money, onChange, onView }) {
   const ok = isAvailable(d);
+  const pics = picsOf(d);
 
   return (
     <article className={ok ? "rs-dish" : "rs-dish off"}>
@@ -125,19 +128,83 @@ function Dish({ d, qty, money, onChange }) {
       </div>
 
       <div className="rs-dish-side">
-        {d.photo && (
-          <div className="rs-dish-img" style={{ backgroundImage: `url("${d.photo}")` }}>
+        {pics.length > 0 && (
+          <button
+            type="button"
+            className="rs-dish-img"
+            style={{ backgroundImage: `url("${pics[0]}")` }}
+            onClick={() => onView(d.id)}
+            aria-label={`View ${d.name}`}
+          >
             {!ok && <span className="rs-out">Sold out</span>}
-          </div>
+            {pics.length > 1 && <span className="rs-more">{pics.length} photos</span>}
+          </button>
         )}
 
         {ok ? (
           <Adder qty={qty} onChange={(by) => onChange(d.id, by)} name={d.name} />
         ) : (
-          !d.photo && <span className="rs-out plain">Sold out</span>
+          pics.length === 0 && <span className="rs-out plain">Sold out</span>
         )}
       </div>
     </article>
+  );
+}
+
+// Big photos of one dish. Swipe sideways to see the next one.
+function DishViewer({ d, qty, money, onChange, onClose }) {
+  const [at, setAt] = useState(0);
+  const pics = picsOf(d);
+  const ok = isAvailable(d);
+
+  useEffect(() => {
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const key = (e) => e.key === "Escape" && onClose();
+    window.addEventListener("keydown", key);
+    return () => {
+      document.body.style.overflow = prev;
+      window.removeEventListener("keydown", key);
+    };
+  }, [onClose]);
+
+  return createPortal(
+    <div className="rs rs-layer">
+    <div className="rs-view" onClick={onClose}>
+      <div className="rs-view-card" onClick={(e) => e.stopPropagation()}>
+        <button type="button" className="rs-view-x" onClick={onClose} aria-label="Close">×</button>
+
+        <div
+          className="rs-view-pics"
+          onScroll={(e) => setAt(Math.round(e.currentTarget.scrollLeft / e.currentTarget.clientWidth))}
+        >
+          {pics.map((u) => (
+            <div key={u} className="rs-view-pic" style={{ backgroundImage: `url("${u}")` }} />
+          ))}
+        </div>
+
+        {pics.length > 1 && (
+          <div className="rs-view-dots">
+            {pics.map((u, i) => <i key={u} className={i === at ? "on" : ""} />)}
+          </div>
+        )}
+
+        <div className="rs-view-info">
+          <h3>{d.name}</h3>
+          {d.description && <p>{d.description}</p>}
+          <div className="rs-view-row">
+            <span className="rs-price">{money(d.price)}</span>
+            {ok ? (
+              <Adder qty={qty} onChange={(by) => onChange(d.id, by)} name={d.name} />
+            ) : (
+              <span className="rs-out plain">Sold out</span>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>,
+    document.body
   );
 }
 
@@ -310,6 +377,7 @@ export default function RestaurantSite({ basePath = "", slug: slugProp }) {
   const [q, setQ] = useState("");
   const [open, setOpen] = useState(false);
   const [activeCat, setActiveCat] = useState("");
+  const [viewId, setViewId] = useState("");
   const { cart, change, clear } = useCart(slug);
   const menuRef = useRef(null);
 
@@ -505,7 +573,7 @@ export default function RestaurantSite({ basePath = "", slug: slugProp }) {
               <h2>{g.cat}</h2>
               <div className="rs-dishes">
                 {g.items.map((d) => (
-                  <Dish key={d.id} d={d} qty={cart[d.id] || 0} money={money} onChange={change} />
+                  <Dish key={d.id} d={d} qty={cart[d.id] || 0} money={money} onChange={change} onView={setViewId} />
                 ))}
               </div>
             </section>
@@ -554,6 +622,16 @@ export default function RestaurantSite({ basePath = "", slug: slugProp }) {
             <b>{money(total)}</b>
           </button>
         </div>
+      )}
+
+      {viewId && dishes.find((x) => x.id === viewId) && (
+        <DishViewer
+          d={dishes.find((x) => x.id === viewId)}
+          qty={cart[viewId] || 0}
+          money={money}
+          onChange={change}
+          onClose={() => setViewId("")}
+        />
       )}
 
       {open && count > 0 && (
