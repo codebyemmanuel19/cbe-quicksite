@@ -17,7 +17,7 @@ export default function RestaurantHome() {
     async function load() {
       try {
         const mine = await api.get("/sites/me");
-        const [m, i] = await Promise.all([api.get("/dishes"), api.get("/inquiries")]);
+        const [m, i] = await Promise.all([api.get("/dishes"), api.get("/dishes/orders/all")]);
         if (cancelled) return;
         setSite(mine.site);
         setDishes(m.dishes);
@@ -50,14 +50,12 @@ export default function RestaurantHome() {
   let urgent = b.daysLeft <= 3;
   let planBtn = "Add more time";
   if (["free", "trial", "trial_not_started"].includes(b.status)) {
-    const used = Math.min(b.items || 0, b.freeItems || 3);
-    planText = `Free plan: ${used} of ${b.freeItems || 3} dishes used. Choose a plan to add more.`;
-    urgent = used >= (b.freeItems || 3);
-    planBtn = "Choose a plan";
+    // Never paid: no card. The message only appears when they try to go past 3.
+    planText = "";
   } else if (b.status === "locked" || b.status === "offline") {
-    planText = "Your plan has ended. Pay to keep editing your website.";
+    planText = "Subscription finished. Upgrade your website so you can make changes.";
     urgent = true;
-    planBtn = "Choose a plan";
+    planBtn = "Upgrade";
   }
 
   async function copy() {
@@ -91,10 +89,12 @@ export default function RestaurantHome() {
         <div className="rd-kpi"><b>{out}</b><span>Sold out</span></div>
       </section>
 
-      <section className={urgent ? "rd-plan urgent" : "rd-plan"}>
-        <p>{planText}</p>
-        <Link className="rd-btn" to="/dashboard/billing">{planBtn}</Link>
-      </section>
+      {planText && (
+        <section className={urgent ? "rd-plan urgent" : "rd-plan"}>
+          <p>{planText}</p>
+          <Link className="rd-btn" to="/dashboard/billing">{planBtn}</Link>
+        </section>
+      )}
     </div>
   );
 }

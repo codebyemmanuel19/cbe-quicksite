@@ -7,6 +7,7 @@ import JewellerySite from "./JewellerySite/JewellerySite";
 import GadgetsSite from "./GadgetsSite/GadgetsSite";
 import RealEstateSite from "./RealEstateSite/Site";
 import CarSite from "./CarSite/Site";
+import RestaurantSite from "./RestaurantSite/Site";
 
 // The business type the vendor picked at setup decides the look
 const TEMPLATES = {
@@ -18,6 +19,7 @@ const TEMPLATES = {
   gadgets: GadgetsSite,
   realestate: RealEstateSite,
   cars: CarSite,
+  restaurant: RestaurantSite,
 };
 
 // kemisboutique.cbequicksite.com loads this. It asks the API which

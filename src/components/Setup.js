@@ -39,6 +39,13 @@ const TYPES = [
     keywords: "car auto motors dealer vehicle toyota used foreign showroom",
   },
   {
+    id: "restaurant",
+    icon: "🍲",
+    name: "Restaurant & Food",
+    desc: "Meals, snacks & drinks people can order",
+    keywords: "food restaurant kitchen chop buka catering cook rice soup grill bakery",
+  },
+  {
     id: "skincare",
     icon: "🧴",
     name: "Skincare & Body Care",

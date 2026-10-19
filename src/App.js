@@ -26,6 +26,10 @@ import CarHome from "./CarSite/dashboard/Home";
 import Cars from "./CarSite/dashboard/Cars";
 import AddCar from "./CarSite/dashboard/AddCar";
 import CarInquiries from "./CarSite/dashboard/Inquiries";
+import RestaurantHome from "./RestaurantSite/dashboard/RestaurantHome";
+import Menu from "./RestaurantSite/dashboard/Menu";
+import AddDish from "./RestaurantSite/dashboard/AddDish";
+import RestaurantSite from "./RestaurantSite/Site";
 import ClothingSite from "./ClothingSite/ClothingSite";
 import HairSite from "./HairSite/HairSite";
 import SkincareSite from "./SkincareSite/SkincareSite";
@@ -195,6 +199,19 @@ const carMenu = [
   ]},
 ];
 
+// The menu a restaurant owner sees
+const restaurantMenu = [
+  { group: "WEBSITE", items: [
+    { to: "/dashboard", label: "Dashboard", end: true, icon: icons.dashboard },
+    { to: "/dashboard/business", label: "Business Info", icon: icons.business },
+    { to: "/dashboard/menu", label: "Menu", icon: icons.products },
+  ]},
+  { group: "ACCOUNT", items: [
+    { to: "/dashboard/billing", label: "Plans & Billing", icon: icons.billing },
+    { to: "/dashboard/support", label: "Support", icon: icons.support },
+  ]},
+];
+
 // Shows the right home page for the shop's type
 function HomeRouter() {
   const [type, setType] = useState(null);
@@ -207,6 +224,7 @@ function HomeRouter() {
 
   if (type === null) return null;
   if (type === "cars") return <CarHome />;
+  if (type === "restaurant") return <RestaurantHome />;
   return type === "realestate" ? <RealEstateHome /> : <DashboardHome />;
 }
 
@@ -252,7 +270,7 @@ function DashboardLayout() {
           </button>
         </div>
 
-        {(type === "realestate" ? realEstateMenu : type === "cars" ? carMenu : menu).map((section) => (
+        {(type === "realestate" ? realEstateMenu : type === "cars" ? carMenu : type === "restaurant" ? restaurantMenu : menu).map((section) => (
           <div key={section.group || "main"} className="menu-group">
             {section.group && <p className="menu-label">{section.group}</p>}
             {section.items.map((item) => (
@@ -303,11 +321,11 @@ function DashboardLayout() {
             }}
           >
             <b>
-              {billingStatus === "offline" ? "Your website is offline." : "Your plan has ended."}
+              {billingStatus === "offline" ? "Your website is offline." : "Subscription finished."}
             </b>{" "}
             {billingStatus === "offline"
               ? "Pay to bring it back online."
-              : "Your website is live, but you can't make changes until you pay."}{" "}
+              : "Your website is live. Upgrade it so you can make changes."}{" "}
             <NavLink to="/dashboard/billing" style={{ fontWeight: 700, color: "#1d4ed8" }}>
               Choose a plan
             </NavLink>
@@ -361,6 +379,7 @@ export default function App() {
         <Route path="/preview/skincare/*" element={<SkincareSite basePath="/preview/skincare" />} />
         <Route path="/preview/perfume/*" element={<PerfumeSite basePath="/preview/perfume" />} />
         <Route path="/preview/jewellery/*" element={<JewellerySite basePath="/preview/jewellery" />} />
+        <Route path="/preview/restaurant/*" element={<RestaurantSite basePath="/preview/restaurant" />} />
         <Route path="/preview/gadgets/*" element={<GadgetsSite basePath="/preview/gadgets" />} />
 
         <Route path="/dashboard" element={<RequireConfirmed><DashboardLayout /></RequireConfirmed>}>
@@ -372,6 +391,8 @@ export default function App() {
           <Route path="properties" element={<Properties />} />
           <Route path="properties/:id" element={<AddProperty />} />
           <Route path="inquiries" element={<Inquiries />} />
+          <Route path="menu" element={<Menu />} />
+          <Route path="menu/:id" element={<AddDish />} />
           <Route path="cars" element={<Cars />} />
           <Route path="cars/:id" element={<AddCar />} />
           <Route path="car-inquiries" element={<CarInquiries />} />
