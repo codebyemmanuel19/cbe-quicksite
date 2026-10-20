@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+import { api } from "./api";
 import { useShop } from "./shop/useShop";
 import ClothingSite from "./ClothingSite/ClothingSite";
 import HairSite from "./HairSite/HairSite";
@@ -22,6 +24,66 @@ const TEMPLATES = {
   restaurant: RestaurantSite,
 };
 
+
+// The page for a website that cannot open. Says clearly whether it is offline or does not exist.
+function Unavailable({ slug }) {
+  const [info, setInfo] = useState(null);
+
+  useEffect(() => {
+    if (!slug) return;
+    api.get(`/public/shop/${slug}/status`)
+      .then(setInfo)
+      .catch(() => setInfo({ state: "missing" }));
+  }, [slug]);
+
+  const offline = info && info.state === "offline";
+  const missing = info && info.state !== "offline";
+
+  return (
+    <div className="un">
+      <style>{`
+        .un { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; background: #f6f7fb; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; color: #0f172a; }
+        .un-card { width: 100%; max-width: 420px; padding: 34px 26px; text-align: center; background: #fff; border-radius: 22px; box-shadow: 0 10px 40px rgba(15, 23, 42, .08); animation: un-in .3s ease-out; }
+        .un-ico { width: 64px; height: 64px; margin: 0 auto 18px; display: grid; place-items: center; border-radius: 50%; background: #fff7ed; font-size: 30px; }
+        .un h1 { margin: 0 0 10px; font-size: 24px; line-height: 1.25; }
+        .un p { margin: 0 0 8px; color: #475569; font-size: 15px; line-height: 1.55; }
+        .un-name { font-weight: 700; color: #0f172a; }
+        .un-owner { margin-top: 22px; padding-top: 18px; border-top: 1px solid #eef0f4; font-size: 13.5px; color: #64748b; }
+        .un a { color: #2563eb; font-weight: 700; text-decoration: none; }
+        @keyframes un-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+      `}</style>
+
+      {info && (
+        <div className="un-card">
+          <div className="un-ico">{offline ? "🔒" : "🔎"}</div>
+
+          {offline && (
+            <>
+              <h1>This website is currently offline</h1>
+              <p>
+                <span className="un-name">{info.name}</span> is not available right now.
+              </p>
+              <p>Please check back later.</p>
+              <div className="un-owner">
+                Are you the owner? <a href="https://cbequicksite.com/login">Log in</a> to bring your website back online.
+              </div>
+            </>
+          )}
+
+          {missing && (
+            <>
+              <h1>We can't find this website</h1>
+              <p>Check the address and try again.</p>
+              <div className="un-owner">
+                Want a website like this? <a href="https://cbequicksite.com">Create yours</a>
+              </div>
+            </>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
 
 // What people see for a moment while the shop loads: the shape of a website, softly pulsing
 function ShopLoader() {
@@ -76,13 +138,7 @@ export default function ShopRouter({ basePath = "" }) {
   }
 
   if (notFound || !store) {
-    return (
-      <div className="shop-missing">
-        <h1>Shop not found</h1>
-        <p>This website address does not belong to any shop.</p>
-        <a href="https://cbequicksite.com">Create your own website</a>
-      </div>
-    );
+    return <Unavailable slug={slug} />;
   }
 
   const Template = TEMPLATES[store.businessType] || ClothingSite;
