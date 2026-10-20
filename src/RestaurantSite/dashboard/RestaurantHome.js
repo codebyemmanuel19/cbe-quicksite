@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { api } from "../../api";
 import DashboardSkeleton from "../../components/Skeleton";
-import TrialCard from "../../components/TrialCard";
+import PlanCard from "../../components/PlanCard";
 import "../../RealEstateSite/dashboard/dashboard.css";
 
 export default function RestaurantHome() {
@@ -94,8 +94,8 @@ export default function RestaurantHome() {
         <div className="rd-kpi"><b>{out}</b><span>Sold out</span></div>
       </section>
 
-      {b.status === "trial" ? (
-        <TrialCard days={b.daysLeft} />
+      {["trial", "active"].includes(b.status) ? (
+        <PlanCard status={b.status} days={b.daysLeft} />
       ) : planText && (
         <section className={urgent ? "rd-plan urgent" : "rd-plan"}>
           <p>{planText}</p>

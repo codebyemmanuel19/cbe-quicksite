@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import InstallCard from "./InstallCard";
 import DashboardSkeleton from "./Skeleton";
+import PlanCard from "./PlanCard";
 import { api } from "../api";
 import "./DashboardHome.css";
 import "./MonthCard.css";
@@ -286,7 +287,9 @@ export default function DashboardHome() {
         )}
       </section>
 
-      {card && (
+      {["trial", "active"].includes(billing.status) ? (
+        <PlanCard status={billing.status} days={billing.daysLeft} />
+      ) : card && (
         <section className={card.urgent ? "trial-card urgent" : "trial-card"}>
           <div>
             <p className="trial-title">{card.title}</p>
