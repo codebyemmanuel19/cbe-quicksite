@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { api } from "../../api";
 import DashboardSkeleton from "../../components/Skeleton";
+import TrialCard from "../../components/TrialCard";
 import "../../RealEstateSite/dashboard/dashboard.css";
 
 export default function RestaurantHome() {
@@ -49,7 +50,11 @@ export default function RestaurantHome() {
   let planText = `${b.daysLeft} ${b.daysLeft === 1 ? "day" : "days"} left on your plan`;
   let urgent = b.daysLeft <= 3;
   let planBtn = "Add more time";
-  if (["free", "trial", "trial_not_started"].includes(b.status)) {
+  if (b.status === "trial") {
+    planText = `Free trial: ${b.daysLeft} ${b.daysLeft === 1 ? "day" : "days"} left. Add as many dishes as you like. After that you keep 3 free, or choose a plan.`;
+    urgent = b.daysLeft <= 5;
+    planBtn = "Choose a plan";
+  } else if (["free", "trial_not_started"].includes(b.status)) {
     // Never paid: no card. The message only appears when they try to go past 3.
     planText = "";
   } else if (b.status === "locked" || b.status === "offline") {
@@ -89,7 +94,9 @@ export default function RestaurantHome() {
         <div className="rd-kpi"><b>{out}</b><span>Sold out</span></div>
       </section>
 
-      {planText && (
+      {b.status === "trial" ? (
+        <TrialCard days={b.daysLeft} />
+      ) : planText && (
         <section className={urgent ? "rd-plan urgent" : "rd-plan"}>
           <p>{planText}</p>
           <Link className="rd-btn" to="/dashboard/billing">{planBtn}</Link>

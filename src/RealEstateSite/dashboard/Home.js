@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { api } from "../../api";
 import DashboardSkeleton from "../../components/Skeleton";
+import TrialCard from "../../components/TrialCard";
 import "./dashboard.css";
 
 // One line about the plan, whatever state the account is in
@@ -125,7 +126,9 @@ export default function RealEstateHome() {
         <div className="rd-kpi"><b>{count("Sold") + count("Rented")}</b><span>Sold or rented</span></div>
       </section>
 
-      {plan && (
+      {site.billing.status === "trial" ? (
+        <TrialCard days={site.billing.daysLeft} />
+      ) : plan && (
         <section className={plan.urgent ? "rd-plan urgent" : "rd-plan"}>
           <p>{plan.text}</p>
           <Link className="rd-btn" to={plan.to}>{plan.action}</Link>

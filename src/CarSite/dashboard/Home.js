@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { api } from "../../api";
 import DashboardSkeleton from "../../components/Skeleton";
+import TrialCard from "../../components/TrialCard";
 import "../../RealEstateSite/dashboard/dashboard.css";
 
 export default function CarHome() {
@@ -92,7 +93,9 @@ export default function CarHome() {
         <div className="rd-kpi"><b>{count("Sold")}</b><span>Sold</span></div>
       </section>
 
-      {planText && (
+      {b.status === "trial" ? (
+        <TrialCard days={b.daysLeft} />
+      ) : planText && (
         <section className={urgent ? "rd-plan urgent" : "rd-plan"}>
           <p>{planText}</p>
           <Link className="rd-btn" to="/dashboard/billing">{planBtn}</Link>
