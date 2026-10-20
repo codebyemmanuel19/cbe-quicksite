@@ -30,6 +30,10 @@ import RestaurantHome from "./RestaurantSite/dashboard/RestaurantHome";
 import Menu from "./RestaurantSite/dashboard/Menu";
 import AddDish from "./RestaurantSite/dashboard/AddDish";
 import RestaurantSite from "./RestaurantSite/Site";
+import FurnitureHome from "./FurnitureSite/dashboard/FurnitureHome";
+import Items from "./FurnitureSite/dashboard/Items";
+import AddItem from "./FurnitureSite/dashboard/AddItem";
+import FurnitureSite from "./FurnitureSite/Site";
 import ClothingSite from "./ClothingSite/ClothingSite";
 import HairSite from "./HairSite/HairSite";
 import SkincareSite from "./SkincareSite/SkincareSite";
@@ -212,6 +216,19 @@ const restaurantMenu = [
   ]},
 ];
 
+// The menu a furniture seller sees
+const furnitureMenu = [
+  { group: "WEBSITE", items: [
+    { to: "/dashboard", label: "Dashboard", end: true, icon: icons.dashboard },
+    { to: "/dashboard/business", label: "Business Info", icon: icons.business },
+    { to: "/dashboard/furniture", label: "Furniture", icon: icons.products },
+  ]},
+  { group: "ACCOUNT", items: [
+    { to: "/dashboard/billing", label: "Plans & Billing", icon: icons.billing },
+    { to: "/dashboard/support", label: "Support", icon: icons.support },
+  ]},
+];
+
 // Shows the right home page for the shop's type
 function HomeRouter() {
   const [type, setType] = useState(null);
@@ -225,6 +242,7 @@ function HomeRouter() {
   if (type === null) return null;
   if (type === "cars") return <CarHome />;
   if (type === "restaurant") return <RestaurantHome />;
+  if (type === "furniture") return <FurnitureHome />;
   return type === "realestate" ? <RealEstateHome /> : <DashboardHome />;
 }
 
@@ -270,7 +288,7 @@ function DashboardLayout() {
           </button>
         </div>
 
-        {(type === "realestate" ? realEstateMenu : type === "cars" ? carMenu : type === "restaurant" ? restaurantMenu : menu).map((section) => (
+        {(type === "realestate" ? realEstateMenu : type === "cars" ? carMenu : type === "restaurant" ? restaurantMenu : type === "furniture" ? furnitureMenu : menu).map((section) => (
           <div key={section.group || "main"} className="menu-group">
             {section.group && <p className="menu-label">{section.group}</p>}
             {section.items.map((item) => (
@@ -380,6 +398,7 @@ export default function App() {
         <Route path="/preview/perfume/*" element={<PerfumeSite basePath="/preview/perfume" />} />
         <Route path="/preview/jewellery/*" element={<JewellerySite basePath="/preview/jewellery" />} />
         <Route path="/preview/restaurant/*" element={<RestaurantSite basePath="/preview/restaurant" />} />
+        <Route path="/preview/furniture/*" element={<FurnitureSite basePath="/preview/furniture" />} />
         <Route path="/preview/gadgets/*" element={<GadgetsSite basePath="/preview/gadgets" />} />
 
         <Route path="/dashboard" element={<RequireConfirmed><DashboardLayout /></RequireConfirmed>}>
@@ -393,6 +412,8 @@ export default function App() {
           <Route path="inquiries" element={<Inquiries />} />
           <Route path="menu" element={<Menu />} />
           <Route path="menu/:id" element={<AddDish />} />
+          <Route path="furniture" element={<Items />} />
+          <Route path="furniture/:id" element={<AddItem />} />
           <Route path="cars" element={<Cars />} />
           <Route path="cars/:id" element={<AddCar />} />
           <Route path="car-inquiries" element={<CarInquiries />} />

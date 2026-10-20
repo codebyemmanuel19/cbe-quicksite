@@ -46,6 +46,20 @@ const TYPES = [
     keywords: "food restaurant kitchen chop buka catering cook rice soup grill bakery",
   },
   {
+    id: "bags",
+    icon: "👜",
+    name: "Bags & Shoes",
+    desc: "Handbags, backpacks, shoes & accessories",
+    keywords: "bag bags handbag purse backpack shoes sneakers slides sandals accessories wallet luggage",
+  },
+  {
+    id: "furniture",
+    icon: "🛋️",
+    name: "Furniture",
+    desc: "Sofas, beds, tables & home furnishing",
+    keywords: "furniture sofa bed chair table wardrobe dining couch interior home decor carpenter",
+  },
+  {
     id: "skincare",
     icon: "🧴",
     name: "Skincare & Body Care",

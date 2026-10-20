@@ -10,6 +10,7 @@ import GadgetsSite from "./GadgetsSite/GadgetsSite";
 import RealEstateSite from "./RealEstateSite/Site";
 import CarSite from "./CarSite/Site";
 import RestaurantSite from "./RestaurantSite/Site";
+import FurnitureSite from "./FurnitureSite/Site";
 
 // The business type the vendor picked at setup decides the look
 const TEMPLATES = {
@@ -22,6 +23,8 @@ const TEMPLATES = {
   realestate: RealEstateSite,
   cars: CarSite,
   restaurant: RestaurantSite,
+  furniture: FurnitureSite,
+  bags: ClothingSite, // bags & shoes use the fashion template
 };
 
 

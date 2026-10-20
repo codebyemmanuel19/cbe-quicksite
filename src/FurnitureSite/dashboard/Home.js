@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { api } from "../../api";
+import DashboardSkeleton from "../../components/Skeleton";
+import PlanCard from "../../components/PlanCard";
 import "../../RealEstateSite/dashboard/dashboard.css";
 
 export default function FurnitureHome() {
@@ -16,10 +18,10 @@ export default function FurnitureHome() {
     async function load() {
       try {
         const mine = await api.get("/sites/me");
-        const [f, i] = await Promise.all([api.get("/furniture"), api.get("/inquiries")]);
+        const [m, i] = await Promise.all([api.get("/furniture"), api.get("/furniture/inquiries/all")]);
         if (cancelled) return;
         setSite(mine.site);
-        setItems(f.items);
+        setItems(m.items);
         setInquiries(i.inquiries);
       } catch (err) {
         if (cancelled) return;
@@ -33,7 +35,7 @@ export default function FurnitureHome() {
   }, [navigate]);
 
   if (error) return <div className="rd"><p className="rd-err">{error}</p></div>;
-  if (!site) return <div className="rd"><p>Loading your dashboard...</p></div>;
+  if (!site) return <div className="rd"><DashboardSkeleton /></div>;
 
   const url = site.url;
   const shareLink = `https://wa.me/?text=${encodeURIComponent(`See our furniture here: ${url}`)}`;
@@ -42,8 +44,24 @@ export default function FurnitureHome() {
   monthStart.setHours(0, 0, 0, 0);
   const thisMonth = inquiries.filter((i) => new Date(i.createdAt) >= monthStart).length;
   const newOnes = inquiries.filter((i) => i.status === "new").length;
-  const count = (s) => items.filter((x) => x.status === s).length;
-  const d = site.billing.daysLeft;
+  const out = items.filter((x) => x.status === "Sold out").length;
+
+  const b = site.billing;
+  let planText = `${b.daysLeft} ${b.daysLeft === 1 ? "day" : "days"} left on your plan`;
+  let urgent = b.daysLeft <= 3;
+  let planBtn = "Add more time";
+  if (b.status === "trial") {
+    planText = `Free trial: ${b.daysLeft} ${b.daysLeft === 1 ? "day" : "days"} left. Add as many pieces as you like. After that you keep 3 free, or choose a plan.`;
+    urgent = b.daysLeft <= 5;
+    planBtn = "Choose a plan";
+  } else if (["free", "trial_not_started"].includes(b.status)) {
+    // Never paid: no card. The message only appears when they try to go past 3.
+    planText = "";
+  } else if (b.status === "locked" || b.status === "offline") {
+    planText = "Subscription finished. Upgrade your website so you can make changes.";
+    urgent = true;
+    planBtn = "Upgrade";
+  }
 
   async function copy() {
     try { await navigator.clipboard.writeText(url); setCopied(true); setTimeout(() => setCopied(false), 2000); } catch { /* ignore */ }
@@ -66,20 +84,24 @@ export default function FurnitureHome() {
       <section className="rd-month">
         <small>This month</small>
         <b>{thisMonth === 0 ? "No inquiries yet" : `You got ${thisMonth} ${thisMonth === 1 ? "inquiry" : "inquiries"}`}</b>
-        <span>{thisMonth === 0 ? "Share your link on your WhatsApp status to get your first one." : "People asked about your furniture."}</span>
+        <span>{thisMonth === 0 ? "Put your link on your WhatsApp status to get your first inquiry." : "Customers sent their inquiries to your WhatsApp."}</span>
       </section>
 
       <section className="rd-kpis">
         <div className="rd-kpi"><b>{items.length}</b><span>Pieces</span></div>
         <div className="rd-kpi"><b>{newOnes}</b><span>New inquiries</span></div>
-        <div className="rd-kpi"><b>{count("Available")}</b><span>Available</span></div>
-        <div className="rd-kpi"><b>{count("Sold out")}</b><span>Sold out</span></div>
+        <div className="rd-kpi"><b>{items.length - out}</b><span>Available</span></div>
+        <div className="rd-kpi"><b>{out}</b><span>Sold out</span></div>
       </section>
 
-      <section className={d <= 3 ? "rd-plan urgent" : "rd-plan"}>
-        <p>{d} {d === 1 ? "day" : "days"} left on your plan</p>
-        <Link className="rd-btn" to="/dashboard/billing">Add more time</Link>
-      </section>
+      {["trial", "active"].includes(b.status) ? (
+        <PlanCard status={b.status} days={b.daysLeft} />
+      ) : planText && (
+        <section className={urgent ? "rd-plan urgent" : "rd-plan"}>
+          <p>{planText}</p>
+          <Link className="rd-btn" to="/dashboard/billing">{planBtn}</Link>
+        </section>
+      )}
     </div>
   );
 }

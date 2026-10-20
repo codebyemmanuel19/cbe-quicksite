@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate, useParams } from "react-router-dom";
 import { api, uploadPhoto } from "../../api";
+import { FormSkeleton } from "../../components/Skeleton";
 import "../../RealEstateSite/dashboard/dashboard.css";
 
 const MAX_PHOTOS = 6;
@@ -119,12 +120,12 @@ export default function AddItem() {
       navigate("/dashboard/furniture");
     } catch (err) {
       if (err.status === 401) return navigate("/login");
-      setError(err.locked ? "Your trial has ended. Pay to keep editing your website." : err.message);
+      setError(err.message);
       setSaving(false);
     }
   }
 
-  if (loading) return <div className="rd"><p>Loading...</p></div>;
+  if (loading) return <div className="rd"><FormSkeleton fields={7} /></div>;
 
   return (
     <form id="furniture-form" className="rd rd-form" onSubmit={handleSave}>
