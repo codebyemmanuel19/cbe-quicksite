@@ -1,0 +1,44 @@
+/* Motion for the sk website. Shares qs-up, qs-fade and the scroll reveal with every template. */
+.sk-hero-label { animation: qs-up .8s .15s ease both; }
+.sk-hero-title { animation: qs-up .9s .3s ease both; }
+.sk-hero-btn { animation: qs-up .9s .5s ease both; }
+
+.sk-header { animation: qs-fade .8s ease both; }
+
+/* Menu and bag open smoothly, links slide in one by one */
+.sk-overlay { animation: qs-fade .25s ease both; }
+
+.sk-drawer.open .sk-drawer-link { animation: qs-up .45s ease both; }
+.sk-drawer.open .sk-drawer-link:nth-child(2) { animation-delay: .08s; }
+.sk-drawer.open .sk-drawer-link:nth-child(3) { animation-delay: .14s; }
+.sk-drawer.open .sk-drawer-link:nth-child(4) { animation-delay: .2s; }
+.sk-drawer.open .sk-drawer-link:nth-child(5) { animation-delay: .26s; }
+.sk-drawer.open .sk-drawer-link:nth-child(6) { animation-delay: .32s; }
+.sk-drawer.open .sk-drawer-link:nth-child(n+7) { animation-delay: .38s; }
+
+.sk-bag-drawer.open .sk-bag-item { animation: qs-up .45s .1s ease both; }
+
+/* Product page: details slide in after the photos */
+.sk-product-info > * { animation: qs-up .6s ease both; }
+.sk-product-info > *:nth-child(1) { animation-delay: .1s; }
+.sk-product-info > *:nth-child(2) { animation-delay: .17s; }
+.sk-product-info > *:nth-child(3) { animation-delay: .24s; }
+.sk-product-info > *:nth-child(4) { animation-delay: .31s; }
+.sk-product-info > *:nth-child(5) { animation-delay: .38s; }
+.sk-product-info > *:nth-child(n+6) { animation-delay: .45s; }
+
+.sk-track img { transition: transform .7s ease; }
+
+@media (hover: hover) {
+  .sk-card:hover .sk-track img { transform: scale(1.05); }
+}
+
+.sk-cat, .sk-chip, .sk-size { transition: background .2s, color .2s, border-color .2s, transform .15s; }
+.sk-btn { transition: transform .15s ease, opacity .2s ease; }
+.sk-btn:active:not(:disabled), .sk-cat:active, .sk-chip:active { transform: scale(.97); }
+
+@media (prefers-reduced-motion: reduce) {
+  .sk-hero-label, .sk-hero-title, .sk-hero-btn, .sk-header, .sk-overlay,
+  .sk-drawer .sk-drawer-link, .sk-bag-item, .sk-product-info > * { animation: none !important; }
+  .sk-track img { transition: none; }
+}

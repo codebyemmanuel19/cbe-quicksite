@@ -6,8 +6,10 @@ import { useCart, itemDetails } from "../shop/useCart";
 import PhotoCarousel from "../shop/PhotoCarousel";
 import Checkout from "../shop/Checkout";
 import Done from "../shop/Done";
+import Reveal from "../shop/Reveal";
 import SkincareFooter from "./SkincareFooter";
 import "./SkincareSite.css";
+import "./SkincareSiteMotion.css";
 
 const SORTS = [
   { id: "featured", label: "Featured" },
@@ -142,6 +144,7 @@ function HomePage({ store, basePath, category, setCategory }) {
 
       <section className="sk-shop" ref={shopRef}>
         {store.categories.length > 0 && (
+          <Reveal>
           <div className="sk-cats">
             {["All", ...store.categories].map((c) => (
               <button
@@ -153,8 +156,10 @@ function HomePage({ store, basePath, category, setCategory }) {
               </button>
             ))}
           </div>
+          </Reveal>
         )}
 
+        <Reveal delay={80}>
         <div className="sk-bar">
           <span>{shown.length} {shown.length === 1 ? "product" : "products"}</span>
           <label className="sk-sort">
@@ -166,13 +171,16 @@ function HomePage({ store, basePath, category, setCategory }) {
             </select>
           </label>
         </div>
+        </Reveal>
 
         {shown.length === 0 ? (
           <p className="sk-muted sk-empty">No products yet. Check back soon.</p>
         ) : (
           <div className="sk-grid">
-            {shown.map((p) => (
-              <ProductCard key={p.id} store={store} product={p} basePath={basePath} />
+            {shown.map((p, i) => (
+              <Reveal key={p.id} delay={(i % 4) * 80}>
+                <ProductCard store={store} product={p} basePath={basePath} />
+              </Reveal>
             ))}
           </div>
         )}
@@ -331,10 +339,14 @@ function ProductPage({ store, basePath, addToCart, openBag }) {
 
       {related.length > 0 && (
         <section className="sk-related">
-          <h2 className="sk-section-title">Goes well with</h2>
+          <Reveal>
+            <h2 className="sk-section-title">Goes well with</h2>
+          </Reveal>
           <div className="sk-grid">
-            {related.map((p) => (
-              <ProductCard key={p.id} store={store} product={p} basePath={basePath} />
+            {related.map((p, i) => (
+              <Reveal key={p.id} delay={(i % 4) * 80}>
+                <ProductCard store={store} product={p} basePath={basePath} />
+              </Reveal>
             ))}
           </div>
         </section>
@@ -427,6 +439,7 @@ export default function SkincareSite({ basePath = "/preview/skincare", slug: slu
       />
 
       <main className="sk-main">
+        <div className="qs-page" key={location.pathname}>
         <Routes>
           <Route
             index
@@ -457,6 +470,7 @@ export default function SkincareSite({ basePath = "/preview/skincare", slug: slu
           />
           <Route path="done" element={<Done store={store} basePath={basePath} prefix="sk" />} />
         </Routes>
+        </div>
       </main>
 
       <SkincareFooter store={store} />
