@@ -6,8 +6,10 @@ import { useCart, itemDetails } from "../shop/useCart";
 import PhotoCarousel from "../shop/PhotoCarousel";
 import Checkout from "../shop/Checkout";
 import Done from "../shop/Done";
+import Reveal from "../shop/Reveal";
 import PerfumeFooter from "./PerfumeFooter";
 import "./PerfumeSite.css";
+import "./PerfumeSiteMotion.css";
 
 const SORTS = [
   { id: "featured", label: "Featured" },
@@ -138,6 +140,7 @@ function HomePage({ store, basePath, category, setCategory }) {
 
       <section className="pf-shop" ref={shopRef}>
         {store.categories.length > 0 && (
+          <Reveal>
           <div className="pf-cats">
             {["All", ...store.categories].map((c) => (
               <button
@@ -149,8 +152,10 @@ function HomePage({ store, basePath, category, setCategory }) {
               </button>
             ))}
           </div>
+          </Reveal>
         )}
 
+        <Reveal delay={80}>
         <div className="pf-bar">
           <span>{shown.length} {shown.length === 1 ? "scent" : "scents"}</span>
           <label className="pf-sort">
@@ -162,13 +167,16 @@ function HomePage({ store, basePath, category, setCategory }) {
             </select>
           </label>
         </div>
+        </Reveal>
 
         {shown.length === 0 ? (
           <p className="pf-muted pf-empty">No scents yet. Check back soon.</p>
         ) : (
           <div className="pf-grid">
-            {shown.map((p) => (
-              <ProductCard key={p.id} store={store} product={p} basePath={basePath} />
+            {shown.map((p, i) => (
+              <Reveal key={p.id} delay={(i % 4) * 80}>
+                <ProductCard store={store} product={p} basePath={basePath} />
+              </Reveal>
             ))}
           </div>
         )}
@@ -327,10 +335,14 @@ function ProductPage({ store, basePath, addToCart, openBag }) {
 
       {related.length > 0 && (
         <section className="pf-related">
-          <h2 className="pf-section-title">You may also like</h2>
+          <Reveal>
+            <h2 className="pf-section-title">You may also like</h2>
+          </Reveal>
           <div className="pf-grid">
-            {related.map((p) => (
-              <ProductCard key={p.id} store={store} product={p} basePath={basePath} />
+            {related.map((p, i) => (
+              <Reveal key={p.id} delay={(i % 4) * 80}>
+                <ProductCard store={store} product={p} basePath={basePath} />
+              </Reveal>
             ))}
           </div>
         </section>
@@ -436,6 +448,7 @@ export default function PerfumeSite({ basePath = "/preview/perfume", slug: slugP
       />
 
       <main className={isHome ? "" : "pf-main"}>
+        <div className="qs-page" key={location.pathname}>
         <Routes>
           <Route
             index
@@ -466,6 +479,7 @@ export default function PerfumeSite({ basePath = "/preview/perfume", slug: slugP
           />
           <Route path="done" element={<Done store={store} basePath={basePath} prefix="pf" />} />
         </Routes>
+        </div>
       </main>
 
       <PerfumeFooter store={store} />

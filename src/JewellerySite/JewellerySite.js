@@ -6,8 +6,10 @@ import { useCart, itemDetails } from "../shop/useCart";
 import PhotoCarousel from "../shop/PhotoCarousel";
 import Checkout from "../shop/Checkout";
 import Done from "../shop/Done";
+import Reveal from "../shop/Reveal";
 import JewelleryFooter from "./JewelleryFooter";
 import "./JewellerySite.css";
+import "./JewellerySiteMotion.css";
 
 const SORTS = [
   { id: "featured", label: "Featured" },
@@ -139,6 +141,7 @@ function HomePage({ store, basePath, category, setCategory }) {
 
       <section className="jw-shop" ref={shopRef}>
         {store.categories.length > 0 && (
+          <Reveal>
           <div className="jw-cats">
             {["All", ...store.categories].map((c) => (
               <button
@@ -150,8 +153,10 @@ function HomePage({ store, basePath, category, setCategory }) {
               </button>
             ))}
           </div>
+          </Reveal>
         )}
 
+        <Reveal delay={80}>
         <div className="jw-bar">
           <span>{shown.length} {shown.length === 1 ? "piece" : "pieces"}</span>
           <label className="jw-sort">
@@ -163,13 +168,16 @@ function HomePage({ store, basePath, category, setCategory }) {
             </select>
           </label>
         </div>
+        </Reveal>
 
         {shown.length === 0 ? (
           <p className="jw-muted jw-empty">No pieces yet. Check back soon.</p>
         ) : (
           <div className="jw-grid">
-            {shown.map((p) => (
-              <ProductCard key={p.id} store={store} product={p} basePath={basePath} />
+            {shown.map((p, i) => (
+              <Reveal key={p.id} delay={(i % 4) * 80}>
+                <ProductCard store={store} product={p} basePath={basePath} />
+              </Reveal>
             ))}
           </div>
         )}
@@ -328,10 +336,14 @@ function ProductPage({ store, basePath, addToCart, openBag }) {
 
       {related.length > 0 && (
         <section className="jw-related">
-          <h2 className="jw-section-title">More from this collection</h2>
+          <Reveal>
+            <h2 className="jw-section-title">More from this collection</h2>
+          </Reveal>
           <div className="jw-grid">
-            {related.map((p) => (
-              <ProductCard key={p.id} store={store} product={p} basePath={basePath} />
+            {related.map((p, i) => (
+              <Reveal key={p.id} delay={(i % 4) * 80}>
+                <ProductCard store={store} product={p} basePath={basePath} />
+              </Reveal>
             ))}
           </div>
         </section>
@@ -423,6 +435,7 @@ export default function JewellerySite({ basePath = "/preview/jewellery", slug: s
       />
 
       <main className="jw-main">
+        <div className="qs-page" key={location.pathname}>
         <Routes>
           <Route
             index
@@ -453,6 +466,7 @@ export default function JewellerySite({ basePath = "/preview/jewellery", slug: s
           />
           <Route path="done" element={<Done store={store} basePath={basePath} prefix="jw" />} />
         </Routes>
+        </div>
       </main>
 
       <JewelleryFooter store={store} />
