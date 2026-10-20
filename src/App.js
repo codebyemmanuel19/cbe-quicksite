@@ -34,6 +34,7 @@ import FurnitureHome from "./FurnitureSite/dashboard/FurnitureHome";
 import Items from "./FurnitureSite/dashboard/Items";
 import AddItem from "./FurnitureSite/dashboard/AddItem";
 import FurnitureSite from "./FurnitureSite/Site";
+import RunAds from "./Ads/RunAds";
 import ClothingSite from "./ClothingSite/ClothingSite";
 import HairSite from "./HairSite/HairSite";
 import SkincareSite from "./SkincareSite/SkincareSite";
@@ -98,6 +99,13 @@ const Brand = () => (
 );
 
 const icons = {
+  ads: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <path d="M3 11v2a1 1 0 0 0 1 1h3l5 4V6L7 10H4a1 1 0 0 0-1 1z" />
+      <path d="M16 9a4 4 0 0 1 0 6" />
+      <path d="M19 6a8 8 0 0 1 0 12" />
+    </svg>
+  ),
   dashboard: (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
       <rect x="3" y="3" width="7" height="9" rx="1" />
@@ -166,6 +174,7 @@ const menu = [
     { to: "/dashboard/order-settings", label: "Order Settings", icon: icons.orderSettings },
   ]},
   { group: "ACCOUNT", items: [
+    { to: "/dashboard/ads", label: "Run Ads", icon: icons.ads },
     { to: "/dashboard/billing", label: "Plans & Billing", icon: icons.billing },
     { to: "/dashboard/support", label: "Support", icon: icons.support },
   ]},
@@ -182,6 +191,7 @@ const realEstateMenu = [
     { to: "/dashboard/inquiries", label: "Inquiries", icon: icons.orders },
   ]},
   { group: "ACCOUNT", items: [
+    { to: "/dashboard/ads", label: "Run Ads", icon: icons.ads },
     { to: "/dashboard/billing", label: "Plans & Billing", icon: icons.billing },
     { to: "/dashboard/support", label: "Support", icon: icons.support },
   ]},
@@ -198,6 +208,7 @@ const carMenu = [
     { to: "/dashboard/car-inquiries", label: "Inquiries", icon: icons.orders },
   ]},
   { group: "ACCOUNT", items: [
+    { to: "/dashboard/ads", label: "Run Ads", icon: icons.ads },
     { to: "/dashboard/billing", label: "Plans & Billing", icon: icons.billing },
     { to: "/dashboard/support", label: "Support", icon: icons.support },
   ]},
@@ -211,6 +222,7 @@ const restaurantMenu = [
     { to: "/dashboard/menu", label: "Menu", icon: icons.products },
   ]},
   { group: "ACCOUNT", items: [
+    { to: "/dashboard/ads", label: "Run Ads", icon: icons.ads },
     { to: "/dashboard/billing", label: "Plans & Billing", icon: icons.billing },
     { to: "/dashboard/support", label: "Support", icon: icons.support },
   ]},
@@ -224,6 +236,7 @@ const furnitureMenu = [
     { to: "/dashboard/furniture", label: "Furniture", icon: icons.products },
   ]},
   { group: "ACCOUNT", items: [
+    { to: "/dashboard/ads", label: "Run Ads", icon: icons.ads },
     { to: "/dashboard/billing", label: "Plans & Billing", icon: icons.billing },
     { to: "/dashboard/support", label: "Support", icon: icons.support },
   ]},
@@ -419,6 +432,7 @@ export default function App() {
           <Route path="car-inquiries" element={<CarInquiries />} />
           <Route path="billing" element={<Billing />} />
           <Route path="support" element={<Support />} />
+          <Route path="ads" element={<RunAds />} />
         </Route>
         <Route path="*" element={<Navigate to="/dashboard" />} />
       </Routes>

@@ -1,0 +1,49 @@
+.ra { padding-bottom: 40px; }
+.ra h1 { margin: 0 0 4px; }
+.ra h2 { font-size: 17px; margin: 0 0 4px; }
+.ra-sub { color: #6b7280; margin: 0 0 16px; font-size: 15px; }
+.ra-progress { display: flex; gap: 8px; margin-bottom: 14px; }
+.ra-progress span { flex: 1; text-align: center; padding: 8px; border-radius: 10px; background: #eef1f7; color: #9ca3af; font-size: 13px; font-weight: 700; }
+.ra-progress span.on { background: #e8efff; color: #1d4ed8; }
+.ra-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 14px; padding: 16px; margin-bottom: 14px; }
+.ra-help { color: #6b7280; font-size: 14px; margin: 0 0 12px; }
+.ra-label { font-size: 14px; font-weight: 700; margin: 16px 0 8px; }
+.ra-between { display: flex; align-items: center; justify-content: space-between; }
+.ra-count { color: #1d4ed8; font-size: 14px; }
+.ra-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+.ra-chips button { border: 1px solid #d1d5db; background: #fff; color: #374151; padding: 9px 14px; border-radius: 999px; font-size: 14px; cursor: pointer; }
+.ra-chips button.on { background: #1d4ed8; border-color: #1d4ed8; color: #fff; font-weight: 700; }
+.ra-states { max-height: 260px; overflow-y: auto; padding: 2px; }
+.ra-input { width: 100%; border: 1px solid #d1d5db; border-radius: 10px; padding: 12px; font-size: 15px; font-family: inherit; margin-bottom: 4px; }
+.ra-tools { display: flex; gap: 14px; margin: 8px 0 10px; }
+.ra-tools button, .ra-link { background: none; border: 0; color: #1d4ed8; font-weight: 700; font-size: 14px; padding: 0; cursor: pointer; }
+.ra-total { background: #f3f6ff; border-radius: 12px; padding: 14px; margin-top: 16px; }
+.ra-total span { display: block; color: #6b7280; font-size: 13px; }
+.ra-total b { display: block; font-size: 26px; color: #1d4ed8; margin: 2px 0 6px; }
+.ra-total small { color: #6b7280; font-size: 13px; line-height: 1.5; }
+.ra-sum p { display: flex; justify-content: space-between; gap: 14px; margin: 8px 0 0; font-size: 14px; }
+.ra-sum span { color: #6b7280; }
+.ra-sum b { text-align: right; }
+.ra-actions { display: flex; gap: 10px; margin: 4px 0 14px; }
+.ra-actions .rd-btn { flex: 2; text-align: center; border: 0; cursor: pointer; }
+.ra-ghost { flex: 1; border: 1px solid #d1d5db; background: #fff; color: #374151; border-radius: 10px; font-weight: 700; padding: 12px; cursor: pointer; }
+.ra-actions button:disabled { opacity: 0.6; cursor: default; }
+.ra-toast { text-align: center; background: #111827; color: #fff; border-radius: 10px; padding: 10px; font-size: 14px; }
+.ra-req { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 10px 0; border-top: 1px solid #f0f1f5; }
+.ra-req:first-of-type { margin-top: 8px; }
+.ra-t1 { margin: 0; font-weight: 700; font-size: 15px; }
+.ra-t2 { margin: 2px 0 0; color: #6b7280; font-size: 13px; }
+.ra-status { font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 99px; background: #e8efff; color: #1d4ed8; white-space: nowrap; }
+.ra-status.running { background: #dcfce7; color: #166534; }
+.ra-status.done { background: #f3f4f6; color: #4b5563; }
+.ra-status.cancelled { background: #fee2e2; color: #991b1b; }
+.ra-done { text-align: center; padding: 24px 8px; }
+.ra-check { width: 64px; height: 64px; border-radius: 50%; background: #dcfce7; color: #166534; font-size: 32px; display: grid; place-items: center; margin: 0 auto 14px; }
+.ra-done p { color: #4b5563; margin: 6px 0 18px; }
+.ra-done .rd-btn { display: inline-block; }
+.ra-steps { padding-left: 20px; margin: 10px 0 0; color: #374151; line-height: 1.7; font-size: 15px; }
+.ra-fee { display: flex; justify-content: space-between; align-items: center; gap: 12px; border: 1px dashed #93aef5; border-radius: 12px; padding: 12px 14px; margin-top: 12px; }
+.ra-fee span { font-size: 14px; color: #374151; }
+.ra-fee b { font-size: 18px; color: #1d4ed8; }
+.ra-agree { display: flex; gap: 10px; align-items: flex-start; background: #fffbeb; border: 1px solid #fde68a; border-radius: 12px; padding: 12px; margin-bottom: 14px; font-size: 14px; line-height: 1.5; color: #374151; cursor: pointer; }
+.ra-agree input { margin-top: 3px; width: 18px; height: 18px; flex: none; }
