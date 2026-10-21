@@ -8,6 +8,7 @@ import "./Products.css";
 const MAX_PHOTOS = 4;
 const MAX_OPTIONS = 20;
 const MAX_VARIANTS = 10;
+const LOW_STOCK = 3;
 
 const TAGS = ["New", "Most loved", "Pre-order", "Limited", "Sale"];
 
@@ -39,6 +40,7 @@ const emptyForm = {
   colors: [],
   variants: [],
   soldOut: false,
+  stock: "",
 };
 
 function formatNaira(amount) {
@@ -305,6 +307,7 @@ export default function Products() {
       colors: product.colors || [],
       variants: product.variants || [],
       soldOut: product.soldOut,
+      stock: product.stock === null || product.stock === undefined ? "" : String(product.stock),
     });
     setError("");
     setEditingId(product.id);
@@ -359,6 +362,10 @@ export default function Products() {
     const name = form.name.trim().slice(0, 80);
     if (!name) return setError("Give the product a name.");
 
+    if (form.stock !== "" && (!Number.isInteger(Number(form.stock)) || Number(form.stock) < 0)) {
+      return setError("Stock must be a whole number, like 5.");
+    }
+
     const price = Number(form.price);
     if (!form.price || Number.isNaN(price) || price <= 0) return setError("Enter a valid price.");
     if (!Number.isInteger(price)) return setError("Enter the price in whole naira, no kobo.");
@@ -375,6 +382,7 @@ export default function Products() {
       colors: form.colors,
       variants: form.variants,
       soldOut: form.soldOut,
+      stock: form.stock === "" ? null : Number(form.stock),
     };
 
     setSaving(true);
@@ -525,6 +533,10 @@ export default function Products() {
                   )}
                   {p.sizes?.length > 0 && <span className="tag">{p.sizes.length} sizes</span>}
                   {p.soldOut && <span className="tag sold">Sold out</span>}
+                  {!p.soldOut && p.stock !== null && p.stock !== undefined && p.stock <= LOW_STOCK && (
+                    <span className="tag sold">Only {p.stock} left</span>
+                  )}
+                  {!p.soldOut && p.stock > LOW_STOCK && <span className="tag">{p.stock} in stock</span>}
                 </div>
               </div>
 
@@ -649,10 +661,19 @@ export default function Products() {
             <textarea name="description" rows={3} value={form.description} onChange={handleChange}
               maxLength={1000} placeholder="Material, fit, care, anything customers should know." />
 
-            <label className="check-row">
-              <input type="checkbox" name="soldOut" checked={form.soldOut} onChange={handleChange} />
-              Mark as sold out
-            </label>
+            <label>How many do you have? (optional)</label>
+            <input name="stock" type="number" inputMode="numeric" min="0" value={form.stock}
+              onChange={handleChange} placeholder="e.g. 10" />
+            <p className="prod-sub">
+              Leave empty if you don't want to count. At 0, customers see "Sold out".
+            </p>
+
+            {form.stock === "" && (
+              <label className="check-row">
+                <input type="checkbox" name="soldOut" checked={form.soldOut} onChange={handleChange} />
+                Mark as sold out
+              </label>
+            )}
 
             {/* Stays pinned at the bottom of the form while the fields scroll */}
             <div className="modal-foot">
