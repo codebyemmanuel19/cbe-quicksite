@@ -55,7 +55,7 @@ const PLANS = [
   },
   {
     name: "Real estate & cars",
-    price: "₦10,000",
+    price: "₦9,999",
     per: "a month",
     who: "Estate agents, property companies and car dealers",
     points: [
@@ -68,7 +68,7 @@ const PLANS = [
 ];
 
 const FAQ = [
-  { q: "How much does it cost?", a: "Shops start free with 3 items, no card needed. Real estate and cars get 30 days free with no limit. After that, shops are ₦7,999 a month, and real estate and cars are ₦10,000 a month. Pay for 3, 6 or 12 months and it costs less." },
+  { q: "How much does it cost?", a: "Shops start free with 3 items, no card needed. Real estate and cars get 30 days free with no limit. After that, shops are ₦7,999 a month, and real estate and cars are ₦9,999 a month. Pay for 3, 6 or 12 months and it costs less." },
   { q: "Do I need to know coding?", a: "No. You fill in simple forms, and your website is ready. If you get stuck, message us on WhatsApp." },
   { q: "How do my customers pay me?", a: "Your customers order and pay you directly. Set your bank account and delivery areas in your dashboard, and your details show at checkout. The money goes straight to your bank, not to us." },
   { q: "What happens after my 3 free items?", a: "Your website stays live and you keep 3 items for free. To add a 4th item, you choose a plan. If a paid plan ends and stays unpaid for 7 days, the website goes offline until you pay." },
