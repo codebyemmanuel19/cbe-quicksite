@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { api, uploadPhoto } from "../api";
 import { ListSkeleton } from "./Skeleton";
+import ShareProduct from "./ShareProduct";
 import "./Products.css";
 
 const MAX_PHOTOS = 4;
@@ -528,6 +529,13 @@ export default function Products() {
               </div>
 
               <div className="row-actions">
+                <ShareProduct
+                  name={p.name}
+                  price={p.variants?.length > 0 ? Math.min(...p.variants.map((v) => v.price)) : p.price}
+                  from={p.variants?.length > 0}
+                  photo={p.photos?.[0]}
+                  path={`/product/${p.id}`}
+                />
                 <button onClick={() => openEdit(p)}>Edit</button>
                 <button className="danger" onClick={() => handleDelete(p.id)}>Delete</button>
               </div>

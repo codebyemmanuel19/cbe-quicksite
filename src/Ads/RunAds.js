@@ -208,13 +208,21 @@ export default function RunAds() {
         </div>
 
         <section className="ra-card">
-          <h2>What happens next</h2>
+          <h2>Get ready while we reply</h2>
+          <p className="ra-help">Do these so we can start your campaign quickly. You never share a password.</p>
           <ol className="ra-steps">
-            <li>You message us on WhatsApp and pay the ₦2,900 campaign setup fee.</li>
-            <li>We guide you to give us access to your Facebook Page and ad account. You never share a password.</li>
-            <li>You add your own payment method in your ad account, so you pay Meta directly.</li>
-            <li>We set up your campaign. You can watch the views and results in your own account.</li>
+            <li>Make sure your business has a Facebook Page. Link your Instagram to it if you want ads there too.</li>
+            <li>Download the <b>Meta Business Suite</b> app and open your Page.</li>
+            <li>Add a payment card in <b>Ads Manager → Billing</b>. You pay Meta directly for your ads.</li>
+            <li>Message us on WhatsApp. We will send the payment details for the ₦2,900 setup fee, and tell you how to give us access to your Page and ad account.</li>
           </ol>
+        </section>
+        <section className="ra-card">
+          <h2>What we do</h2>
+          <p className="ra-help" style={{ margin: 0 }}>
+            We set up your campaign: the targeting, budget and schedule. You watch the views and results in your own
+            account. We do not guarantee sales or results.
+          </p>
         </section>
         <button className="ra-link" onClick={startNew}>Create another request</button>
       </div>
@@ -224,7 +232,7 @@ export default function RunAds() {
   return (
     <div className="rd ra">
       <h1>Run Ads</h1>
-      <p className="ra-sub">Create and manage your advertising campaigns in minutes</p>
+      <p className="ra-sub">Run Meta ads so you can get sales for your business</p>
 
       <div className="ra-progress">
         <span className={step >= 1 ? "on" : ""}>1 Campaign</span>
@@ -257,7 +265,7 @@ export default function RunAds() {
               <h2>Ad target location</h2>
               <b className="ra-count">{form.states.length} selected</b>
             </div>
-            <p className="ra-help">Tap the states where you want people to see your ads.</p>
+            <p className="ra-help">Choose the states where your ads will show.</p>
             <input className="ra-input" placeholder="Search states" value={search} onChange={(e) => setSearch(e.target.value)} />
             <div className="ra-tools">
               <button type="button" onClick={() => set("states", allSelected ? [] : [...states])}>

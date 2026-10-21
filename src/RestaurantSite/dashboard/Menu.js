@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { api } from "../../api";
 import { ListSkeleton } from "../../components/Skeleton";
+import ShareProduct from "../../components/ShareProduct";
 import "../../RealEstateSite/dashboard/dashboard.css";
 
 const FILTERS = ["All", "Available", "Sold out"];
@@ -86,6 +87,7 @@ export default function Menu() {
             <span className={`rd-tag ${x.status === "Sold out" ? "sold" : ""}`}>{x.status || "Available"}</span>
           </div>
           <div className="rd-acts">
+            <ShareProduct name={x.name} price={x.price} photo={x.photo || (x.photos && x.photos[0])} />
             <button onClick={() => toggle(x)}>{x.status === "Sold out" ? "Bring back" : "Sold out"}</button>
             <Link to={`/dashboard/menu/${x.id}`}>Edit</Link>
             <button className="del" onClick={() => remove(x.id)}>Delete</button>

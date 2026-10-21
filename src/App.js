@@ -172,9 +172,10 @@ const menu = [
   { group: "SALES", items: [
     { to: "/dashboard/orders", label: "Orders", icon: icons.orders },
     { to: "/dashboard/order-settings", label: "Order Settings", icon: icons.orderSettings },
+  
+    { to: "/dashboard/ads", label: "Run Ads", icon: icons.ads },
   ]},
   { group: "ACCOUNT", items: [
-    { to: "/dashboard/ads", label: "Run Ads", icon: icons.ads },
     { to: "/dashboard/billing", label: "Plans & Billing", icon: icons.billing },
     { to: "/dashboard/support", label: "Support", icon: icons.support },
   ]},
@@ -189,9 +190,10 @@ const realEstateMenu = [
   ]},
   { group: "SALES", items: [
     { to: "/dashboard/inquiries", label: "Inquiries", icon: icons.orders },
+  
+    { to: "/dashboard/ads", label: "Run Ads", icon: icons.ads },
   ]},
   { group: "ACCOUNT", items: [
-    { to: "/dashboard/ads", label: "Run Ads", icon: icons.ads },
     { to: "/dashboard/billing", label: "Plans & Billing", icon: icons.billing },
     { to: "/dashboard/support", label: "Support", icon: icons.support },
   ]},
@@ -206,9 +208,10 @@ const carMenu = [
   ]},
   { group: "SALES", items: [
     { to: "/dashboard/car-inquiries", label: "Inquiries", icon: icons.orders },
+  
+    { to: "/dashboard/ads", label: "Run Ads", icon: icons.ads },
   ]},
   { group: "ACCOUNT", items: [
-    { to: "/dashboard/ads", label: "Run Ads", icon: icons.ads },
     { to: "/dashboard/billing", label: "Plans & Billing", icon: icons.billing },
     { to: "/dashboard/support", label: "Support", icon: icons.support },
   ]},
@@ -221,8 +224,10 @@ const restaurantMenu = [
     { to: "/dashboard/business", label: "Business Info", icon: icons.business },
     { to: "/dashboard/menu", label: "Menu", icon: icons.products },
   ]},
-  { group: "ACCOUNT", items: [
+  { group: "SALES", items: [
     { to: "/dashboard/ads", label: "Run Ads", icon: icons.ads },
+  ]},
+  { group: "ACCOUNT", items: [
     { to: "/dashboard/billing", label: "Plans & Billing", icon: icons.billing },
     { to: "/dashboard/support", label: "Support", icon: icons.support },
   ]},
@@ -235,8 +240,10 @@ const furnitureMenu = [
     { to: "/dashboard/business", label: "Business Info", icon: icons.business },
     { to: "/dashboard/furniture", label: "Furniture", icon: icons.products },
   ]},
-  { group: "ACCOUNT", items: [
+  { group: "SALES", items: [
     { to: "/dashboard/ads", label: "Run Ads", icon: icons.ads },
+  ]},
+  { group: "ACCOUNT", items: [
     { to: "/dashboard/billing", label: "Plans & Billing", icon: icons.billing },
     { to: "/dashboard/support", label: "Support", icon: icons.support },
   ]},
