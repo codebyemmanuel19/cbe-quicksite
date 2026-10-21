@@ -32,7 +32,7 @@ const STEPS = [
 ];
 
 const FEATURES = [
-  { title: "A design made for your business", text: "Clothing, hair, skincare, perfume, jewellery, gadgets and real estate each get their own look. Not one template for everybody." },
+  { title: "A design made for your business", text: "Clothing, bags, hair, skincare, perfume, jewellery, gadgets, furniture, restaurants, real estate and cars each get their own look. Not one template for everybody." },
   { title: "Your own website address", text: "Something like yourshop.cbequicksite.com that you can send to anyone." },
   { title: "Orders on WhatsApp", text: "Every order comes straight to your WhatsApp, with the product and the customer's details." },
   { title: "Edit it yourself", text: "Change prices, photos and business info from your phone. No need to call a developer." },
@@ -43,9 +43,9 @@ const FEATURES = [
 const PLANS = [
   {
     name: "Shops",
-    price: "₦5,000",
+    price: "₦7,999",
     per: "a month",
-    who: "Clothing, hair & wigs, skincare, perfume, jewellery and gadgets",
+    who: "Clothing, bags & shoes, hair & wigs, skincare, perfume, jewellery, gadgets, furniture and restaurants",
     points: [
       "Your own website address",
       "Products with photos, sizes and colours",
@@ -54,21 +54,21 @@ const PLANS = [
     ],
   },
   {
-    name: "Real estate",
+    name: "Real estate & cars",
     price: "₦10,000",
     per: "a month",
-    who: "Estate agents and property companies",
+    who: "Estate agents, property companies and car dealers",
     points: [
       "Your own website address",
-      "Up to 8 photos on every property",
-      "Buyers filter by sale, rent, house, flat or land",
+      "Photos on every listing",
+      "Buyers search and filter your listings",
       "Every enquiry lands in your dashboard",
     ],
   },
 ];
 
 const FAQ = [
-  { q: "How much does it cost?", a: "Shops start free with 3 items, no card needed. Real estate and cars get 30 days free with no limit. After that, shops are ₦5,000 a month, and real estate and cars are ₦10,000 a month. Pay for 3, 6 or 12 months and it costs less." },
+  { q: "How much does it cost?", a: "Shops start free with 3 items, no card needed. Real estate and cars get 30 days free with no limit. After that, shops are ₦7,999 a month, and real estate and cars are ₦10,000 a month. Pay for 3, 6 or 12 months and it costs less." },
   { q: "Do I need to know coding?", a: "No. You fill in simple forms, and your website is ready. If you get stuck, message us on WhatsApp." },
   { q: "How do my customers pay me?", a: "Your customers order and pay you directly. Set your bank account and delivery areas in your dashboard, and your details show at checkout. The money goes straight to your bank, not to us." },
   { q: "What happens after my 3 free items?", a: "Your website stays live and you keep 3 items for free. To add a 4th item, you choose a plan. If a paid plan ends and stays unpaid for 7 days, the website goes offline until you pay." },
