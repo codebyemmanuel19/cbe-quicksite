@@ -113,7 +113,7 @@ export default function Landing() {
 
       <section className="lp-top">
         <div className="lp-top-text">
-          <h1>Your shop online in 5 minutes. Orders go straight to your WhatsApp.</h1>
+          <h1>Grow your business with your own website. Get orders, run ads and create flyers.</h1>
           <p>
             Make a website for your business.
             Whatever you sell or do, we’ve got you covered.
