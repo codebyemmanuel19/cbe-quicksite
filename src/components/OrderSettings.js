@@ -97,27 +97,6 @@ function ChoiceCard({ on, onClick, title, hint, badge }) {
   );
 }
 
-function Switch({ checked, onChange, label, hint }) {
-  return (
-    <div className="switch-row">
-      <div>
-        <p className="switch-label">{label}</p>
-        {hint && <p className="switch-hint">{hint}</p>}
-      </div>
-      <button
-        type="button"
-        role="switch"
-        aria-checked={checked}
-        aria-label={label}
-        className={checked ? "switch on" : "switch"}
-        onClick={() => onChange(!checked)}
-      >
-        <span className="knob" />
-      </button>
-    </div>
-  );
-}
-
 export default function OrderSettings() {
   const navigate = useNavigate();
   const [s, setS] = useState(emptySettings);
