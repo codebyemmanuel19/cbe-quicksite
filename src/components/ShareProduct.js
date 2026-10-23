@@ -4,8 +4,10 @@ import { api } from "../api";
 import "./ShareProduct.css";
 
 // Two buttons for any item in a dashboard list: Share (WhatsApp) and Flyer (a picture to post).
-// Usage: <ShareProduct name={p.name} price={p.price} photo={p.photos?.[0]} path={`/product/${p.id}`} />
+// Usage: <ShareProduct name={p.name} price={p.price} photo={p.photos?.[0]} path={`/product/${p.id}`} tag={p.tag} stock={p.stock} />
+// Optional: cta="BOOK A VIEWING" changes the words on the order button.
 // `path` is the item's page on the public site. Leave it out to share the main website link.
+// `tag` and `stock` are optional. They choose the badge the flyer starts with.
 
 const THEMES = [
   { id: "blue", label: "Blue", bg: "#0f2a6b", accent: "#ffd166", text: "#ffffff" },
@@ -15,12 +17,42 @@ const THEMES = [
   { id: "light", label: "Light", bg: "#ffffff", accent: "#1d4ed8", text: "#111827" },
 ];
 
+// The small label on the photo. Words that create a reason to order now work best.
+const BADGES = ["NEW IN", "HOT 🔥", "LIMITED STOCK", "SALE", "BEST SELLER", "PRE-ORDER"];
+const TAG_BADGE = {
+  New: "NEW IN",
+  "Most loved": "BEST SELLER",
+  "Pre-order": "PRE-ORDER",
+  Limited: "LIMITED STOCK",
+  Sale: "SALE",
+};
+
+// Reasons to order, shown with an icon on the flyer. Up to 3 are shown.
+const REASONS = [
+  { id: "original", icon: "shield", text: "100% Original" },
+  { id: "delivery", icon: "truck", text: "Delivery available" },
+  { id: "pod", icon: "naira", text: "Pay on delivery" },
+  { id: "whatsapp", icon: "chat", text: "Easy WhatsApp order" },
+  { id: "quality", icon: "star", text: "Top quality" },
+];
+
+function defaultBadge(tag, stock) {
+  if (Number.isInteger(stock) && stock > 0 && stock <= 3) return `ONLY ${stock} LEFT`;
+  return TAG_BADGE[tag] || "NEW IN";
+}
+
 let siteCache = null;
 function loadSite() {
   if (!siteCache) {
     siteCache = api
       .get("/sites/me")
-      .then((res) => ({ name: res.site.business.businessName, url: String(res.site.url || "").replace(/\/$/, "") }))
+      .then((res) => ({
+        name: res.site.business.businessName,
+        url: String(res.site.url || "").replace(/\/$/, ""),
+        whatsapp: String((res.site.business && res.site.business.whatsapp) || "").trim(),
+        delivery: !!(res.site.orderSettings && res.site.orderSettings.offersDelivery),
+        payOnDelivery: !!(res.site.orderSettings && res.site.orderSettings.payOnDelivery),
+      }))
       .catch(() => {
         siteCache = null;
         return null;
@@ -41,8 +73,10 @@ function roundRect(c, x, y, w, h, r, fill) {
   c.arcTo(x, y + h, x, y, r);
   c.arcTo(x, y, x + w, y, r);
   c.closePath();
-  c.fillStyle = fill;
-  c.fill();
+  if (fill) {
+    c.fillStyle = fill;
+    c.fill();
+  }
 }
 
 function wrap(c, text, maxWidth, maxLines) {
@@ -68,22 +102,147 @@ function wrap(c, text, maxWidth, maxLines) {
   return lines;
 }
 
-function draw(canvas, { img, name, priceText, shop, link, theme }) {
+// Mixes a #rrggbb colour towards another colour. t = 0 keeps it, t = 1 gives the other.
+function mix(hex, to, t) {
+  const n = parseInt(hex.replace("#", ""), 16);
+  const m = (a, b) => Math.round(a + (b - a) * t);
+  return `rgb(${m((n >> 16) & 255, to[0])},${m((n >> 8) & 255, to[1])},${m(n & 255, to[2])})`;
+}
+
+// True when the photo has a see-through background (a cut-out PNG)
+function hasCutout(img) {
+  try {
+    const s = 40;
+    const k = document.createElement("canvas");
+    k.width = s;
+    k.height = s;
+    const g = k.getContext("2d");
+    g.drawImage(img, 0, 0, s, s);
+    const corners = [[0, 0], [s - 1, 0], [0, s - 1], [s - 1, s - 1]];
+    return corners.every(([x, y]) => g.getImageData(x, y, 1, 1).data[3] < 20);
+  } catch (err) {
+    return false;
+  }
+}
+
+// Small line icons for the "why order" column
+function icon(c, kind, cx, cy, r, color) {
+  const s = r * 0.52;
+  c.save();
+  c.strokeStyle = color;
+  c.fillStyle = color;
+  c.lineWidth = 4;
+  c.lineCap = "round";
+  c.lineJoin = "round";
+  c.beginPath();
+  c.arc(cx, cy, r, 0, Math.PI * 2);
+  c.stroke();
+  c.lineWidth = 3.5;
+  c.beginPath();
+  if (kind === "shield") {
+    c.moveTo(cx, cy - s);
+    c.lineTo(cx + s * 0.9, cy - s * 0.55);
+    c.lineTo(cx + s * 0.9, cy + s * 0.1);
+    c.quadraticCurveTo(cx + s * 0.9, cy + s * 0.8, cx, cy + s * 1.05);
+    c.quadraticCurveTo(cx - s * 0.9, cy + s * 0.8, cx - s * 0.9, cy + s * 0.1);
+    c.lineTo(cx - s * 0.9, cy - s * 0.55);
+    c.closePath();
+    c.stroke();
+    c.beginPath();
+    c.moveTo(cx - s * 0.38, cy + s * 0.05);
+    c.lineTo(cx - s * 0.05, cy + s * 0.38);
+    c.lineTo(cx + s * 0.45, cy - s * 0.28);
+    c.stroke();
+  } else if (kind === "truck") {
+    c.rect(cx - s * 1.05, cy - s * 0.6, s * 1.35, s * 0.95);
+    c.moveTo(cx + s * 0.3, cy - s * 0.25);
+    c.lineTo(cx + s * 0.8, cy - s * 0.25);
+    c.lineTo(cx + s * 1.05, cy + s * 0.08);
+    c.lineTo(cx + s * 1.05, cy + s * 0.35);
+    c.lineTo(cx + s * 0.3, cy + s * 0.35);
+    c.stroke();
+    c.beginPath();
+    c.arc(cx - s * 0.5, cy + s * 0.55, s * 0.22, 0, Math.PI * 2);
+    c.moveTo(cx + s * 0.82, cy + s * 0.55);
+    c.arc(cx + s * 0.6, cy + s * 0.55, s * 0.22, 0, Math.PI * 2);
+    c.stroke();
+  } else if (kind === "naira") {
+    c.font = `800 ${Math.round(r * 1.05)}px -apple-system, Segoe UI, Roboto, Arial, sans-serif`;
+    c.textAlign = "center";
+    c.fillText("₦", cx, cy + r * 0.36);
+    c.textAlign = "left";
+  } else if (kind === "chat") {
+    c.arc(cx, cy - s * 0.1, s * 0.9, 0, Math.PI * 2);
+    c.stroke();
+    c.beginPath();
+    c.moveTo(cx - s * 0.55, cy + s * 0.65);
+    c.lineTo(cx - s * 0.95, cy + s * 1.05);
+    c.lineTo(cx - s * 0.1, cy + s * 0.8);
+    c.stroke();
+    [-0.4, 0, 0.4].forEach((d) => {
+      c.beginPath();
+      c.arc(cx + s * d, cy - s * 0.1, s * 0.1, 0, Math.PI * 2);
+      c.fill();
+    });
+  } else {
+    // star
+    for (let i = 0; i < 10; i++) {
+      const a = (Math.PI / 5) * i - Math.PI / 2;
+      const rr = i % 2 === 0 ? s * 1.05 : s * 0.45;
+      const x = cx + Math.cos(a) * rr;
+      const y = cy + Math.sin(a) * rr + s * 0.05;
+      if (i === 0) c.moveTo(x, y);
+      else c.lineTo(x, y);
+    }
+    c.closePath();
+    c.stroke();
+  }
+  c.restore();
+}
+
+function cart(c, x, y, color) {
+  c.save();
+  c.strokeStyle = color;
+  c.fillStyle = color;
+  c.lineWidth = 6;
+  c.lineCap = "round";
+  c.lineJoin = "round";
+  c.beginPath();
+  c.moveTo(x - 24, y - 24);
+  c.lineTo(x - 12, y - 24);
+  c.lineTo(x - 2, y + 8);
+  c.lineTo(x + 30, y + 8);
+  c.lineTo(x + 38, y - 14);
+  c.lineTo(x - 9, y - 14);
+  c.stroke();
+  c.beginPath();
+  c.arc(x + 2, y + 24, 5, 0, Math.PI * 2);
+  c.arc(x + 26, y + 24, 5, 0, Math.PI * 2);
+  c.fill();
+  c.restore();
+}
+
+function draw(canvas, { img, name, subtitle, priceText, oldPriceText, discount, badge, shop, whatsapp, link, trust, cta, theme }) {
   const W = 1080;
   const H = 1350;
-  const PH = 860; // photo height
+  const SCENE = 800; // the picture area, the wave covers its bottom edge
   canvas.width = W;
   canvas.height = H;
   const c = canvas.getContext("2d");
   const font = "-apple-system, Segoe UI, Roboto, Arial, sans-serif";
+  const light = theme.text !== "#ffffff";
+  const cut = img ? hasCutout(img) : false;
+  c.textBaseline = "alphabetic";
 
+  // Page colour
   c.fillStyle = theme.bg;
   c.fillRect(0, 0, W, H);
 
-  if (img) {
+  // ---- Scene ----
+  if (img && !cut) {
     // Soft blurred copy of the photo fills the background, so any shape of photo looks finished
     const sw = 36;
-    const sh = Math.round((sw * PH) / W);
+    const sh = Math.round((sw * SCENE) / W);
     const small = document.createElement("canvas");
     small.width = sw;
     small.height = sh;
@@ -92,78 +251,242 @@ function draw(canvas, { img, name, priceText, shop, link, theme }) {
     sc.drawImage(img, (sw - img.width * cover) / 2, (sh - img.height * cover) / 2, img.width * cover, img.height * cover);
     c.imageSmoothingEnabled = true;
     c.imageSmoothingQuality = "high";
-    c.drawImage(small, 0, 0, W, PH);
-    c.fillStyle = "rgba(0,0,0,.18)";
-    c.fillRect(0, 0, W, PH);
+    c.drawImage(small, 0, 0, W, SCENE);
+    c.fillStyle = "rgba(0,0,0,.22)";
+    c.fillRect(0, 0, W, SCENE);
+  } else {
+    // A glowing studio backdrop for cut-outs and for items with no photo
+    const g = c.createRadialGradient(W / 2, 380, 40, W / 2, 380, 640);
+    g.addColorStop(0, light ? "#ffffff" : mix(theme.bg, [255, 255, 255], 0.38));
+    g.addColorStop(1, light ? "#e8eefc" : theme.bg);
+    c.fillStyle = g;
+    c.fillRect(0, 0, W, SCENE);
+    c.strokeStyle = theme.accent;
+    c.globalAlpha = 0.35;
+    c.lineWidth = 5;
+    c.beginPath();
+    c.arc(W / 2, 400, 300, 0, Math.PI * 2);
+    c.stroke();
+    c.globalAlpha = 1;
+  }
 
-    // The whole photo, never cropped
-    const boxX = 35;
-    const boxY = 125;
-    const boxW = W - 70;
-    const boxH = PH - boxY - 35;
+  if (img && cut) {
+    // The product floats, with a soft shadow under it
+    const boxW = 860;
+    const boxH = 600;
+    const fit = Math.min(boxW / img.width, boxH / img.height);
+    const w = img.width * fit;
+    const h = img.height * fit;
+    const x = (W - w) / 2;
+    const y = 120 + (boxH - h) / 2 + 20;
+    c.save();
+    c.fillStyle = "rgba(0,0,0,.35)";
+    c.filter = "blur(18px)";
+    c.beginPath();
+    c.ellipse(W / 2, y + h - 4, w * 0.42, 24, 0, 0, Math.PI * 2);
+    c.fill();
+    c.restore();
+    c.save();
+    c.shadowColor = "rgba(0,0,0,.35)";
+    c.shadowBlur = 36;
+    c.shadowOffsetY = 14;
+    c.drawImage(img, x, y, w, h);
+    c.restore();
+  } else if (img) {
+    // The whole photo, never cropped, in a clean frame
+    const boxX = 70;
+    const boxY = 130;
+    const boxW = W - 140;
+    const boxH = 570;
     const fit = Math.min(boxW / img.width, boxH / img.height);
     const w = img.width * fit;
     const h = img.height * fit;
     const x = boxX + (boxW - w) / 2;
     const y = boxY + (boxH - h) / 2;
     c.save();
-    c.shadowColor = "rgba(0,0,0,.35)";
+    c.shadowColor = "rgba(0,0,0,.4)";
     c.shadowBlur = 40;
-    c.shadowOffsetY = 12;
-    roundRect(c, x, y, w, h, 26, "#ffffff");
+    c.shadowOffsetY = 14;
+    roundRect(c, x - 10, y - 10, w + 20, h + 20, 34, "#ffffff");
     c.restore();
     c.save();
-    c.beginPath();
-    c.moveTo(x + 26, y);
-    c.arcTo(x + w, y, x + w, y + h, 26);
-    c.arcTo(x + w, y + h, x, y + h, 26);
-    c.arcTo(x, y + h, x, y, 26);
-    c.arcTo(x, y, x + w, y, 26);
-    c.closePath();
+    roundRect(c, x, y, w, h, 26);
     c.clip();
     c.drawImage(img, x, y, w, h);
     c.restore();
   } else {
-    const g = c.createLinearGradient(0, 0, W, PH);
-    g.addColorStop(0, theme.accent);
-    g.addColorStop(1, theme.bg);
-    c.fillStyle = g;
-    c.fillRect(0, 0, W, PH);
-    c.fillStyle = "rgba(255,255,255,.35)";
-    c.font = `800 420px ${font}`;
+    c.fillStyle = theme.accent;
+    c.globalAlpha = 0.5;
+    c.font = `800 380px ${font}`;
     c.textAlign = "center";
-    c.fillText(String(name || "?").trim().charAt(0).toUpperCase(), W / 2, PH / 2 + 150);
+    c.fillText(String(name || "?").trim().charAt(0).toUpperCase(), W / 2, 470);
+    c.textAlign = "left";
+    c.globalAlpha = 1;
+  }
+
+  // ---- Wave and panel ----
+  const wave = () => {
+    c.beginPath();
+    c.moveTo(0, 810);
+    c.bezierCurveTo(260, 870, 540, 850, 720, 790);
+    c.bezierCurveTo(870, 742, 970, 735, W, 758);
+  };
+  wave();
+  c.lineTo(W, H);
+  c.lineTo(0, H);
+  c.closePath();
+  c.fillStyle = theme.bg;
+  c.fill();
+  wave();
+  c.strokeStyle = theme.accent;
+  c.lineWidth = 7;
+  c.stroke();
+
+  // ---- Top: shop name and badge ----
+  c.font = `800 32px ${font}`;
+  const label = String(shop || "").slice(0, 24);
+  const tw = c.measureText(label).width;
+  roundRect(c, 40, 40, tw + 56, 68, 34, "rgba(0,0,0,.6)");
+  c.fillStyle = "#ffffff";
+  c.fillText(label, 68, 85);
+
+  if (badge) {
+    c.font = `800 36px ${font}`;
+    const bw = c.measureText(badge).width + 56;
+    const urgent = /LEFT|LIMITED|SALE/.test(badge);
+    roundRect(c, W - 40 - bw, 40, bw, 68, 34, urgent ? "#ef4444" : theme.accent);
+    c.fillStyle = urgent ? "#ffffff" : theme.bg;
+    c.fillText(badge, W - 40 - bw + 28, 86);
+  }
+
+  if (discount > 0) {
+    const cx = W - 130;
+    const cy = 640;
+    c.save();
+    c.shadowColor = "rgba(0,0,0,.35)";
+    c.shadowBlur = 20;
+    c.beginPath();
+    c.arc(cx, cy, 84, 0, Math.PI * 2);
+    c.fillStyle = "#ef4444";
+    c.fill();
+    c.restore();
+    c.fillStyle = "#ffffff";
+    c.textAlign = "center";
+    c.font = `800 50px ${font}`;
+    c.fillText(`-${discount}%`, cx, cy + 10);
+    c.font = `700 24px ${font}`;
+    c.fillText("OFF", cx, cy + 42);
     c.textAlign = "left";
   }
 
-  // Business name tag on the photo
-  c.font = `700 34px ${font}`;
-  const label = String(shop || "").slice(0, 28);
-  const tw = c.measureText(label).width;
-  roundRect(c, 40, 40, tw + 60, 70, 35, "rgba(0,0,0,.6)");
-  c.fillStyle = "#ffffff";
-  c.fillText(label, 70, 87);
-
-  // Name and price
+  // ---- Panel: name, line, price, button ----
   c.fillStyle = theme.text;
-  c.font = `700 64px ${font}`;
-  const lines = wrap(c, name, W - 120, 2);
-  lines.forEach((ln, i) => c.fillText(ln, 60, PH + 95 + i * 74));
+  let nameSize = 66;
+  c.font = `800 ${nameSize}px ${font}`;
+  let lines = wrap(c, name, W - 120, 2);
+  if (lines.length > 1) {
+    nameSize = 54;
+    c.font = `800 ${nameSize}px ${font}`;
+    lines = wrap(c, name, W - 120, 2);
+  }
+  const step = nameSize + 6;
+  let y = 905;
+  lines.forEach((ln, i) => c.fillText(ln, 60, y + i * step));
+  y += (lines.length - 1) * step;
 
+  if (subtitle) {
+    y += 22;
+    c.font = `800 27px ${font}`;
+    const text = subtitle.toUpperCase().slice(0, 40);
+    const w = Math.min(c.measureText(text).width + 56, 600);
+    roundRect(c, 60, y, w, 54, 27, theme.accent);
+    c.fillStyle = theme.bg;
+    c.fillText(text, 88, y + 37);
+    y += 54;
+  }
+
+  // Price
+  y += lines.length > 1 ? 100 : 114;
   c.fillStyle = theme.accent;
-  c.font = `800 96px ${font}`;
-  c.fillText(priceText, 60, PH + 95 + lines.length * 74 + 80);
+  let priceSize = 100;
+  c.font = `800 ${priceSize}px ${font}`;
+  while (priceSize > 56 && c.measureText(priceText).width > 560) {
+    priceSize -= 4;
+    c.font = `800 ${priceSize}px ${font}`;
+  }
+  const priceW = c.measureText(priceText).width;
+  c.fillText(priceText, 60, y);
+  if (oldPriceText) {
+    c.font = `600 40px ${font}`;
+    const ow = c.measureText(oldPriceText).width;
+    const ox = 60 + priceW + 22;
+    if (ox + ow < 640) {
+      c.fillStyle = light ? "rgba(17,24,39,.5)" : "rgba(255,255,255,.55)";
+      c.fillText(oldPriceText, ox, y - 6);
+      c.fillRect(ox, y - 22, ow, 4);
+    } else {
+      c.fillStyle = light ? "rgba(17,24,39,.5)" : "rgba(255,255,255,.55)";
+      c.fillText(oldPriceText, 60, y - 100);
+      c.fillRect(60, y - 116, ow, 4);
+    }
+  }
 
-  // Order line
-  roundRect(c, 60, H - 150, 260, 84, 42, theme.accent);
+  // Order button
+  y += lines.length > 1 ? 24 : 36;
+  roundRect(c, 60, y, 470, 92, 46, theme.accent);
+  cart(c, 118, y + 44, theme.bg);
   c.fillStyle = theme.bg;
-  c.font = `800 36px ${font}`;
-  c.fillText("Order now", 100, H - 96);
-  c.fillStyle = theme.text;
-  c.font = `600 32px ${font}`;
-  let shown = String(link || "").replace(/^https?:\/\//, "");
-  while (shown.length > 3 && c.measureText(shown).width > W - 400) shown = shown.slice(0, -2);
-  c.fillText(shown, 350, H - 98);
+  let ctaSize = 40;
+  c.font = `800 ${ctaSize}px ${font}`;
+  while (ctaSize > 26 && c.measureText(cta || "ORDER NOW").width > 270) {
+    ctaSize -= 2;
+    c.font = `800 ${ctaSize}px ${font}`;
+  }
+  c.fillText(cta || "ORDER NOW", 178, y + 58);
+  c.font = `800 44px ${font}`;
+  c.fillText("›", 478, y + 58);
+
+  // ---- Why order (right column) ----
+  // A long name takes two lines, so the column starts lower and shows two reasons
+  const reasons = trust.slice(0, lines.length > 1 ? 2 : 3);
+  const colX = 640;
+  const rowStart = lines.length > 1 ? 1125 : 960;
+  c.fillStyle = light ? "rgba(17,24,39,.15)" : "rgba(255,255,255,.2)";
+  if (reasons.length) c.fillRect(colX - 22, rowStart - 50, 2, reasons.length * 96 - 20);
+  reasons.forEach((r, i) => {
+    const cy = rowStart + i * 96;
+    icon(c, r.icon, colX + 38, cy, 38, theme.accent);
+    c.fillStyle = theme.text;
+    c.font = `700 28px ${font}`;
+    const words = wrap(c, r.text, 280, 2);
+    words.forEach((ln, k) => c.fillText(ln, colX + 96, cy + (words.length === 1 ? 10 : -4 + k * 34)));
+  });
+
+  // ---- Footer ----
+  c.fillStyle = light ? "#eef2ff" : "#f6efe0";
+  c.fillRect(0, H - 80, W, 80);
+  c.fillStyle = "#14213d";
+  c.font = `800 30px ${font}`;
+  c.fillText(whatsapp ? `WhatsApp: ${whatsapp}`.slice(0, 34) : "Order on WhatsApp", 50, H - 43);
+  c.globalAlpha = 0.65;
+  c.font = `600 19px ${font}`;
+  c.fillText("Made with CBE QuickSite", 50, H - 16);
+  c.globalAlpha = 1;
+  // The link people tap or type to order
+  // Use the full link if it fits, otherwise just the shop address
+  const fullLink = String(link || "").replace(/^https?:\/\//, "");
+  let shown = fullLink;
+  c.font = `800 25px ${font}`;
+  if (c.measureText(shown).width > 480) {
+    c.font = `800 21px ${font}`;
+    if (c.measureText(shown).width > 480) {
+      shown = fullLink.split("/")[0];
+      c.font = `800 25px ${font}`;
+    }
+  }
+  c.textAlign = "right";
+  c.fillText(shown, W - 40, H - 30);
+  c.textAlign = "left";
 }
 
 function loadImage(src) {
@@ -200,12 +523,16 @@ async function shareOut({ text, file }) {
   }
 }
 
-export default function ShareProduct({ name, price, photo, path = "", from = false }) {
+export default function ShareProduct({ name, price, photo, path = "", from = false, tag = "", stock = null, cta = "ORDER NOW" }) {
   const [site, setSite] = useState(null);
   const [busy, setBusy] = useState(false);
   const [open, setOpen] = useState(false);
   const [themeId, setThemeId] = useState("blue");
   const [ready, setReady] = useState(false);
+  const [badge, setBadge] = useState("NEW IN");
+  const [line, setLine] = useState("");
+  const [oldPrice, setOldPrice] = useState("");
+  const [picked, setPicked] = useState({ original: false, delivery: false, pod: false, whatsapp: true, quality: false });
   const canvasRef = useRef(null);
 
   useEffect(() => {
@@ -222,6 +549,32 @@ export default function ShareProduct({ name, price, photo, path = "", from = fal
   const priceText = (from ? "From " : "") + naira(price);
   const theme = THEMES.find((t) => t.id === themeId) || THEMES[0];
 
+  const oldAmount = Number(oldPrice);
+  const hasOld = oldPrice !== "" && Number.isFinite(oldAmount) && oldAmount > Number(price);
+  const oldPriceText = hasOld ? naira(oldAmount) : "";
+  const discount = hasOld ? Math.round(((oldAmount - Number(price)) / oldAmount) * 100) : 0;
+
+  const startBadge = defaultBadge(tag, stock);
+  const badgeOptions = BADGES.includes(startBadge) ? BADGES : [startBadge, ...BADGES];
+
+  const trust = REASONS.filter((r) => picked[r.id]);
+  const trustKey = trust.map((r) => r.id).join(",");
+
+  function openFlyer() {
+    // Start with what the shop settings say. The vendor can change every one of these.
+    setBadge(startBadge);
+    setLine("");
+    setOldPrice("");
+    setPicked({
+      original: false,
+      delivery: !!(site && site.delivery),
+      pod: !!(site && site.payOnDelivery),
+      whatsapp: true,
+      quality: false,
+    });
+    setOpen(true);
+  }
+
   async function onShare() {
     if (!site) return;
     setBusy(true);
@@ -231,20 +584,36 @@ export default function ShareProduct({ name, price, photo, path = "", from = fal
     setBusy(false);
   }
 
-  // Redraw the flyer whenever it opens or the colour changes
+  // Redraw the flyer whenever it opens or anything on it changes
   useEffect(() => {
     if (!open || !site) return;
     let cancelled = false;
     setReady(false);
     loadImage(photo).then((img) => {
       if (cancelled || !canvasRef.current) return;
-      draw(canvasRef.current, { img, name, priceText, shop: site.name, link, theme });
+      draw(canvasRef.current, {
+        img,
+        name,
+        subtitle: line.trim(),
+        priceText,
+        oldPriceText,
+        discount,
+        badge,
+        shop: site.name,
+        whatsapp: site.whatsapp,
+        link,
+        trust,
+        cta,
+        theme,
+      });
       setReady(true);
     });
     return () => {
       cancelled = true;
     };
-  }, [open, site, photo, name, priceText, link, theme]);
+    // `trust` is rebuilt from `picked`, so `trustKey` is what we watch
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, site, photo, name, line, priceText, oldPriceText, discount, badge, link, cta, theme, trustKey]);
 
   function toBlob() {
     return new Promise((resolve) => canvasRef.current.toBlob(resolve, "image/png"));
@@ -280,7 +649,7 @@ export default function ShareProduct({ name, price, photo, path = "", from = fal
       <button type="button" onClick={onShare} disabled={busy || !site}>
         {busy ? "..." : "Share"}
       </button>
-      <button type="button" onClick={() => setOpen(true)} disabled={!site}>
+      <button type="button" onClick={openFlyer} disabled={!site}>
         Flyer
       </button>
 
@@ -293,6 +662,54 @@ export default function ShareProduct({ name, price, photo, path = "", from = fal
                 <button type="button" className="sp-x" onClick={() => setOpen(false)}>×</button>
               </div>
               <canvas ref={canvasRef} className="sp-canvas" style={{ opacity: ready ? 1 : 0.4 }} />
+
+              <p className="sp-label">Badge on the photo</p>
+              <div className="sp-chips">
+                {badgeOptions.map((b) => (
+                  <button type="button" key={b} className={b === badge ? "on" : ""} onClick={() => setBadge(b)}>
+                    {b}
+                  </button>
+                ))}
+                <button type="button" className={badge === "" ? "on" : ""} onClick={() => setBadge("")}>
+                  None
+                </button>
+              </div>
+
+              <p className="sp-label">Short line under the name (optional)</p>
+              <input
+                className="sp-input"
+                maxLength={40}
+                placeholder="e.g. Unisex • Long lasting"
+                value={line}
+                onChange={(e) => setLine(e.target.value)}
+              />
+
+              <p className="sp-label">Old price (optional)</p>
+              <input
+                className="sp-input"
+                inputMode="numeric"
+                placeholder="Type the old price to show a discount"
+                value={oldPrice}
+                onChange={(e) => setOldPrice(e.target.value.replace(/\D/g, ""))}
+              />
+              {oldPrice !== "" && !hasOld && <p className="sp-warn">The old price must be higher than the price.</p>}
+
+              <p className="sp-label">Reasons to order (the flyer shows up to 3)</p>
+              <div className="sp-chips">
+                {REASONS.map((r) => (
+                  <button
+                    type="button"
+                    key={r.id}
+                    className={picked[r.id] ? "on" : ""}
+                    onClick={() => setPicked({ ...picked, [r.id]: !picked[r.id] })}
+                  >
+                    {r.text}
+                  </button>
+                ))}
+              </div>
+              <p className="sp-tip">Only tick what is true for your business.</p>
+
+              <p className="sp-label">Colour</p>
               <div className="sp-themes">
                 {THEMES.map((t) => (
                   <button
@@ -310,7 +727,7 @@ export default function ShareProduct({ name, price, photo, path = "", from = fal
                 <button type="button" className="sp-ghost" onClick={download} disabled={!ready}>Download</button>
                 <button type="button" className="sp-main" onClick={shareFlyer} disabled={!ready}>Share flyer</button>
               </div>
-              <p className="sp-hint">Download it, then post it on your WhatsApp status, Instagram or Facebook.</p>
+              <p className="sp-hint">Tip: a photo with no background (PNG) makes your product stand out. Download it, then post it on your WhatsApp status, Instagram or Facebook.</p>
             </div>
           </div>,
           document.body

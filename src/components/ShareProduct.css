@@ -12,3 +12,13 @@
 .sp-main { border: 0; background: #1d4ed8; color: #fff; }
 .sp-acts button:disabled { opacity: 0.5; cursor: default; }
 .sp-hint { color: #6b7280; font-size: 13px; text-align: center; margin: 10px 0 0; }
+.sp-label { margin: 14px 0 6px; font-size: 13px; font-weight: 700; color: #374151; }
+.sp-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.sp-chips button { border: 1.5px solid #d1d5db; background: #fff; color: #374151; border-radius: 999px; padding: 7px 12px; font-size: 13px; font-weight: 700; cursor: pointer; }
+.sp-chips button.on { background: #1d4ed8; border-color: #1d4ed8; color: #fff; }
+.sp-input { width: 100%; box-sizing: border-box; border: 1px solid #d1d5db; border-radius: 10px; padding: 11px 12px; font-size: 15px; font-family: inherit; }
+.sp-input:focus { outline: none; border-color: #1d4ed8; }
+.sp-warn { margin: 6px 0 0; font-size: 12px; color: #b91c1c; }
+.sp-themes { margin: 0 0 12px; }
+.sp-box { max-height: calc(100vh - 32px); overflow-y: auto; }
+.sp-tip { margin: 6px 0 0; font-size: 12px; color: #6b7280; }
