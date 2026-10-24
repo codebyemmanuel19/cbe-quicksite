@@ -1,0 +1,14 @@
+/* One clean look for every shop logo, whatever the template or the picture */
+[class$="-logo"][class$="-logo"] img,
+[class*="-logo "][class*="-logo "] img {
+  width: 46px !important;
+  height: 46px !important;
+  max-width: none !important;
+  max-height: none !important;
+  border-radius: 50% !important;
+  object-fit: cover !important;
+  background: #fff;
+  border: 2px solid rgba(255, 255, 255, 0.95);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+  display: block;
+}

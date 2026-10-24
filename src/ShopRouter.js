@@ -11,6 +11,7 @@ import RealEstateSite from "./RealEstateSite/Site";
 import CarSite from "./CarSite/Site";
 import RestaurantSite from "./RestaurantSite/Site";
 import FurnitureSite from "./FurnitureSite/Site";
+import "./shop/logoFix.css";
 
 // The business type the vendor picked at setup decides the look
 const TEMPLATES = {
