@@ -523,7 +523,10 @@ async function shareOut({ text, file }) {
   }
 }
 
-export default function ShareProduct({ name, price, photo, path = "", from = false, tag = "", stock = null, cta = "ORDER NOW" }) {
+export default function ShareProduct({ name, price, photo, photos = [], path = "", from = false, tag = "", stock = null, cta = "ORDER NOW" }) {
+  const list = photos && photos.length ? photos : photo ? [photo] : [];
+  const [pickedPhoto, setPickedPhoto] = useState(0);
+  const picture = list[pickedPhoto] || list[0] || "";
   const [site, setSite] = useState(null);
   const [busy, setBusy] = useState(false);
   const [open, setOpen] = useState(false);
@@ -579,7 +582,7 @@ export default function ShareProduct({ name, price, photo, path = "", from = fal
     if (!site) return;
     setBusy(true);
     const text = `🔥 ${name}\n${priceText}\nOrder here: ${link}`;
-    const file = photo ? await photoFile(photo) : null;
+    const file = picture ? await photoFile(picture) : null;
     await shareOut({ text, file });
     setBusy(false);
   }
@@ -589,7 +592,7 @@ export default function ShareProduct({ name, price, photo, path = "", from = fal
     if (!open || !site) return;
     let cancelled = false;
     setReady(false);
-    loadImage(photo).then((img) => {
+    loadImage(picture).then((img) => {
       if (cancelled || !canvasRef.current) return;
       draw(canvasRef.current, {
         img,
@@ -613,7 +616,7 @@ export default function ShareProduct({ name, price, photo, path = "", from = fal
     };
     // `trust` is rebuilt from `picked`, so `trustKey` is what we watch
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, site, photo, name, line, priceText, oldPriceText, discount, badge, link, cta, theme, trustKey]);
+  }, [open, site, picture, name, line, priceText, oldPriceText, discount, badge, link, cta, theme, trustKey]);
 
   function toBlob() {
     return new Promise((resolve) => canvasRef.current.toBlob(resolve, "image/png"));
@@ -661,7 +664,25 @@ export default function ShareProduct({ name, price, photo, path = "", from = fal
                 <b>Your flyer</b>
                 <button type="button" className="sp-x" onClick={() => setOpen(false)}>×</button>
               </div>
-              <canvas ref={canvasRef} className="sp-canvas" style={{ opacity: ready ? 1 : 0.4 }} />
+              <div className="sp-stage">
+                <canvas ref={canvasRef} className="sp-canvas" style={{ opacity: ready ? 1 : 0.4 }} />
+                {list.length > 1 && (
+                  <div className="sp-dots" aria-label="Choose flyer photo">
+                    {list.map((src, i) => (
+                      <button
+                        type="button"
+                        key={src + i}
+                        className={i === pickedPhoto ? "on" : ""}
+                        onClick={() => setPickedPhoto(i)}
+                        aria-label={`Use photo ${i + 1}`}
+                      >
+                        <span />
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+              {list.length > 1 && <p className="sp-tip">Tap a dot to change the photo on your flyer.</p>}
 
               <p className="sp-label">Badge on the photo</p>
               <div className="sp-chips">

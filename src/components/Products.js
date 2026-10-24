@@ -546,7 +546,10 @@ export default function Products() {
                   price={p.variants?.length > 0 ? Math.min(...p.variants.map((v) => v.price)) : p.price}
                   from={p.variants?.length > 0}
                   photo={p.photos?.[0]}
+                  photos={p.photos}
                   path={`/product/${p.id}`}
+                  tag={p.tag}
+                  stock={p.stock}
                 />
                 <button onClick={() => openEdit(p)}>Edit</button>
                 <button className="danger" onClick={() => handleDelete(p.id)}>Delete</button>
