@@ -224,10 +224,10 @@ function cart(c, x, y, color) {
 
 function draw(canvas, { img, name, subtitle, priceText, oldPriceText, discount, badge, shop, whatsapp, link, trust, cta, theme, layout = "big" }) {
   const W = 1080;
-  const H = 1350;
-  const big = layout !== "details"; // big photo layout, or the original full details layout
-  const SCENE = big ? 950 : 800; // the picture area, the wave covers its bottom edge
-  const DY = big ? 150 : 0; // how far the wave moves down
+  const big = layout !== "details"; // story size (1080 x 1920), or the original post size (1080 x 1350)
+  const H = big ? 1920 : 1350;
+  const SCENE = big ? 1400 : 800; // the picture area, the wave covers its bottom edge
+  const DY = big ? 600 : 0; // how far the wave moves down
   canvas.width = W;
   canvas.height = H;
   const c = canvas.getContext("2d");
@@ -258,7 +258,7 @@ function draw(canvas, { img, name, subtitle, priceText, oldPriceText, discount, 
     c.fillRect(0, 0, W, SCENE);
   } else {
     // A glowing studio backdrop for cut-outs and for items with no photo
-    const g = c.createRadialGradient(W / 2, big ? 470 : 380, 40, W / 2, big ? 470 : 380, big ? 740 : 640);
+    const g = c.createRadialGradient(W / 2, big ? 720 : 380, 40, W / 2, big ? 720 : 380, big ? 900 : 640);
     g.addColorStop(0, light ? "#ffffff" : mix(theme.bg, [255, 255, 255], 0.38));
     g.addColorStop(1, light ? "#e8eefc" : theme.bg);
     c.fillStyle = g;
@@ -267,20 +267,20 @@ function draw(canvas, { img, name, subtitle, priceText, oldPriceText, discount, 
     c.globalAlpha = 0.35;
     c.lineWidth = 5;
     c.beginPath();
-    c.arc(W / 2, big ? 500 : 400, big ? 330 : 300, 0, Math.PI * 2);
+    c.arc(W / 2, big ? 760 : 400, big ? 400 : 300, 0, Math.PI * 2);
     c.stroke();
     c.globalAlpha = 1;
   }
 
   if (img && cut) {
     // The product floats, with a soft shadow under it
-    const boxW = big ? 960 : 860;
-    const boxH = big ? 740 : 600;
+    const boxW = big ? 980 : 860;
+    const boxH = big ? 1120 : 600;
     const fit = Math.min(boxW / img.width, boxH / img.height);
     const w = img.width * fit;
     const h = img.height * fit;
     const x = (W - w) / 2;
-    const y = (big ? 105 : 120) + (boxH - h) / 2 + 20;
+    const y = (big ? 140 : 120) + (boxH - h) / 2 + 20;
     c.save();
     c.fillStyle = "rgba(0,0,0,.35)";
     c.filter = "blur(18px)";
@@ -296,10 +296,10 @@ function draw(canvas, { img, name, subtitle, priceText, oldPriceText, discount, 
     c.restore();
   } else if (img) {
     // The whole photo, never cropped, in a clean frame
-    const boxX = big ? 40 : 70;
-    const boxY = big ? 125 : 130;
+    const boxX = big ? 60 : 70;
+    const boxY = big ? 150 : 130;
     const boxW = W - boxX * 2;
-    const boxH = big ? 780 : 570;
+    const boxH = big ? 1190 : 570;
     const fit = Math.min(boxW / img.width, boxH / img.height);
     const w = img.width * fit;
     const h = img.height * fit;
@@ -321,7 +321,7 @@ function draw(canvas, { img, name, subtitle, priceText, oldPriceText, discount, 
     c.globalAlpha = 0.5;
     c.font = `800 380px ${font}`;
     c.textAlign = "center";
-    c.fillText(String(name || "?").trim().charAt(0).toUpperCase(), W / 2, big ? 570 : 470);
+    c.fillText(String(name || "?").trim().charAt(0).toUpperCase(), W / 2, big ? 860 : 470);
     c.textAlign = "left";
     c.globalAlpha = 1;
   }
@@ -363,7 +363,7 @@ function draw(canvas, { img, name, subtitle, priceText, oldPriceText, discount, 
 
   if (discount > 0) {
     const cx = W - 130;
-    const cy = big ? 770 : 640;
+    const cy = big ? 1215 : 640;
     c.save();
     c.shadowColor = "rgba(0,0,0,.35)";
     c.shadowBlur = 20;
@@ -486,93 +486,83 @@ function draw(canvas, { img, name, subtitle, priceText, oldPriceText, discount, 
     words.forEach((ln, k) => c.fillText(ln, colX + 96, cy + (words.length === 1 ? 10 : -4 + k * 34)));
   });
   } else {
-    // ---- Big photo layout: name, price and button, then the reasons in one row ----
+    // ---- Story layout: big photo on top, then name, price, button and the reasons ----
     c.fillStyle = theme.text;
-    let nameSize = 60;
+    const nameSize = 56;
     c.font = `800 ${nameSize}px ${font}`;
-    while (nameSize > 44 && c.measureText(name).width > 960) {
-      nameSize -= 2;
-      c.font = `800 ${nameSize}px ${font}`;
-    }
-    let nm = String(name || "");
-    if (c.measureText(nm).width > 960) {
-      while (nm.length > 3 && c.measureText(nm + "…").width > 960) nm = nm.slice(0, -1);
-      nm = nm.trim() + "…";
-    }
-    c.fillText(nm, 60, 1082);
+    const lines = wrap(c, name, 520, 2);
+    const nameStep = nameSize + 8;
+    lines.forEach((ln, i) => c.fillText(ln, 60, 1536 + i * nameStep));
 
-    if (subtitle) {
-      c.font = `800 26px ${font}`;
-      c.fillStyle = theme.accent;
-      let sub = subtitle.toUpperCase().slice(0, 40);
-      while (sub.length > 3 && c.measureText(sub).width > 500) sub = sub.slice(0, -1);
-      c.fillText(sub, 60, 1118);
-    }
-
-    // Price, shrunk to fit the left side
+    // Price (with the old price beside it), shrunk until both fit the left side
     let priceSize = 92;
-    c.font = `800 ${priceSize}px ${font}`;
-    while (priceSize > 52 && c.measureText(priceText).width > 500) {
-      priceSize -= 4;
+    let oldSize = 32;
+    let ow = 0;
+    for (;;) {
       c.font = `800 ${priceSize}px ${font}`;
+      const pw = c.measureText(priceText).width;
+      if (oldPriceText) {
+        c.font = `600 ${oldSize}px ${font}`;
+        ow = c.measureText(oldPriceText).width;
+      }
+      const need = pw + (oldPriceText ? 16 + ow : 0);
+      if (need <= 520 || (priceSize <= 56 && oldSize <= 24)) break;
+      if (priceSize > 56) priceSize -= 4;
+      else oldSize -= 2;
     }
+    const priceY = 1690;
+    c.font = `800 ${priceSize}px ${font}`;
     c.fillStyle = theme.accent;
-    c.fillText(priceText, 60, 1205);
+    const priceW = c.measureText(priceText).width;
+    c.fillText(priceText, 60, priceY);
+    if (oldPriceText) {
+      c.font = `600 ${oldSize}px ${font}`;
+      c.fillStyle = light ? "rgba(17,24,39,.55)" : "rgba(255,255,255,.6)";
+      const ox = 60 + priceW + 16;
+      c.fillText(oldPriceText, ox, priceY - 4);
+      c.fillRect(ox, priceY - 4 - Math.round(oldSize * 0.36), ow, 3);
+    }
 
-    // Order button on the right
-    const bx = 590;
-    const bw = 430;
-    const by = 1128;
-    roundRect(c, bx, by, bw, 88, 44, theme.accent);
-    cart(c, bx + 54, by + 42, theme.bg);
+    // Order button
+    const by = 1722;
+    roundRect(c, 60, by, 520, 92, 46, theme.accent);
+    cart(c, 122, by + 44, theme.bg);
     c.fillStyle = theme.bg;
-    let ctaSize = 38;
+    let ctaSize = 40;
     c.font = `800 ${ctaSize}px ${font}`;
-    while (ctaSize > 24 && c.measureText(cta || "ORDER NOW").width > 240) {
+    while (ctaSize > 26 && c.measureText(cta || "ORDER NOW").width > 270) {
       ctaSize -= 2;
       c.font = `800 ${ctaSize}px ${font}`;
     }
-    c.fillText(cta || "ORDER NOW", bx + 108, by + 56);
-    c.font = `800 42px ${font}`;
-    c.fillText("›", bx + bw - 56, by + 56);
+    c.fillText(cta || "ORDER NOW", 184, by + 59);
+    c.font = `800 46px ${font}`;
+    c.fillText("›", 520, by + 60);
 
-    // Old price, crossed out, above the button
-    if (oldPriceText) {
-      c.font = `600 30px ${font}`;
-      const ow = c.measureText(oldPriceText).width;
-      const ox = bx + bw / 2;
-      c.fillStyle = light ? "rgba(17,24,39,.55)" : "rgba(255,255,255,.6)";
-      c.textAlign = "center";
-      c.fillText(oldPriceText, ox, 1120);
-      c.textAlign = "left";
-      c.fillRect(ox - ow / 2, 1120 - 10, ow, 3);
-    }
-
-    // Reasons to order, spread across one row
+    // Reasons to order: pills down the right side
     const reasons = trust.slice(0, 3);
-    if (reasons.length) {
-      let rs = 26;
-      const measure = () => {
-        c.font = `700 ${rs}px ${font}`;
-        return reasons.map((r) => 56 + c.measureText(r.text).width);
-      };
-      let widths = measure();
-      while (rs > 18 && widths.reduce((a, b) => a + b, 0) + (reasons.length - 1) * 24 > 960) {
-        rs -= 1;
-        widths = measure();
-      }
-      const total = widths.reduce((a, b) => a + b, 0);
-      const gap = reasons.length > 1 ? Math.min(70, (960 - total) / (reasons.length - 1)) : 0;
-      let x = 60;
-      const cy = 1242;
-      reasons.forEach((r, i) => {
-        icon(c, r.icon, x + 22, cy - 2, 22, theme.accent);
-        c.fillStyle = theme.text;
-        c.font = `700 ${rs}px ${font}`;
-        c.fillText(r.text, x + 54, cy + 7);
-        x += widths[i] + gap;
-      });
-    }
+    reasons.forEach((r, i) => {
+      const py = 1500 + i * 106;
+      roundRect(c, 620, py, 400, 86, 43, light ? "rgba(17,24,39,.08)" : "rgba(255,255,255,.14)");
+      c.fillStyle = theme.accent;
+      c.beginPath();
+      c.arc(620 + 43, py + 43, 38, 0, Math.PI * 2);
+      c.fill();
+      icon(c, r.icon, 620 + 43, py + 43, 38, theme.bg);
+      c.fillStyle = theme.text;
+      c.font = `700 28px ${font}`;
+      const words = wrap(c, r.text, 270, 2);
+      words.forEach((ln, k) => c.fillText(ln, 620 + 98, py + (words.length === 1 ? 53 : 37 + k * 32)));
+    });
+  }
+
+  // Short line as a tag on the bottom of the photo (story layout)
+  if (big && subtitle) {
+    c.font = `800 28px ${font}`;
+    const text = subtitle.toUpperCase().slice(0, 40);
+    const w = Math.min(c.measureText(text).width + 56, 700);
+    roundRect(c, 90, 150 + 1190 - 86, w, 58, 29, theme.accent);
+    c.fillStyle = theme.bg;
+    c.fillText(text, 118, 150 + 1190 - 86 + 40);
   }
 
   // ---- Footer ----
@@ -802,10 +792,10 @@ export default function ShareProduct({ name, price, photo, photos = [], path = "
               <p className="sp-label">Flyer style</p>
               <div className="sp-chips">
                 <button type="button" className={layout === "big" ? "on" : ""} onClick={() => setLayout("big")}>
-                  Big photo
+                  Story
                 </button>
                 <button type="button" className={layout === "details" ? "on" : ""} onClick={() => setLayout("details")}>
-                  Full details
+                  Post
                 </button>
               </div>
 
