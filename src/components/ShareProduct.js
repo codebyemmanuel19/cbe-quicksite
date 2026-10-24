@@ -222,10 +222,12 @@ function cart(c, x, y, color) {
   c.restore();
 }
 
-function draw(canvas, { img, name, subtitle, priceText, oldPriceText, discount, badge, shop, whatsapp, link, trust, cta, theme }) {
+function draw(canvas, { img, name, subtitle, priceText, oldPriceText, discount, badge, shop, whatsapp, link, trust, cta, theme, layout = "big" }) {
   const W = 1080;
   const H = 1350;
-  const SCENE = 800; // the picture area, the wave covers its bottom edge
+  const big = layout !== "details"; // big photo layout, or the original full details layout
+  const SCENE = big ? 950 : 800; // the picture area, the wave covers its bottom edge
+  const DY = big ? 150 : 0; // how far the wave moves down
   canvas.width = W;
   canvas.height = H;
   const c = canvas.getContext("2d");
@@ -256,7 +258,7 @@ function draw(canvas, { img, name, subtitle, priceText, oldPriceText, discount, 
     c.fillRect(0, 0, W, SCENE);
   } else {
     // A glowing studio backdrop for cut-outs and for items with no photo
-    const g = c.createRadialGradient(W / 2, 380, 40, W / 2, 380, 640);
+    const g = c.createRadialGradient(W / 2, big ? 470 : 380, 40, W / 2, big ? 470 : 380, big ? 740 : 640);
     g.addColorStop(0, light ? "#ffffff" : mix(theme.bg, [255, 255, 255], 0.38));
     g.addColorStop(1, light ? "#e8eefc" : theme.bg);
     c.fillStyle = g;
@@ -265,20 +267,20 @@ function draw(canvas, { img, name, subtitle, priceText, oldPriceText, discount, 
     c.globalAlpha = 0.35;
     c.lineWidth = 5;
     c.beginPath();
-    c.arc(W / 2, 400, 300, 0, Math.PI * 2);
+    c.arc(W / 2, big ? 500 : 400, big ? 330 : 300, 0, Math.PI * 2);
     c.stroke();
     c.globalAlpha = 1;
   }
 
   if (img && cut) {
     // The product floats, with a soft shadow under it
-    const boxW = 860;
-    const boxH = 600;
+    const boxW = big ? 960 : 860;
+    const boxH = big ? 740 : 600;
     const fit = Math.min(boxW / img.width, boxH / img.height);
     const w = img.width * fit;
     const h = img.height * fit;
     const x = (W - w) / 2;
-    const y = 120 + (boxH - h) / 2 + 20;
+    const y = (big ? 105 : 120) + (boxH - h) / 2 + 20;
     c.save();
     c.fillStyle = "rgba(0,0,0,.35)";
     c.filter = "blur(18px)";
@@ -294,10 +296,10 @@ function draw(canvas, { img, name, subtitle, priceText, oldPriceText, discount, 
     c.restore();
   } else if (img) {
     // The whole photo, never cropped, in a clean frame
-    const boxX = 70;
-    const boxY = 130;
-    const boxW = W - 140;
-    const boxH = 570;
+    const boxX = big ? 40 : 70;
+    const boxY = big ? 125 : 130;
+    const boxW = W - boxX * 2;
+    const boxH = big ? 780 : 570;
     const fit = Math.min(boxW / img.width, boxH / img.height);
     const w = img.width * fit;
     const h = img.height * fit;
@@ -319,7 +321,7 @@ function draw(canvas, { img, name, subtitle, priceText, oldPriceText, discount, 
     c.globalAlpha = 0.5;
     c.font = `800 380px ${font}`;
     c.textAlign = "center";
-    c.fillText(String(name || "?").trim().charAt(0).toUpperCase(), W / 2, 470);
+    c.fillText(String(name || "?").trim().charAt(0).toUpperCase(), W / 2, big ? 570 : 470);
     c.textAlign = "left";
     c.globalAlpha = 1;
   }
@@ -327,9 +329,9 @@ function draw(canvas, { img, name, subtitle, priceText, oldPriceText, discount, 
   // ---- Wave and panel ----
   const wave = () => {
     c.beginPath();
-    c.moveTo(0, 810);
-    c.bezierCurveTo(260, 870, 540, 850, 720, 790);
-    c.bezierCurveTo(870, 742, 970, 735, W, 758);
+    c.moveTo(0, 810 + DY);
+    c.bezierCurveTo(260, 870 + DY, 540, 850 + DY, 720, 790 + DY);
+    c.bezierCurveTo(870, 742 + DY, 970, 735 + DY, W, 758 + DY);
   };
   wave();
   c.lineTo(W, H);
@@ -361,7 +363,7 @@ function draw(canvas, { img, name, subtitle, priceText, oldPriceText, discount, 
 
   if (discount > 0) {
     const cx = W - 130;
-    const cy = 640;
+    const cy = big ? 770 : 640;
     c.save();
     c.shadowColor = "rgba(0,0,0,.35)";
     c.shadowBlur = 20;
@@ -379,6 +381,7 @@ function draw(canvas, { img, name, subtitle, priceText, oldPriceText, discount, 
     c.textAlign = "left";
   }
 
+  if (!big) {
   // ---- Panel: name, line, price, button ----
   c.fillStyle = theme.text;
   let nameSize = 66;
@@ -482,6 +485,95 @@ function draw(canvas, { img, name, subtitle, priceText, oldPriceText, discount, 
     const words = wrap(c, r.text, 280, 2);
     words.forEach((ln, k) => c.fillText(ln, colX + 96, cy + (words.length === 1 ? 10 : -4 + k * 34)));
   });
+  } else {
+    // ---- Big photo layout: name, price and button, then the reasons in one row ----
+    c.fillStyle = theme.text;
+    let nameSize = 60;
+    c.font = `800 ${nameSize}px ${font}`;
+    while (nameSize > 44 && c.measureText(name).width > 960) {
+      nameSize -= 2;
+      c.font = `800 ${nameSize}px ${font}`;
+    }
+    let nm = String(name || "");
+    if (c.measureText(nm).width > 960) {
+      while (nm.length > 3 && c.measureText(nm + "…").width > 960) nm = nm.slice(0, -1);
+      nm = nm.trim() + "…";
+    }
+    c.fillText(nm, 60, 1082);
+
+    if (subtitle) {
+      c.font = `800 26px ${font}`;
+      c.fillStyle = theme.accent;
+      let sub = subtitle.toUpperCase().slice(0, 40);
+      while (sub.length > 3 && c.measureText(sub).width > 500) sub = sub.slice(0, -1);
+      c.fillText(sub, 60, 1118);
+    }
+
+    // Price, shrunk to fit the left side
+    let priceSize = 92;
+    c.font = `800 ${priceSize}px ${font}`;
+    while (priceSize > 52 && c.measureText(priceText).width > 500) {
+      priceSize -= 4;
+      c.font = `800 ${priceSize}px ${font}`;
+    }
+    c.fillStyle = theme.accent;
+    c.fillText(priceText, 60, 1205);
+
+    // Order button on the right
+    const bx = 590;
+    const bw = 430;
+    const by = 1128;
+    roundRect(c, bx, by, bw, 88, 44, theme.accent);
+    cart(c, bx + 54, by + 42, theme.bg);
+    c.fillStyle = theme.bg;
+    let ctaSize = 38;
+    c.font = `800 ${ctaSize}px ${font}`;
+    while (ctaSize > 24 && c.measureText(cta || "ORDER NOW").width > 240) {
+      ctaSize -= 2;
+      c.font = `800 ${ctaSize}px ${font}`;
+    }
+    c.fillText(cta || "ORDER NOW", bx + 108, by + 56);
+    c.font = `800 42px ${font}`;
+    c.fillText("›", bx + bw - 56, by + 56);
+
+    // Old price, crossed out, above the button
+    if (oldPriceText) {
+      c.font = `600 30px ${font}`;
+      const ow = c.measureText(oldPriceText).width;
+      const ox = bx + bw / 2;
+      c.fillStyle = light ? "rgba(17,24,39,.55)" : "rgba(255,255,255,.6)";
+      c.textAlign = "center";
+      c.fillText(oldPriceText, ox, 1120);
+      c.textAlign = "left";
+      c.fillRect(ox - ow / 2, 1120 - 10, ow, 3);
+    }
+
+    // Reasons to order, spread across one row
+    const reasons = trust.slice(0, 3);
+    if (reasons.length) {
+      let rs = 26;
+      const measure = () => {
+        c.font = `700 ${rs}px ${font}`;
+        return reasons.map((r) => 56 + c.measureText(r.text).width);
+      };
+      let widths = measure();
+      while (rs > 18 && widths.reduce((a, b) => a + b, 0) + (reasons.length - 1) * 24 > 960) {
+        rs -= 1;
+        widths = measure();
+      }
+      const total = widths.reduce((a, b) => a + b, 0);
+      const gap = reasons.length > 1 ? Math.min(70, (960 - total) / (reasons.length - 1)) : 0;
+      let x = 60;
+      const cy = 1242;
+      reasons.forEach((r, i) => {
+        icon(c, r.icon, x + 22, cy - 2, 22, theme.accent);
+        c.fillStyle = theme.text;
+        c.font = `700 ${rs}px ${font}`;
+        c.fillText(r.text, x + 54, cy + 7);
+        x += widths[i] + gap;
+      });
+    }
+  }
 
   // ---- Footer ----
   c.fillStyle = light ? "#eef2ff" : "#f6efe0";
@@ -552,6 +644,7 @@ export default function ShareProduct({ name, price, photo, photos = [], path = "
   const [busy, setBusy] = useState(false);
   const [open, setOpen] = useState(false);
   const [themeId, setThemeId] = useState("blue");
+  const [layout, setLayout] = useState("big");
   const [ready, setReady] = useState(false);
   const [badge, setBadge] = useState("NEW IN");
   const [line, setLine] = useState("");
@@ -629,6 +722,7 @@ export default function ShareProduct({ name, price, photo, photos = [], path = "
         trust,
         cta,
         theme,
+        layout,
       });
       setReady(true);
     });
@@ -637,7 +731,7 @@ export default function ShareProduct({ name, price, photo, photos = [], path = "
     };
     // `trust` is rebuilt from `picked`, so `trustKey` is what we watch
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, site, picture, name, line, priceText, oldPriceText, discount, badge, link, cta, theme, trustKey]);
+  }, [open, site, picture, name, line, priceText, oldPriceText, discount, badge, link, cta, theme, layout, trustKey]);
 
   function toBlob() {
     return new Promise((resolve) => canvasRef.current.toBlob(resolve, "image/png"));
@@ -704,6 +798,16 @@ export default function ShareProduct({ name, price, photo, photos = [], path = "
                 )}
               </div>
               {list.length > 1 && <p className="sp-tip">Tap a dot to change the photo on your flyer.</p>}
+
+              <p className="sp-label">Flyer style</p>
+              <div className="sp-chips">
+                <button type="button" className={layout === "big" ? "on" : ""} onClick={() => setLayout("big")}>
+                  Big photo
+                </button>
+                <button type="button" className={layout === "details" ? "on" : ""} onClick={() => setLayout("details")}>
+                  Full details
+                </button>
+              </div>
 
               <p className="sp-label">Badge on the photo</p>
               <div className="sp-chips">
