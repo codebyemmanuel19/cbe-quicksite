@@ -405,8 +405,7 @@ function draw(canvas, { img, name, subtitle, priceText, oldPriceText, discount, 
     y += 54;
   }
 
-  // Price
-  y += lines.length > 1 ? 100 : 114;
+  // Price. The old price goes beside it when it fits, otherwise on its own line above it.
   c.fillStyle = theme.accent;
   let priceSize = 100;
   c.font = `800 ${priceSize}px ${font}`;
@@ -414,25 +413,47 @@ function draw(canvas, { img, name, subtitle, priceText, oldPriceText, discount, 
     priceSize -= 4;
     c.font = `800 ${priceSize}px ${font}`;
   }
+
+  let oldSize = 40;
+  let ow = 0;
+  let beside = false;
+  if (oldPriceText) {
+    // Shrink the price (down to 76) and the old price (down to 32) until both sit on one line
+    for (;;) {
+      c.font = `800 ${priceSize}px ${font}`;
+      const pw = c.measureText(priceText).width;
+      c.font = `600 ${oldSize}px ${font}`;
+      ow = c.measureText(oldPriceText).width;
+      if (60 + pw + 22 + ow <= 585) {
+        beside = true;
+        break;
+      }
+      if (priceSize > 76) priceSize -= 4;
+      else if (oldSize > 32) oldSize -= 2;
+      else break;
+    }
+  }
+  const stacked = Boolean(oldPriceText) && !beside;
+
+  y += lines.length > 1 ? 100 : 114;
+  if (stacked) y += 52;
+
+  c.font = `800 ${priceSize}px ${font}`;
+  c.fillStyle = theme.accent;
   const priceW = c.measureText(priceText).width;
   c.fillText(priceText, 60, y);
+
   if (oldPriceText) {
-    c.font = `600 40px ${font}`;
-    const ow = c.measureText(oldPriceText).width;
-    const ox = 60 + priceW + 22;
-    if (ox + ow < 640) {
-      c.fillStyle = light ? "rgba(17,24,39,.5)" : "rgba(255,255,255,.55)";
-      c.fillText(oldPriceText, ox, y - 6);
-      c.fillRect(ox, y - 22, ow, 4);
-    } else {
-      c.fillStyle = light ? "rgba(17,24,39,.5)" : "rgba(255,255,255,.55)";
-      c.fillText(oldPriceText, 60, y - 100);
-      c.fillRect(60, y - 116, ow, 4);
-    }
+    c.font = `600 ${oldSize}px ${font}`;
+    c.fillStyle = light ? "rgba(17,24,39,.5)" : "rgba(255,255,255,.55)";
+    const ox = beside ? 60 + priceW + 22 : 60;
+    const oy = beside ? y - 6 : y - 88;
+    c.fillText(oldPriceText, ox, oy);
+    c.fillRect(ox, oy - Math.round(oldSize * 0.36), ow, 4);
   }
 
   // Order button
-  y += lines.length > 1 ? 24 : 36;
+  y += lines.length > 1 ? (stacked ? 16 : 24) : 36;
   roundRect(c, 60, y, 470, 92, 46, theme.accent);
   cart(c, 118, y + 44, theme.bg);
   c.fillStyle = theme.bg;
