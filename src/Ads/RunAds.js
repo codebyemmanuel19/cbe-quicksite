@@ -26,7 +26,6 @@ const BUDGET_LABEL = {
   3000: "Popular",
   5000: "More reach",
   10000: "Serious push",
-  20000: "Big push",
 };
 // The business type the vendor picked at setup, in the words used here
 const TYPE_LABEL = {
