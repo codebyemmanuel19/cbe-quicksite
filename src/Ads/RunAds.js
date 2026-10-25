@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { api } from "../api";
 import { ListSkeleton } from "../components/Skeleton";
 import "../RealEstateSite/dashboard/dashboard.css";
@@ -299,32 +299,6 @@ export default function RunAds() {
 
       {step === 1 && (
         <>
-          <section className="ra-card">
-            <h2>Get your content ready</h2>
-            <p className="ra-help">Good ads need good photos. Check that you have these before you continue.</p>
-            <ul className="ra-ready">
-              <li>
-                <b>3 or more clear product photos</b>
-                <span>Take them in daylight, with a clean background. No blurry or dark photos.</span>
-              </li>
-              <li>
-                <b>Prices on your shop</b>
-                <span>People ignore products with no price.</span>
-              </li>
-              <li>
-                <b>Your shop link</b>
-                <span>This is where your ad sends people.</span>
-              </li>
-              <li>
-                <b>A short video (optional)</b>
-                <span>10 to 20 seconds showing your product. Videos get more attention than pictures.</span>
-              </li>
-            </ul>
-            <p className="ra-help" style={{ margin: "10px 0 0" }}>
-              Need ideas for what to post? Open <Link to="/dashboard/content">Content Ideas</Link>.
-            </p>
-          </section>
-
           <section className="ra-card">
             <h2>Your business</h2>
             <div className="ra-biz">
