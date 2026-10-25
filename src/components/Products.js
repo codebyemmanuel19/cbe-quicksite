@@ -4,6 +4,7 @@ import { api, uploadPhoto } from "../api";
 import { ListSkeleton } from "./Skeleton";
 import ShareProduct from "./ShareProduct";
 import "./Products.css";
+import "./ProductsExtra.css";
 
 const MAX_PHOTOS = 4;
 const MAX_OPTIONS = 20;
@@ -221,6 +222,8 @@ export default function Products() {
   const [editingId, setEditingId] = useState(null); // null = closed, "new" = adding
   const [form, setForm] = useState(emptyForm);
   const [newCategory, setNewCategory] = useState("");
+  const [catOpen, setCatOpen] = useState(false); // the Categories box
+  const [newCatOpen, setNewCatOpen] = useState(false); // "+ New category" inside the product form
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -292,6 +295,8 @@ export default function Products() {
   function openAdd() {
     setForm(emptyForm);
     setError("");
+    setNewCatOpen(false);
+    setNewCategory("");
     setEditingId("new");
   }
 
@@ -310,6 +315,8 @@ export default function Products() {
       stock: product.stock === null || product.stock === undefined ? "" : String(product.stock),
     });
     setError("");
+    setNewCatOpen(false);
+    setNewCategory("");
     setEditingId(product.id);
   }
 
@@ -412,16 +419,22 @@ export default function Products() {
     }
   }
 
-  async function addCategory() {
+  // fromForm: the category was added inside the product form, so pick it for that product
+  async function addCategory(fromForm) {
     const name = newCategory.trim().slice(0, 30);
     if (!name) return;
     setPageError("");
+    setError("");
     try {
       const res = await api.post("/categories", { name });
       setCategories([...categories, res.category]);
       setNewCategory("");
+      if (fromForm === true) {
+        setForm((f) => ({ ...f, categoryId: res.category.id }));
+        setNewCatOpen(false);
+      }
     } catch (err) {
-      handleWriteError(err, setPageError);
+      handleWriteError(err, fromForm === true ? setError : setPageError);
     }
   }
 
@@ -457,8 +470,19 @@ export default function Products() {
             {products.length} {products.length === 1 ? "product" : "products"}
           </p>
         </div>
+      </div>
+
+      <div className="prod-btnrow">
+        <button type="button" className="cat-btn" onClick={() => setCatOpen(true)}>Categories</button>
         <button className="add-btn" onClick={openAdd}>+ Add product</button>
       </div>
+
+      {products.length >= 5 && categories.length === 0 && (
+        <p className="cat-hint">
+          Group your products into categories so customers find things faster.{" "}
+          <button type="button" className="cat-link" onClick={() => setCatOpen(true)}>Add categories</button>
+        </p>
+      )}
 
       {locked && (
         <p className="prod-error">
@@ -559,29 +583,38 @@ export default function Products() {
         </div>
       )}
 
-      {/* Manage categories */}
-      <section className="cat-box">
-        <h2>Categories</h2>
-        <p className="prod-sub">Group your products so customers find things faster. Optional.</p>
-        <div className="cat-list">
-          {categories.map((c) => (
-            <span key={c.id} className="cat-pill">
-              {c.name}
-              <button onClick={() => removeCategory(c)} aria-label={`Delete ${c.name}`}>×</button>
-            </span>
-          ))}
+      {/* The Categories box */}
+      {catOpen && (
+        <div className="modal-bg" onClick={() => setCatOpen(false)}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-head">
+              <h2>Categories</h2>
+              <button type="button" className="x-btn" onClick={() => setCatOpen(false)}>✕</button>
+            </div>
+            <p className="prod-sub">Group your products so customers find things faster. Optional.</p>
+            {pageError && <p className="prod-error">{pageError}</p>}
+            {categories.length === 0 && <p className="prod-sub">You have no categories yet.</p>}
+            <div className="cat-list">
+              {categories.map((c) => (
+                <span key={c.id} className="cat-pill">
+                  {c.name}
+                  <button type="button" onClick={() => removeCategory(c)} aria-label={`Delete ${c.name}`}>×</button>
+                </span>
+              ))}
+            </div>
+            <div className="cat-add">
+              <input
+                value={newCategory}
+                maxLength={30}
+                onChange={(e) => setNewCategory(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && addCategory()}
+                placeholder="New category, e.g. Dresses"
+              />
+              <button type="button" onClick={() => addCategory()}>Add</button>
+            </div>
+          </div>
         </div>
-        <div className="cat-add">
-          <input
-            value={newCategory}
-            maxLength={30}
-            onChange={(e) => setNewCategory(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && addCategory()}
-            placeholder="New category, e.g. Dresses"
-          />
-          <button onClick={addCategory}>Add</button>
-        </div>
-      </section>
+      )}
 
       {/* Add / Edit form */}
       {editingId !== null && (
@@ -623,13 +656,36 @@ export default function Products() {
               </p>
             )}
 
-            <label>Category (optional)</label>
+            <div className="cat-label-row">
+              <label>Category (optional)</label>
+              <button type="button" className="cat-link" onClick={() => setNewCatOpen(!newCatOpen)}>
+                {newCatOpen ? "Cancel" : "+ New category"}
+              </button>
+            </div>
             <select name="categoryId" value={form.categoryId} onChange={handleChange}>
               <option value="">No category</option>
               {categories.map((c) => (
                 <option key={c.id} value={c.id}>{c.name}</option>
               ))}
             </select>
+            {newCatOpen && (
+              <div className="cat-add cat-inline">
+                <input
+                  autoFocus
+                  value={newCategory}
+                  maxLength={30}
+                  onChange={(e) => setNewCategory(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault(); // stops Enter from saving the whole product
+                      addCategory(true);
+                    }
+                  }}
+                  placeholder="e.g. Dresses"
+                />
+                <button type="button" onClick={() => addCategory(true)}>Add</button>
+              </div>
+            )}
 
             <VariantInput
               words={words}
