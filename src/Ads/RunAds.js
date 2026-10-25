@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { api } from "../api";
 import { ListSkeleton } from "../components/Skeleton";
 import "../RealEstateSite/dashboard/dashboard.css";
@@ -21,6 +21,46 @@ const TYPES = [
   "Cars",
 ];
 const BUDGETS = [2000, 3000, 5000, 10000, 20000];
+const BUDGET_LABEL = {
+  2000: "Good to test",
+  3000: "Popular",
+  5000: "More reach",
+  10000: "Serious push",
+  20000: "Big push",
+};
+// The business type the vendor picked at setup, in the words used here
+const TYPE_LABEL = {
+  clothing: "Fashion & clothing",
+  skincare: "Beauty & skincare",
+  hair: "Hair",
+  perfume: "Perfume",
+  jewellery: "Jewellery",
+  bags: "Bags & shoes",
+  gadgets: "Gadgets",
+  furniture: "Furniture",
+  restaurant: "Food & restaurant",
+  realestate: "Real estate",
+  cars: "Cars",
+};
+const MODES = [
+  { id: "one", title: "One state", sub: "Best for reaching customers you can deliver to", rec: true },
+  { id: "cities", title: "Lagos + Abuja + Port Harcourt", sub: "Reach the 3 main cities" },
+  { id: "all", title: "All Nigeria", sub: "Widest reach, best if you deliver nationwide" },
+  { id: "pick", title: "Choose several states", sub: "Pick exactly where you want" },
+];
+
+// Lagos, Abuja (FCT) and Rivers (Port Harcourt), as they are named in the state list
+function cityList(all) {
+  return [/lagos/i, /abuja|fct/i, /rivers/i].map((r) => all.find((s) => r.test(s))).filter(Boolean);
+}
+
+function guessMode(selected, all) {
+  if (selected.length === 0 || selected.length === 1) return "one";
+  if (all.length > 0 && selected.length === all.length) return "all";
+  const cities = cityList(all);
+  if (cities.length > 0 && selected.length === cities.length && cities.every((c) => selected.includes(c))) return "cities";
+  return "pick";
+}
 const DURATIONS = [3, 7, 14, 30];
 const STATUS_TEXT = {
   submitted: "Received",
@@ -62,6 +102,10 @@ export default function RunAds() {
   const [toast, setToast] = useState("");
   const [sent, setSent] = useState(null);
   const [agreed, setAgreed] = useState(false);
+  const [showAll, setShowAll] = useState(false);
+  const [mode, setMode] = useState("one");
+  const [changeType, setChangeType] = useState(false);
+  const [siteType, setSiteType] = useState("");
   const toastTimer = useRef(null);
 
   useEffect(() => {
@@ -75,9 +119,13 @@ export default function RunAds() {
         setSiteUrl(site.url || "");
         setStates(ads.states || []);
         setRequests(ads.requests || []);
+        const typeName = TYPE_LABEL[site.businessType] || "";
+        setSiteType(typeName);
+        setMode(guessMode((d && d.states) || [], ads.states || []));
         setForm({
           ...blank,
           ...(d || {}),
+          businessType: (d && d.businessType) || typeName,
           link: (d && d.link) || site.url || "",
         });
         if (d && d.dailyBudget && !BUDGETS.includes(d.dailyBudget)) setCustom(String(d.dailyBudget));
@@ -108,7 +156,15 @@ export default function RunAds() {
   }
 
   function toggleState(s) {
+    if (mode === "one") return set("states", form.states.includes(s) ? [] : [s]);
     set("states", form.states.includes(s) ? form.states.filter((x) => x !== s) : [...form.states, s]);
+  }
+
+  function chooseMode(id) {
+    setMode(id);
+    if (id === "cities") set("states", cityList(states));
+    else if (id === "all") set("states", [...states]);
+    else if (id === "one") set("states", form.states.slice(0, 1));
   }
 
   function pickBudget(n) {
@@ -177,7 +233,9 @@ export default function RunAds() {
   }
 
   function startNew() {
-    setForm({ ...blank, link: siteUrl });
+    setForm({ ...blank, businessType: siteType, link: siteUrl });
+    setMode("one");
+    setChangeType(false);
     setCustom("");
     setSent(null);
     setAgreed(false);
@@ -232,7 +290,7 @@ export default function RunAds() {
   return (
     <div className="rd ra">
       <h1>Run Ads</h1>
-      <p className="ra-sub">Run Meta ads so you can get sales for your business</p>
+      <p className="ra-sub">Get more customers for your business with Meta ads</p>
 
       <div className="ra-progress">
         <span className={step >= 1 ? "on" : ""}>1 Campaign</span>
@@ -242,60 +300,124 @@ export default function RunAds() {
       {step === 1 && (
         <>
           <section className="ra-card">
-            <h2>Business type</h2>
-            <p className="ra-help">What do you sell or do?</p>
-            <div className="ra-chips">
-              {TYPES.map((t) => (
-                <button type="button" key={t} className={form.businessType === t ? "on" : ""} onClick={() => set("businessType", t)}>
-                  {t}
-                </button>
-              ))}
-            </div>
-            <input
-              className="ra-input"
-              maxLength={60}
-              placeholder="Or type your own, for example Bakery"
-              value={TYPES.includes(form.businessType) ? "" : form.businessType}
-              onChange={(e) => set("businessType", e.target.value)}
-            />
+            <h2>Get your content ready</h2>
+            <p className="ra-help">Good ads need good photos. Check that you have these before you continue.</p>
+            <ul className="ra-ready">
+              <li>
+                <b>3 or more clear product photos</b>
+                <span>Take them in daylight, with a clean background. No blurry or dark photos.</span>
+              </li>
+              <li>
+                <b>Prices on your shop</b>
+                <span>People ignore products with no price.</span>
+              </li>
+              <li>
+                <b>Your shop link</b>
+                <span>This is where your ad sends people.</span>
+              </li>
+              <li>
+                <b>A short video (optional)</b>
+                <span>10 to 20 seconds showing your product. Videos get more attention than pictures.</span>
+              </li>
+            </ul>
+            <p className="ra-help" style={{ margin: "10px 0 0" }}>
+              Need ideas for what to post? Open <Link to="/dashboard/content">Content Ideas</Link>.
+            </p>
           </section>
 
           <section className="ra-card">
-            <div className="ra-between">
-              <h2>Ad target location</h2>
-              <b className="ra-count">{form.states.length} selected</b>
-            </div>
-            <p className="ra-help">Choose the states where your ads will show.</p>
-            <input className="ra-input" placeholder="Search states" value={search} onChange={(e) => setSearch(e.target.value)} />
-            <div className="ra-tools">
-              <button type="button" onClick={() => set("states", allSelected ? [] : [...states])}>
-                {allSelected ? "Clear all" : "Select all states"}
+            <h2>Your business</h2>
+            <div className="ra-biz">
+              <b>{form.businessType || "Choose your business type"}</b>
+              <button type="button" onClick={() => setChangeType(!changeType)}>
+                {changeType ? "Done" : "Change"}
               </button>
-              {form.states.length > 0 && !allSelected && (
-                <button type="button" onClick={() => set("states", [])}>Clear</button>
-              )}
             </div>
-            <div className="ra-chips ra-states">
-              {shownStates.map((s) => (
-                <button type="button" key={s} className={form.states.includes(s) ? "on" : ""} onClick={() => toggleState(s)}>
-                  {s}
+            {(changeType || !form.businessType) && (
+              <>
+                <div className="ra-chips" style={{ marginTop: 12 }}>
+                  {TYPES.map((t) => (
+                    <button type="button" key={t} className={form.businessType === t ? "on" : ""} onClick={() => set("businessType", t)}>
+                      {t}
+                    </button>
+                  ))}
+                </div>
+                <input
+                  className="ra-input"
+                  maxLength={60}
+                  placeholder="Or type your own, for example Bakery"
+                  value={TYPES.includes(form.businessType) ? "" : form.businessType}
+                  onChange={(e) => set("businessType", e.target.value)}
+                />
+              </>
+            )}
+          </section>
+
+          <section className="ra-card">
+            <h2>Where should we show your ad?</h2>
+            <p className="ra-help">Start with one state, then grow.</p>
+            <div className="ra-opts">
+              {MODES.map((m) => (
+                <button type="button" key={m.id} className={mode === m.id ? "ra-opt on" : "ra-opt"} onClick={() => chooseMode(m.id)}>
+                  <span className="ra-rad" />
+                  <span>
+                    <b>
+                      {m.title}
+                      {m.rec && <i className="ra-rec">RECOMMENDED</i>}
+                    </b>
+                    <small>{m.sub}</small>
+                  </span>
                 </button>
               ))}
-              {shownStates.length === 0 && <p className="ra-help">No state found.</p>}
             </div>
+
+            {(mode === "one" || mode === "pick") && (
+              <>
+                <p className="ra-label">{mode === "one" ? "Choose your state" : "Choose your states"}</p>
+                <input className="ra-input" placeholder="Search states" value={search} onChange={(e) => setSearch(e.target.value)} />
+                {mode === "pick" && (
+                  <div className="ra-tools">
+                    <button type="button" onClick={() => set("states", allSelected ? [] : [...states])}>
+                      {allSelected ? "Clear all" : "Select all states"}
+                    </button>
+                    {form.states.length > 0 && !allSelected && (
+                      <button type="button" onClick={() => set("states", [])}>Clear</button>
+                    )}
+                  </div>
+                )}
+                <div className="ra-chips ra-states">
+                  {shownStates.map((s) => (
+                    <button type="button" key={s} className={form.states.includes(s) ? "on" : ""} onClick={() => toggleState(s)}>
+                      {s}
+                    </button>
+                  ))}
+                  {shownStates.length === 0 && <p className="ra-help">No state found.</p>}
+                </div>
+              </>
+            )}
+
+            <p className="ra-picked">
+              {form.states.length === 0
+                ? "No state selected yet"
+                : form.states.length === states.length
+                ? "All states selected"
+                : `${form.states.length} selected: ${form.states.join(", ")}`}
+            </p>
           </section>
 
           <section className="ra-card">
             <h2>Campaign settings</h2>
 
             <p className="ra-label">Daily budget</p>
-            <div className="ra-chips">
+            <div className="ra-budgets">
               {BUDGETS.map((n) => (
-                <button type="button" key={n} className={form.dailyBudget === n && !custom ? "on" : ""} onClick={() => pickBudget(n)}>
-                  {naira(n)}
+                <button type="button" key={n} className={form.dailyBudget === n && !custom ? "ra-bud on" : "ra-bud"} onClick={() => pickBudget(n)}>
+                  <b>{naira(n)}</b>
+                  <small>{BUDGET_LABEL[n]}</small>
                 </button>
               ))}
             </div>
+            <p className="ra-note">More budget means more people see your ad. We can't promise how many, and we can't promise sales.</p>
             <input
               className="ra-input"
               inputMode="numeric"
@@ -314,7 +436,7 @@ export default function RunAds() {
             </div>
 
             <div className="ra-total">
-              <span>Estimated total</span>
+              <span>You will spend about</span>
               <b>{naira(total)}</b>
               <small>
                 {naira(form.dailyBudget)} a day for {form.durationDays} days. You pay this directly to Meta from your own ad
@@ -325,6 +447,7 @@ export default function RunAds() {
               <span>Campaign setup fee (paid to us)</span>
               <b>{naira(FEE)}</b>
             </div>
+            <p className="ra-note" style={{ textAlign: "center" }}>We set up your campaign. No sales are guaranteed.</p>
           </section>
         </>
       )}
@@ -416,7 +539,7 @@ export default function RunAds() {
       {step === 1 && requests.length > 0 && (
         <section className="ra-card">
           <h2>Your requests</h2>
-          {requests.map((r) => (
+          {(showAll ? requests : requests.slice(0, 3)).map((r) => (
             <div key={r.id} className="ra-req">
               <div>
                 <p className="ra-t1">{r.businessType}</p>
@@ -427,6 +550,11 @@ export default function RunAds() {
               <span className={`ra-status ${r.status}`}>{STATUS_TEXT[r.status] || r.status}</span>
             </div>
           ))}
+          {requests.length > 3 && (
+            <button type="button" className="ra-link" onClick={() => setShowAll(!showAll)}>
+              {showAll ? "Show less" : `Show all (${requests.length})`}
+            </button>
+          )}
         </section>
       )}
     </div>
