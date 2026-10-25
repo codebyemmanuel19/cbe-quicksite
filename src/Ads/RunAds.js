@@ -20,7 +20,7 @@ const TYPES = [
   "Real estate",
   "Cars",
 ];
-const BUDGETS = [2000, 3000, 5000, 10000, 20000];
+const BUDGETS = [2000, 3000, 5000, 10000];
 const BUDGET_LABEL = {
   2000: "Good to test",
   3000: "Popular",
