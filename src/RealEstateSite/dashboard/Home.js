@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { api } from "../../api";
-import DashboardSkeleton from "../../components/Skeleton";
-import PlanCard from "../../components/PlanCard";
+import ReadyChecklist from "../../components/ReadyChecklist";
 import "./dashboard.css";
 
 // One line about the plan, whatever state the account is in
@@ -10,21 +9,22 @@ function planCard(billing) {
   const d = billing.daysLeft;
   const word = d === 1 ? "day" : "days";
 
-  if (billing.status === "trial") {
+  if (billing.status === "trial_not_started") {
     return {
-      text: `Free trial: ${d} ${word} left. Add as many properties as you like. After that you keep 3 free, or choose a plan.`,
-      action: "Choose a plan",
-      to: "/dashboard/billing",
-      urgent: d <= 5,
+      text: "Your 7 free days start when you add your first property",
+      action: "Add property",
+      to: "/dashboard/properties/new",
+      urgent: false,
     };
   }
-  // Never paid: no card. The message only appears when they try to go past 3.
-  if (["free", "trial_not_started"].includes(billing.status)) return null;
+  if (billing.status === "trial") {
+    return { text: `Free trial: ${d} ${word} left`, action: "Pay now", to: "/dashboard/billing", urgent: d <= 2 };
+  }
   if (billing.status === "active") {
     return { text: `${d} ${word} left on your plan`, action: "Add more time", to: "/dashboard/billing", urgent: d <= 3 };
   }
   if (billing.status === "locked") {
-    return { text: "Subscription finished. Upgrade your website so you can make changes.", action: "Upgrade", to: "/dashboard/billing", urgent: true };
+    return { text: "Your trial has ended. Pay to keep editing your website.", action: "Pay now", to: "/dashboard/billing", urgent: true };
   }
   if (billing.status === "offline") {
     return { text: "Your website is offline. Pay now and it comes back.", action: "Pay now", to: "/dashboard/billing", urgent: true };
@@ -76,7 +76,7 @@ export default function RealEstateHome() {
   }, [navigate]);
 
   if (error) return <div className="rd"><p className="rd-err">{error}</p></div>;
-  if (!site) return <div className="rd"><DashboardSkeleton /></div>;
+  if (!site) return <div className="rd"><p>Loading your dashboard...</p></div>;
 
   const url = site.url;
   const shareLink = `https://wa.me/?text=${encodeURIComponent(`Check out my properties: ${url}`)}`;
@@ -126,14 +126,20 @@ export default function RealEstateHome() {
         <div className="rd-kpi"><b>{count("Sold") + count("Rented")}</b><span>Sold or rented</span></div>
       </section>
 
-      {["trial", "active"].includes(site.billing.status) ? (
-        <PlanCard status={site.billing.status} days={site.billing.daysLeft} />
-      ) : plan && (
-        <section className={plan.urgent ? "rd-plan urgent" : "rd-plan"}>
-          <p>{plan.text}</p>
-          <Link className="rd-btn" to={plan.to}>{plan.action}</Link>
-        </section>
-      )}
+      <section className={plan.urgent ? "rd-plan urgent" : "rd-plan"}>
+        <p>{plan.text}</p>
+        <Link className="rd-btn" to={plan.to}>{plan.action}</Link>
+      </section>
+
+      <ReadyChecklist
+        slug={site.slug}
+        shareLink={shareLink}
+        items={[
+          { label: "Add your WhatsApp number", done: !!site.business.whatsapp, to: "/dashboard/business" },
+          { label: "Upload your logo", done: !!site.business.logo, to: "/dashboard/business" },
+          { label: "Add your first property", done: properties.length > 0, to: "/dashboard/properties/new" },
+        ]}
+      />
     </div>
   );
 }
