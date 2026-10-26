@@ -121,8 +121,6 @@ function HomePage({ store, basePath, category, setCategory }) {
     }
   }, [location.key, location.hash]);
 
-  const about = String(store.about || store.description || "").trim().slice(0, 220);
-
   let shown = category === "All"
     ? store.products
     : store.products.filter((p) => p.category === category);
@@ -142,13 +140,6 @@ function HomePage({ store, basePath, category, setCategory }) {
           <Link className="sk-hero-btn" to={`${basePath}/#shop`}>Shop all products</Link>
         </div>
       </section>
-
-      {about && (
-        <section className="sk-about">
-          <p className="sk-about-label">About us</p>
-          <p className="sk-about-text">{about}</p>
-        </section>
-      )}
 
       <section className="sk-shop" ref={shopRef}>
         {store.categories.length > 0 && (
