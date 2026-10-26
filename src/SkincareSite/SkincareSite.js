@@ -31,7 +31,6 @@ function ProductCard({ store, product, basePath }) {
     <Link to={`${basePath}/product/${product.id}`} className="sk-card">
       <PhotoCarousel photos={product.photos} alt={product.name} prefix="sk" />
       <div className="sk-card-info">
-        {product.category && <p className="sk-cat-label">{product.category}</p>}
         <p className="sk-name">{product.name}</p>
         <p className="sk-price">
           {hasOptions ? "From " : ""}
@@ -122,6 +121,8 @@ function HomePage({ store, basePath, category, setCategory }) {
     }
   }, [location.key, location.hash]);
 
+  const about = String(store.about || store.description || "").trim().slice(0, 220);
+
   let shown = category === "All"
     ? store.products
     : store.products.filter((p) => p.category === category);
@@ -141,6 +142,13 @@ function HomePage({ store, basePath, category, setCategory }) {
           <Link className="sk-hero-btn" to={`${basePath}/#shop`}>Shop all products</Link>
         </div>
       </section>
+
+      {about && (
+        <section className="sk-about">
+          <p className="sk-about-label">About us</p>
+          <p className="sk-about-text">{about}</p>
+        </section>
+      )}
 
       <section className="sk-shop" ref={shopRef}>
         {store.categories.length > 0 && (
@@ -224,10 +232,18 @@ function ProductPage({ store, basePath, addToCart, openBag }) {
     .filter((p) => p.id !== product.id && p.category === product.category)
     .slice(0, 4);
 
-  function handleAdd() {
-    if (options.length > 0 && !variant) return setError("Please choose a size.");
-    if (sizes.length > 0 && !size) return setError("Please choose an option.");
-    if (colors.length > 1 && !color) return setError("Please choose a shade.");
+  function handleAdd(fromBar) {
+    // From the bottom bar the options are off screen, so scroll up to them
+    const fail = (message) => {
+      setError(message);
+      if (fromBar) {
+        const box = document.querySelector(".sk-options");
+        if (box) box.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    };
+    if (options.length > 0 && !variant) return fail("Please choose a size.");
+    if (sizes.length > 0 && !size) return fail("Please choose an option.");
+    if (colors.length > 1 && !color) return fail("Please choose a shade.");
     setError("");
     addToCart({
       productId: product.id,
@@ -315,7 +331,7 @@ function ProductPage({ store, basePath, addToCart, openBag }) {
         {product.soldOut ? (
           <button className="sk-btn" disabled>Out of stock</button>
         ) : (
-          <button className="sk-btn" onClick={handleAdd}>Add to bag</button>
+          <button className="sk-btn" onClick={() => handleAdd(false)}>Add to bag</button>
         )}
 
         {!product.soldOut && (
@@ -334,6 +350,20 @@ function ProductPage({ store, basePath, addToCart, openBag }) {
             <p className="sk-label">About this product</p>
             <p>{product.description}</p>
           </div>
+        )}
+
+        <p className="sk-safety">Test on a small area first. Results differ for each person.</p>
+      </div>
+
+      <div className="sk-buybar">
+        <div>
+          <p className="sk-buybar-label">{!chosen && options.length > 0 ? "From" : "Price"}</p>
+          <p className="sk-buybar-price">{formatPrice(shownPrice, store.symbol)}</p>
+        </div>
+        {product.soldOut ? (
+          <button className="sk-btn" disabled>Out of stock</button>
+        ) : (
+          <button className="sk-btn" onClick={() => handleAdd(true)}>Add to bag</button>
         )}
       </div>
 
