@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { Link, useNavigate } from "react-router-dom";
 import { api, uploadPhoto } from "../api";
 import { FormSkeleton } from "./Skeleton";
+import { prepareImage } from "./prepareImage";
 import "./BusinessInfo.css";
 
 const emptyInfo = {
@@ -79,23 +80,28 @@ export default function BusinessInfo() {
     setSaved(false);
   }
 
-  // Goes straight to Cloudinary. The server refuses any link that didn't come from there.
-  async function handleImage(e, setImage) {
+  // The photo shows at once. It shrinks and uploads in the background.
+  // The server refuses any link that didn't come from Cloudinary.
+  async function handleImage(e, setImage, previous) {
     const file = e.target.files[0];
     e.target.value = "";
     if (!file) return;
     if (!file.type.startsWith("image/")) return setError("Please pick an image file.");
-    if (file.size > 5 * 1024 * 1024) return setError("Image must be smaller than 5MB.");
+    if (file.size > 25 * 1024 * 1024) return setError("Image must be smaller than 25MB.");
 
     setError("");
+    const preview = URL.createObjectURL(file);
+    setImage(preview);
     setUploading(true);
     try {
-      const url = await uploadPhoto(file);
+      const url = await uploadPhoto(await prepareImage(file));
       setImage(url);
       setSaved(false);
     } catch (err) {
+      setImage(previous); // put the old photo back
       setError(err.message);
     } finally {
+      URL.revokeObjectURL(preview);
       setUploading(false);
     }
   }
@@ -167,7 +173,7 @@ export default function BusinessInfo() {
           </div>
           <label className="img-btn hero-btn-change">
             {uploading ? "Uploading..." : cover ? "Change photo" : "Add photo"}
-            <input type="file" accept="image/*" hidden onChange={(e) => handleImage(e, setCover)} />
+            <input type="file" accept="image/*" hidden onChange={(e) => handleImage(e, setCover, cover)} />
           </label>
         </div>
 
@@ -196,7 +202,7 @@ export default function BusinessInfo() {
           </div>
           <label className="img-btn">
             {uploading ? "Uploading..." : logo ? "Change logo" : "Add logo"}
-            <input type="file" accept="image/*" hidden onChange={(e) => handleImage(e, setLogo)} />
+            <input type="file" accept="image/*" hidden onChange={(e) => handleImage(e, setLogo, logo)} />
           </label>
         </div>
       </section>

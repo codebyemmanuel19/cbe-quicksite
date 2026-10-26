@@ -1,0 +1,16 @@
+/* A photo that shows at once and uploads in the background */
+.photo-thumb.pending { position: relative; }
+.photo-thumb.pending img { opacity: 0.55; }
+.photo-spin {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 22px;
+  height: 22px;
+  margin: -11px 0 0 -11px;
+  border: 3px solid rgba(255, 255, 255, 0.9);
+  border-top-color: #2563eb;
+  border-radius: 50%;
+  animation: photo-spin 0.7s linear infinite;
+}
+@keyframes photo-spin { to { transform: rotate(360deg); } }

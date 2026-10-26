@@ -3,8 +3,10 @@ import { Link, useNavigate } from "react-router-dom";
 import { api, uploadPhoto } from "../api";
 import { ListSkeleton } from "./Skeleton";
 import ShareProduct from "./ShareProduct";
+import { prepareImage } from "./prepareImage";
 import "./Products.css";
 import "./ProductsExtra.css";
+import "./PhotoUpload.css";
 
 const MAX_PHOTOS = 4;
 const MAX_OPTIONS = 20;
@@ -226,7 +228,8 @@ export default function Products() {
   const [newCatOpen, setNewCatOpen] = useState(false); // "+ New category" inside the product form
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
-  const [uploading, setUploading] = useState(false);
+  const [pending, setPending] = useState([]); // photos still uploading
+  const uploading = pending.length > 0;
 
   const words = VARIANT_WORDS[businessType] || VARIANT_WORDS.clothing;
 
@@ -330,32 +333,47 @@ export default function Products() {
     setForm({ ...form, [name]: type === "checkbox" ? checked : value });
   }
 
-  // Photos go straight to Cloudinary. We only ever save the link they come back with.
+  // Photos show at once, then shrink and upload in the background.
+  // We only ever save the link Cloudinary sends back.
   async function handlePhotos(e) {
     const files = Array.from(e.target.files);
     e.target.value = ""; // lets them pick the same file again
     setError("");
 
-    const room = MAX_PHOTOS - form.photos.length;
+    const room = MAX_PHOTOS - form.photos.length - pending.length;
     if (files.length > room) setError(`You can add up to ${MAX_PHOTOS} photos.`);
 
     const good = files
-      .filter((f) => f.type.startsWith("image/") && f.size <= 5 * 1024 * 1024)
-      .slice(0, room);
+      .filter((f) => f.type.startsWith("image/") && f.size <= 25 * 1024 * 1024)
+      .slice(0, Math.max(room, 0));
     if (!good.length) return;
 
-    setUploading(true);
-    try {
-      const links = [];
-      for (const file of good) {
-        links.push(await uploadPhoto(file));
-      }
-      setForm((current) => ({ ...current, photos: [...current.photos, ...links] }));
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setUploading(false);
+    const items = good.map((file, i) => ({
+      id: `${Date.now()}-${i}`,
+      file,
+      preview: URL.createObjectURL(file),
+    }));
+    setPending((cur) => [...cur, ...items]);
+
+    const results = await Promise.allSettled(
+      items.map(async (item) => uploadPhoto(await prepareImage(item.file)))
+    );
+
+    const links = [];
+    let failed = "";
+    results.forEach((r) => {
+      if (r.status === "fulfilled") links.push(r.value);
+      else failed = (r.reason && r.reason.message) || "A photo failed to upload.";
+    });
+
+    if (links.length) {
+      setForm((current) => ({ ...current, photos: [...current.photos, ...links].slice(0, MAX_PHOTOS) }));
     }
+    if (failed) setError(failed);
+
+    items.forEach((it) => URL.revokeObjectURL(it.preview));
+    const done = items.map((it) => it.id);
+    setPending((cur) => cur.filter((p) => !done.includes(p.id)));
   }
 
   function removePhoto(index) {
@@ -626,7 +644,7 @@ export default function Products() {
             </div>
 
             <label className="plain">
-              Photos ({form.photos.length}/{MAX_PHOTOS}){uploading ? " · uploading..." : ""}
+              Photos ({form.photos.length + pending.length}/{MAX_PHOTOS})
             </label>
             <div className="photo-row">
               {form.photos.map((src, i) => (
@@ -635,7 +653,13 @@ export default function Products() {
                   <button type="button" onClick={() => removePhoto(i)}>×</button>
                 </div>
               ))}
-              {form.photos.length < MAX_PHOTOS && (
+              {pending.map((p) => (
+                <div key={p.id} className="photo-thumb pending">
+                  <img src={p.preview} alt="" />
+                  <span className="photo-spin" />
+                </div>
+              ))}
+              {form.photos.length + pending.length < MAX_PHOTOS && (
                 <label className="photo-add">
                   +
                   <input type="file" accept="image/*" multiple hidden onChange={handlePhotos} />
