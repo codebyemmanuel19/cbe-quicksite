@@ -1,6 +1,6 @@
 .rd {
   max-width: 760px;
-  padding-bottom: 120px;
+  padding-bottom: 24px;
   font-family: inherit;
 }
 
@@ -276,6 +276,9 @@
 }
 
 /* Form */
+/* Room for the fixed save bar, only on form pages */
+.rd-form { padding-bottom: 110px; }
+
 .rd-form label {
   display: block;
   margin: 16px 0 6px;
