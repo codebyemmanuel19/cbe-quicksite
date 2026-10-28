@@ -18,7 +18,9 @@
 .rd-btn {
   display: inline-block;
   padding: 11px 16px;
-  font: 700 14px inherit;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 14px;
   color: #fff;
   background: #2563eb;
   border: 0;
@@ -73,7 +75,9 @@
 .rd-live button,
 .rd-live a {
   padding: 10px 14px;
-  font: 700 14px inherit;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 14px;
   color: #fff;
   text-decoration: none;
   background: rgba(255,255,255,.12);
@@ -156,7 +160,8 @@
   width: 100%;
   height: 48px;
   padding: 0 14px;
-  font: 16px inherit;
+  font-family: inherit;
+  font-size: 16px;
   background: #fff;
   border: 1px solid #e2e8f0;
   border-radius: 12px;
@@ -171,7 +176,9 @@
 
 .rd-chips button {
   padding: 8px 14px;
-  font: 700 13px inherit;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 13px;
   white-space: nowrap;
   background: #fff;
   border: 1px solid #e2e8f0;
@@ -259,7 +266,9 @@
 .rd-acts a,
 .rd-acts button {
   padding: 6px 12px;
-  font: 700 12px inherit;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 12px;
   text-align: center;
   text-decoration: none;
   color: #0f766e;
@@ -273,7 +282,9 @@
 
 .rd-select {
   padding: 8px;
-  font: 600 13px inherit;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 13px;
   border: 1px solid #cbd5e1;
   border-radius: 8px;
   background: #fff;
@@ -294,7 +305,8 @@
 .rd-form textarea {
   width: 100%;
   padding: 0 14px;
-  font: 16px inherit;
+  font-family: inherit;
+  font-size: 16px;
   border: 1px solid #cbd5e1;
   border-radius: 12px;
 }
@@ -322,7 +334,9 @@
 
 .rd-opts button {
   padding: 10px 16px;
-  font: 700 14px inherit;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 14px;
   background: #fff;
   border: 1px solid #cbd5e1;
   border-radius: 999px;
@@ -409,7 +423,9 @@
 .rd-savebar button {
   flex: 1;
   height: 52px;
-  font: 700 17px inherit;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 17px;
   color: #fff;
   background: #2563eb;
   border: 0;
