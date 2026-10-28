@@ -20,7 +20,7 @@
   padding: 11px 16px;
   font: 700 14px inherit;
   color: #fff;
-  background: #0f766e;
+  background: #2563eb;
   border: 0;
   border-radius: 10px;
   text-decoration: none;
@@ -28,9 +28,9 @@
 }
 
 .rd-btn.ghost {
-  color: #0f766e;
+  color: #2563eb;
   background: #fff;
-  border: 1px solid #99f6e4;
+  border: 1px solid #bfdbfe;
 }
 
 .rd-btn.red {
@@ -146,6 +146,10 @@
 .rd-plan.urgent { background: #fff7ed; border-color: #fdba74; }
 
 .rd-plan p { margin: 0; font-weight: 700; }
+
+.rd-plan.active { background: #f0fdf4; border-color: #bbf7d0; }
+.rd-plan.active p { color: #15803d; }
+.rd-plan-sub { font-size: 13px; color: #64748b; }
 
 /* Lists */
 .rd-search {

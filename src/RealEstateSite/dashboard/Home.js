@@ -18,10 +18,17 @@ function planCard(billing) {
     };
   }
   if (billing.status === "trial") {
-    return { text: `Free trial: ${d} ${word} left`, action: "Pay now", to: "/dashboard/billing", urgent: d <= 2 };
+    return { text: `Free trial: ${d} ${word} left`, action: "Pay now", to: "/dashboard/billing", urgent: d <= 7 };
   }
   if (billing.status === "active") {
-    return { text: `${d} ${word} left on your plan`, action: "Add more time", to: "/dashboard/billing", urgent: d <= 3 };
+    return {
+      text: "Active ✓",
+      sub: `${d} ${word} left on your plan`,
+      action: "Renew",
+      to: "/dashboard/billing",
+      urgent: d <= 7,
+      active: d > 7,
+    };
   }
   if (billing.status === "locked") {
     return { text: "Your trial has ended. Pay to keep editing your website.", action: "Pay now", to: "/dashboard/billing", urgent: true };
@@ -126,9 +133,12 @@ export default function RealEstateHome() {
         <div className="rd-kpi"><b>{count("Sold") + count("Rented")}</b><span>Sold or rented</span></div>
       </section>
 
-      <section className={plan.urgent ? "rd-plan urgent" : "rd-plan"}>
-        <p>{plan.text}</p>
-        <Link className="rd-btn" to={plan.to}>{plan.action}</Link>
+      <section className={plan.urgent ? "rd-plan urgent" : plan.active ? "rd-plan active" : "rd-plan"}>
+        <div>
+          <p>{plan.text}</p>
+          {plan.sub && <span className="rd-plan-sub">{plan.sub}</span>}
+        </div>
+        <Link className={plan.active ? "rd-btn ghost" : "rd-btn"} to={plan.to}>{plan.action}</Link>
       </section>
 
       <ReadyChecklist
