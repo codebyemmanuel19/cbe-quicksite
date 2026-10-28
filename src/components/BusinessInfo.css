@@ -1,4 +1,4 @@
-.biz { max-width: 640px; padding-bottom: 140px; }
+.biz { max-width: 640px; padding-bottom: 120px; }
 .biz-title { font-size: 22px; margin: 4px 0; }
 .biz-sub { margin: 0 0 16px; color: #666; }
 
@@ -91,8 +91,7 @@
 
 .biz-error { color: #dc2626; font-size: 14px; }
 
-/* Save bar: always visible at the bottom of the screen.
-   If your desktop has a sidebar, add  left: 240px;  (your sidebar width) to .biz-savebar */
+/* Save bar: same on every dashboard form (see also dashboard.css, Products.css) */
 .biz-savebar {
   position: fixed !important;
   left: 0 !important;
@@ -103,12 +102,11 @@
   align-items: center;
   gap: 14px;
   box-sizing: border-box;
-  padding: 14px 16px calc(26px + env(safe-area-inset-bottom, 0px));
+  padding: 12px 16px calc(16px + env(safe-area-inset-bottom, 0px));
   background: #fff;
-  box-shadow: 0 -8px 20px rgba(0, 0, 0, 0.07);
+  border-top: 1px solid #e5e7eb;
 }
 
-/* The error floats above the button, so the bar never changes size */
 .biz-toast {
   position: absolute;
   left: 16px;
@@ -124,25 +122,18 @@
   border-radius: 10px;
 }
 
-.biz-saved {
-  flex-shrink: 0;
-  color: #16a34a;
-  font-weight: 600;
-  font-size: 14px;
-}
+.biz-saved { flex-shrink: 0; color: #16a34a; font-weight: 600; font-size: 14px; }
 
 .biz-savebtn {
   flex: 1;
-  height: 52px;
   padding: 0 22px;
-  font-size: 17px;
-  font-weight: 600;
+  height: 52px;
+  font: 700 17px inherit;
   color: #fff;
   background: #2563eb;
-  border: none;
-  border-radius: 10px;
+  border: 0;
+  border-radius: 12px;
   cursor: pointer;
-  box-shadow: 0 6px 14px rgba(37, 99, 235, 0.25);
 }
 
 .biz-savebtn:disabled { opacity: 0.6; cursor: default; }

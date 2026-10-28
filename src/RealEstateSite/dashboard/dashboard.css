@@ -1,6 +1,6 @@
 .rd {
   max-width: 760px;
-  padding-bottom: 130px;
+  padding-bottom: 120px;
   font-family: inherit;
 }
 
@@ -368,7 +368,7 @@
   cursor: pointer;
 }
 
-/* Save bar, pinned at the bottom */
+/* Save bar: same on every dashboard form */
 .rd-savebar {
   position: fixed !important;
   left: 0 !important;
@@ -378,9 +378,10 @@
   display: flex;
   align-items: center;
   gap: 14px;
-  padding: 14px 16px calc(26px + env(safe-area-inset-bottom, 0px));
+  box-sizing: border-box;
+  padding: 12px 16px calc(16px + env(safe-area-inset-bottom, 0px));
   background: #fff;
-  box-shadow: 0 -8px 20px rgba(0,0,0,.07);
+  border-top: 1px solid #e5e7eb;
 }
 
 .rd-savebar .toast {
@@ -403,11 +404,10 @@
   height: 52px;
   font: 700 17px inherit;
   color: #fff;
-  background: #0f766e;
+  background: #2563eb;
   border: 0;
   border-radius: 12px;
-  box-shadow: 0 6px 14px rgba(15,118,110,.25);
   cursor: pointer;
 }
 
-.rd-savebar button:disabled { opacity: .6; }
+.rd-savebar button:disabled { opacity: .6; cursor: default; }
