@@ -3,6 +3,8 @@ import { createPortal } from "react-dom";
 import { useNavigate, useParams } from "react-router-dom";
 import { api, uploadPhoto } from "../../api";
 import { FormSkeleton } from "../../components/Skeleton";
+import { prepareImage } from "../../components/prepareImage";
+import "../../components/PhotoUpload.css";
 import "../../RealEstateSite/dashboard/dashboard.css";
 
 // Ideas for a first dish. After that, the owner's own sections show instead.
@@ -38,7 +40,8 @@ export default function AddDish() {
   const [form, setForm] = useState(empty);
   const [loading, setLoading] = useState(!!editing);
   const [saving, setSaving] = useState(false);
-  const [uploading, setUploading] = useState(false);
+  const [pending, setPending] = useState([]); // photos still uploading
+  const uploading = pending.length > 0;
   const [error, setError] = useState("");
   const [mine, setMine] = useState([]);
 
@@ -69,22 +72,50 @@ export default function AddDish() {
 
   const set = (key, value) => setForm((f) => ({ ...f, [key]: value }));
 
-  async function handlePhoto(e) {
-    const file = e.target.files[0];
+  // Photos show at once, then shrink and upload in the background.
+  async function handlePhotos(e) {
+    const files = Array.from(e.target.files);
     e.target.value = "";
-    if (!file || !file.type.startsWith("image/") || file.size > 5 * 1024 * 1024) {
-      return setError("Choose a photo smaller than 5MB.");
-    }
     setError("");
-    setUploading(true);
-    try {
-      const url = await uploadPhoto(file);
-      setForm((f) => ({ ...f, photos: [...f.photos, url].slice(0, MAX_PHOTOS) }));
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setUploading(false);
+
+    const room = MAX_PHOTOS - form.photos.length - pending.length;
+    const good = files
+      .filter((f) => f.type.startsWith("image/") && f.size <= 25 * 1024 * 1024)
+      .slice(0, Math.max(room, 0));
+    if (!good.length) return;
+
+    const items = good.map((file, i) => ({
+      id: `${Date.now()}-${i}`,
+      file,
+      preview: URL.createObjectURL(file),
+    }));
+    setPending((cur) => [...cur, ...items]);
+
+    const results = await Promise.allSettled(
+      items.map(async (item) => {
+        return uploadPhoto(await prepareImage(item.file));
+      })
+    );
+
+    const links = [];
+    let failed = 0;
+    let lastMessage = "";
+    results.forEach((r) => {
+      if (r.status === "fulfilled") links.push(r.value);
+      else {
+        failed++;
+        lastMessage = (r.reason && r.reason.message) || "";
+      }
+    });
+
+    if (links.length) {
+      setForm((f) => ({ ...f, photos: [...f.photos, ...links].slice(0, MAX_PHOTOS) }));
     }
+    if (failed) setError(lastMessage || `${failed} photo(s) could not be added. Try a different photo.`);
+
+    items.forEach((it) => URL.revokeObjectURL(it.preview));
+    const done = items.map((it) => it.id);
+    setPending((cur) => cur.filter((p) => !done.includes(p.id)));
   }
 
   async function handleSave(e) {
@@ -119,15 +150,20 @@ export default function AddDish() {
     <form id="dish-form" className="rd rd-form" onSubmit={handleSave}>
       <h1>{editing ? "Edit dish" : "Add dish"}</h1>
 
-      <label>Photos (up to {MAX_PHOTOS}){uploading ? " · uploading..." : ""}</label>
+      <label>Photos (up to {MAX_PHOTOS})</label>
       <div className="rd-photos">
         {form.photos.map((u, i) => (
           <div className="rd-photo" key={u} style={{ backgroundImage: `url(${u})` }}>
             <button type="button" onClick={() => set("photos", form.photos.filter((_, n) => n !== i))}>×</button>
           </div>
         ))}
-        {form.photos.length < MAX_PHOTOS && !uploading && (
-          <label className="rd-add">+<input type="file" accept="image/*" hidden onChange={handlePhoto} /></label>
+        {pending.map((p) => (
+          <div key={p.id} className="rd-photo pending" style={{ backgroundImage: `url(${p.preview})` }}>
+            <span className="photo-spin" />
+          </div>
+        ))}
+        {form.photos.length + pending.length < MAX_PHOTOS && (
+          <label className="rd-add">+<input type="file" accept="image/*" multiple hidden onChange={handlePhotos} /></label>
         )}
       </div>
 

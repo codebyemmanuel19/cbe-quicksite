@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { useNavigate, useParams } from "react-router-dom";
 import { api, uploadPhoto } from "../../api";
 import { FormSkeleton } from "../../components/Skeleton";
+import "../../components/PhotoUpload.css";
 import "./dashboard.css";
 
 const MAX_PHOTOS = 8;
@@ -70,7 +71,8 @@ export default function AddProperty() {
   const [form, setForm] = useState(empty);
   const [loading, setLoading] = useState(!!editing);
   const [saving, setSaving] = useState(false);
-  const [uploading, setUploading] = useState(false);
+  const [pending, setPending] = useState([]); // photos still uploading
+  const uploading = pending.length > 0;
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -89,35 +91,52 @@ export default function AddProperty() {
 
   const set = (key, value) => setForm((f) => ({ ...f, [key]: value }));
 
+  // Photos show at once, then shrink and upload in the background.
   async function handlePhotos(e) {
     const files = Array.from(e.target.files);
     e.target.value = "";
-    const room = MAX_PHOTOS - form.photos.length;
-    const picked = files.filter((f) => f.type.startsWith("image/")).slice(0, room);
-    if (!picked.length) return;
-
     setError("");
-    setUploading(true);
-    try {
-      const links = [];
-      let skipped = 0;
 
-      for (const original of picked) {
-        const file = await shrink(original); // shrink first, then check size
-        if (file.size > MAX_BYTES) {
-          skipped++;
-          continue;
-        }
-        links.push(await uploadPhoto(file));
+    const room = MAX_PHOTOS - form.photos.length - pending.length;
+    const good = files
+      .filter((f) => f.type.startsWith("image/") && f.size <= 25 * 1024 * 1024)
+      .slice(0, Math.max(room, 0));
+    if (!good.length) return;
+
+    const items = good.map((file, i) => ({
+      id: `${Date.now()}-${i}`,
+      file,
+      preview: URL.createObjectURL(file),
+    }));
+    setPending((cur) => [...cur, ...items]);
+
+    const results = await Promise.allSettled(
+      items.map(async (item) => {
+        const file = await shrink(item.file); // shrink first, then check size
+        if (file.size > MAX_BYTES) throw new Error("");
+        return uploadPhoto(file);
+      })
+    );
+
+    const links = [];
+    let failed = 0;
+    let lastMessage = "";
+    results.forEach((r) => {
+      if (r.status === "fulfilled") links.push(r.value);
+      else {
+        failed++;
+        lastMessage = (r.reason && r.reason.message) || "";
       }
+    });
 
-      if (links.length) setForm((f) => ({ ...f, photos: [...f.photos, ...links] }));
-      if (skipped) setError(`${skipped} photo(s) could not be added. Try a different photo.`);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setUploading(false);
+    if (links.length) {
+      setForm((f) => ({ ...f, photos: [...f.photos, ...links].slice(0, MAX_PHOTOS) }));
     }
+    if (failed) setError(lastMessage || `${failed} photo(s) could not be added. Try a different photo.`);
+
+    items.forEach((it) => URL.revokeObjectURL(it.preview));
+    const done = items.map((it) => it.id);
+    setPending((cur) => cur.filter((p) => !done.includes(p.id)));
   }
 
   async function handleSave(e) {
@@ -156,14 +175,19 @@ export default function AddProperty() {
     <form id="property-form" className="rd rd-form" onSubmit={handleSave}>
       <h1>{editing ? "Edit property" : "Add property"}</h1>
 
-      <label>Photos ({form.photos.length}/{MAX_PHOTOS}){uploading ? " · uploading..." : ""}</label>
+      <label>Photos ({form.photos.length + pending.length}/{MAX_PHOTOS})</label>
       <div className="rd-photos">
         {form.photos.map((src, i) => (
           <div key={src} className="rd-photo" style={{ backgroundImage: `url(${src})` }}>
             <button type="button" onClick={() => set("photos", form.photos.filter((_, n) => n !== i))}>×</button>
           </div>
         ))}
-        {form.photos.length < MAX_PHOTOS && (
+        {pending.map((p) => (
+          <div key={p.id} className="rd-photo pending" style={{ backgroundImage: `url(${p.preview})` }}>
+            <span className="photo-spin" />
+          </div>
+        ))}
+        {form.photos.length + pending.length < MAX_PHOTOS && (
           <label className="rd-add">+<input type="file" accept="image/*" multiple hidden onChange={handlePhotos} /></label>
         )}
       </div>

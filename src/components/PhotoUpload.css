@@ -14,3 +14,6 @@
   animation: photo-spin 0.7s linear infinite;
 }
 @keyframes photo-spin { to { transform: rotate(360deg); } }
+
+/* Photo tiles on the dashboard pages (restaurant, real estate, cars, furniture) */
+.rd-photo.pending { position: relative; opacity: 0.6; }
