@@ -19,10 +19,10 @@ const TRUST = [
 ];
 
 const MOCK_ITEMS = [
-  { name: "Summer dress", price: 19, color: "#fdba74" },
-  { name: "Linen set", price: 24, color: "#a5b4fc" },
-  { name: "Wrap blazer", price: 32, color: "#86efac" },
-  { name: "Pleated skirt", price: 12, color: "#f9a8d4" },
+  { name: "Summer dress", price: 19000, color: "#fdba74" },
+  { name: "Linen set", price: 24000, color: "#a5b4fc" },
+  { name: "Wrap blazer", price: 32000, color: "#86efac" },
+  { name: "Pleated skirt", price: 12000, color: "#f9a8d4" },
 ];
 
 const STEPS = [
@@ -38,14 +38,21 @@ const FEATURES = [
   { title: "Edit it yourself", text: "Change prices, photos and business info from your phone. No need to call a developer." },
   { title: "Sizes, colours and options", text: "Sell shoes in different sizes, wigs in different lengths, or perfume in different bottle sizes." },
   { title: "A dashboard that shows results", text: "See how many orders your website brought you this month and how much they are worth." },
+  { title: "Flyers in one tap", text: "Pick any product and get a ready flyer for your WhatsApp Status and social media. No designer needed." },
+  { title: "Content ideas every day", text: "Video ideas, scripts and captions made for your type of business, so you always know what to post." },
+  { title: "Help running your ads", text: "We help you set up your Meta ads, even if you have no laptop. You pay Meta directly for the ads." },
 ];
 
+// Prices for the whole period, in naira. Keep these the same as the billing page and the server.
 const PLANS = [
   {
     name: "Shops",
-    price: "₦7,999",
-    per: "a month",
     who: "Clothing, bags & shoes, hair & wigs, skincare, perfume, jewellery, gadgets, furniture and restaurants",
+    tiers: [
+      { months: 3, price: "₦19,999", perMonth: "₦6,700 a month" },
+      { months: 6, price: "₦34,999", perMonth: "₦5,800 a month", best: true },
+      { months: 12, price: "₦59,999", perMonth: "₦5,000 a month" },
+    ],
     points: [
       "Your own website address",
       "Products with photos, sizes and colours",
@@ -55,9 +62,12 @@ const PLANS = [
   },
   {
     name: "Real estate & cars",
-    price: "₦9,999",
-    per: "a month",
     who: "Estate agents, property companies and car dealers",
+    tiers: [
+      { months: 3, price: "₦24,999", perMonth: "₦8,300 a month" },
+      { months: 6, price: "₦44,999", perMonth: "₦7,500 a month", best: true },
+      { months: 12, price: "₦74,999", perMonth: "₦6,250 a month" },
+    ],
     points: [
       "Your own website address",
       "Photos on every listing",
@@ -68,10 +78,11 @@ const PLANS = [
 ];
 
 const FAQ = [
-  { q: "How much does it cost?", a: "Shops start free with 3 items, no card needed. Real estate and cars get 30 days free with no limit. After that, shops are ₦7,999 a month, and real estate and cars are ₦9,999 a month. Pay for 3, 6 or 12 months and it costs less." },
+  { q: "How much does it cost?", a: "Shops start free with 3 items, no card needed. Real estate and cars get 30 days free with no limit. After that, you pick 3, 6 or 12 months. Shops start at ₦19,999 for 3 months, and real estate and cars start at ₦24,999 for 3 months. The longer the plan, the less you pay each month." },
   { q: "Do I need to know coding?", a: "No. You fill in simple forms, and your website is ready. If you get stuck, message us on WhatsApp." },
   { q: "How do my customers pay me?", a: "Your customers order and pay you directly. Set your bank account and delivery areas in your dashboard, and your details show at checkout. The money goes straight to your bank, not to us." },
   { q: "What happens after my 3 free items?", a: "Your website stays live and you keep 3 items for free. To add a 4th item, you choose a plan. If a paid plan ends and stays unpaid for 7 days, the website goes offline until you pay." },
+  { q: "How do the ads work?", a: "We help you set up your Meta ads for a small setup fee. You pay Meta directly for the ad money, and you choose your budget. We can't promise sales, because that depends on your product, your price and your photos." },
   { q: "Can I change my products later?", a: "Yes. You can add, edit or remove products, prices and photos as often as you like." },
 ];
 
@@ -85,14 +96,14 @@ function PhoneMock() {
             <div key={i.name} className="lp-mockitem">
               <span className="lp-mockimg" style={{ background: i.color }} />
               <span className="lp-mockname">{i.name}</span>
-              <span className="lp-mockprice">${i.price}</span>
+              <span className="lp-mockprice">₦{i.price.toLocaleString("en-NG")}</span>
             </div>
           ))}
         </div>
       </div>
       <div className="lp-toast">
         <b>New order on WhatsApp</b>
-        <span>2 × {MOCK_ITEMS[0].name}, ${MOCK_ITEMS[0].price * 2}</span>
+        <span>2 × {MOCK_ITEMS[0].name}, ₦{(MOCK_ITEMS[0].price * 2).toLocaleString("en-NG")}</span>
       </div>
     </div>
   );
@@ -207,10 +218,19 @@ export default function Landing() {
           {PLANS.map((p) => (
             <div key={p.name} className="lp-plan">
               <h3>{p.name}</h3>
-              <p className="lp-amount">
-                {p.price}<small> {p.per}</small>
-              </p>
               <p className="lp-who">{p.who}</p>
+              <div className="lp-tiers">
+                {p.tiers.map((t) => (
+                  <div key={t.months} className={t.best ? "lp-tier best" : "lp-tier"}>
+                    <span>
+                      {t.months} months
+                      {t.best && <em className="lp-best">Best value</em>}
+                      <small>{t.perMonth}</small>
+                    </span>
+                    <b>{t.price}</b>
+                  </div>
+                ))}
+              </div>
               <ul>
                 {p.points.map((t) => <li key={t}>{t}</li>)}
               </ul>
@@ -219,7 +239,7 @@ export default function Landing() {
           ))}
         </div>
 
-        <p className="lp-note">Pay for 3, 6 or 12 months and it costs less.</p>
+        <p className="lp-note">You pay once for the whole period. No monthly payments to remember.</p>
       </section>
 
       <section className="lp-section">

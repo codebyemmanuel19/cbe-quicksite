@@ -608,3 +608,37 @@
   .lp-top h1, .lp-top p, .lp-top .lp-actions, .lp-top p.lp-free, .lp-phone { animation: none; }
   .lp-btn, .lp-site, .lp-step, .lp-feature, .lp-plan { transition: none; }
 }
+/* ---------- Plan lengths (3, 6, 12 months) ---------- */
+.lp-tiers { display: grid; gap: 8px; margin: 0 0 20px; }
+
+.lp-tier {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  font-size: 15px;
+  font-weight: 700;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+.lp-tier small { display: block; margin-top: 2px; font-size: 12px; font-weight: 500; color: var(--muted); }
+.lp-tier b { font-size: 18px; font-weight: 800; letter-spacing: -0.01em; }
+.lp-tier.best { background: #eff6ff; border-color: var(--blue); }
+
+.lp-best {
+  margin-left: 8px;
+  padding: 2px 8px;
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 800;
+  color: #fff;
+  background: var(--blue);
+  border-radius: 999px;
+  vertical-align: middle;
+}
+
+@media (min-width: 760px) {
+  .lp-features { grid-template-columns: repeat(3, 1fr); }
+}
