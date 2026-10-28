@@ -5,8 +5,8 @@ import { formatPrice } from "./countries";
 import { ListSkeleton } from "./Skeleton";
 import "./Billing.css";
 
-// The plan with ts many months is pre-selected and marked Popular
-const POPULAR_MONTHS = 3;
+// The plan with this many months is pre-selected and marked Popular
+const POPULAR_MONTHS = 6;
 
 const STATUS_INFO = {
   free: { label: "Free plan", tone: "blue" },
@@ -35,6 +35,18 @@ const BENEFITS = [
   {
     title: "Edit any time",
     text: "Update your prices, photos and business info yourself, with no need to call anyone.",
+  },
+  {
+    title: "Flyers in one tap",
+    text: "Make a ready flyer from any product, for your WhatsApp Status and social media.",
+  },
+  {
+    title: "Content ideas",
+    text: "Video ideas, scripts and captions for your type of business, so you always know what to post.",
+  },
+  {
+    title: "Help with ads",
+    text: "We help you set up your Meta ads. You pay Meta directly for the ads.",
   },
   {
     title: "Support",
@@ -223,7 +235,9 @@ export default function Billing() {
                   {formatPrice(p.amount)}
                   <small> / {p.label.toLowerCase()}</small>
                 </span>
-                <span className="plan-desc">{billedEvery(p.months)}</span>
+                <span className="plan-desc">
+                  {billedEvery(p.months)} · about {formatPrice(Math.round(p.amount / p.months))} a month
+                </span>
               </span>
 
               {p.id === popularId && <span className="popular">Popular</span>}
