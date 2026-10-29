@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { api } from "../../api";
 import DashboardSkeleton from "../../components/Skeleton";
 import PlanCard from "../../components/PlanCard";
+import ReadyChecklist from "../../components/ReadyChecklist";
 import "../../RealEstateSite/dashboard/dashboard.css";
 
 export default function RestaurantHome() {
@@ -55,8 +56,11 @@ export default function RestaurantHome() {
     urgent = b.daysLeft <= 5;
     planBtn = "Choose a plan";
   } else if (["free", "trial_not_started"].includes(b.status)) {
-    // Never paid: no card. The message only appears when they try to go past 3.
-    planText = "";
+    planText = b.status === "free"
+      ? "You are on the free plan: up to 3 dishes. Choose a plan to add more."
+      : "Your free trial starts when you add your first dish.";
+    urgent = false;
+    planBtn = b.status === "free" ? "Choose a plan" : "Add dish";
   } else if (b.status === "locked" || b.status === "offline") {
     planText = "Subscription finished. Upgrade your website so you can make changes.";
     urgent = true;
@@ -99,9 +103,19 @@ export default function RestaurantHome() {
       ) : planText && (
         <section className={urgent ? "rd-plan urgent" : "rd-plan"}>
           <p>{planText}</p>
-          <Link className="rd-btn" to="/dashboard/billing">{planBtn}</Link>
+          <Link className="rd-btn" to={b.status === "trial_not_started" ? "/dashboard/dishes/new" : "/dashboard/billing"}>{planBtn}</Link>
         </section>
       )}
+
+      <ReadyChecklist
+        slug={site.slug}
+        shareLink={shareLink}
+        items={[
+          { label: "Add your WhatsApp number", done: !!site.business.whatsapp, to: "/dashboard/business" },
+          { label: "Upload your logo", done: !!site.business.logo, to: "/dashboard/business" },
+          { label: "Add your first dish", done: dishes.length > 0, to: "/dashboard/dishes/new" },
+        ]}
+      />
     </div>
   );
 }
