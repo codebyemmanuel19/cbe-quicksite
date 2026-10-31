@@ -221,9 +221,14 @@ function ProductPage({ store, basePath, addToCart, openBag }) {
     .slice(0, 4);
 
   function handleAdd() {
-    if (options.length > 0 && !variant) return setError("Please choose a bottle size.");
-    if (sizes.length > 0 && !size) return setError("Please choose an option.");
-    if (colors.length > 1 && !color) return setError("Please choose one.");
+    const fail = (msg) => {
+      setError(msg);
+      const el = document.querySelector(".pf-options");
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+    };
+    if (options.length > 0 && !variant) return fail("Please choose a bottle size.");
+    if (sizes.length > 0 && !size) return fail("Please choose an option.");
+    if (colors.length > 1 && !color) return fail("Please choose one.");
     setError("");
     addToCart({
       productId: product.id,
@@ -311,7 +316,7 @@ function ProductPage({ store, basePath, addToCart, openBag }) {
         {product.soldOut ? (
           <button className="pf-btn" disabled>Sold out</button>
         ) : (
-          <button className="pf-btn" onClick={handleAdd}>Add to bag</button>
+          <button className="pf-btn pf-add-inline" onClick={handleAdd}>Add to bag</button>
         )}
 
         {!product.soldOut && (
@@ -330,6 +335,18 @@ function ProductPage({ store, basePath, addToCart, openBag }) {
             <p className="pf-label">The scent</p>
             <p>{product.description}</p>
           </div>
+        )}
+      </div>
+
+      <div className="pf-buybar">
+        <div className="pf-buybar-price">
+          <small>{!chosen && options.length > 0 ? "From" : "Price"}</small>
+          {formatPrice(shownPrice, store.symbol)}
+        </div>
+        {product.soldOut ? (
+          <button className="pf-btn" disabled>Sold out</button>
+        ) : (
+          <button className="pf-btn" onClick={handleAdd}>Add to bag</button>
         )}
       </div>
 
@@ -402,7 +419,7 @@ export default function PerfumeSite({ basePath = "/preview/perfume", slug: slugP
 
   return (
     <div className="pf">
-      <header className={scrolled ? "pf-header solid" : "pf-header"}>
+      <header className={scrolled || !isHome ? "pf-header solid" : "pf-header"}>
         <button className="pf-icon" onClick={() => setMenuOpen(true)} aria-label="Open menu">
           <span className="pf-burger"><span /><span /><span /></span>
         </button>

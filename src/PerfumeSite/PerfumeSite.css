@@ -1,24 +1,24 @@
 /* ---------- CBE QuickSite · Perfume & Fragrance ----------
-   Midnight background throughout, bronze accent, thin
-   letter-spaced type. Dark makes glass bottles glow.
+   Warm cream background, dark ink text, gold accent, thin
+   letter-spaced type. Hero and footer stay dark.
 ---------------------------------------------------------- */
 
 .pf {
-  --night: #0c0b10;
-  --night-soft: #16151c;
-  --card: #1c1b23;
-  --line: #2b2a34;
-  --mist: #a9a5b5;
-  --bronze: #c9a227;
-  --bronze-soft: #e0c368;
-  --white: #ffffff;
+  --bg: #faf7f2;
+  --soft: #f3eee4;
+  --card: #ffffff;
+  --line: #e8e1d4;
+  --mist: #6b645a;
+  --gold: #b08d3c;
+  --gold-dark: #8a6d22;
+  --ink: #1a1714;
 
   --serif: "Playfair Display", "Times New Roman", Georgia, serif;
   --sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 
   min-height: 100vh;
-  background: var(--night);
-  color: var(--white);
+  background: var(--bg);
+  color: var(--ink);
   font-family: var(--sans);
   -webkit-font-smoothing: antialiased;
 }
@@ -33,8 +33,8 @@
   min-height: 100vh;
   display: grid;
   place-items: center;
-  background: #0c0b10;
-  color: #a9a5b5;
+  background: #faf7f2;
+  color: #6b645a;
   font-family: "Inter", sans-serif;
   font-size: 12px;
   letter-spacing: 0.16em;
@@ -54,13 +54,14 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  color: var(--white);
-  transition: background 0.3s ease, border-color 0.3s ease;
+  color: #ffffff;
+  transition: background 0.3s ease, border-color 0.3s ease, color 0.3s ease;
   border-bottom: 1px solid transparent;
 }
 
 .pf-header.solid {
-  background: rgba(12, 11, 16, 0.88);
+  color: var(--ink);
+  background: rgba(250, 247, 242, 0.94);
   backdrop-filter: blur(12px);
   border-bottom-color: var(--line);
 }
@@ -117,8 +118,8 @@
   height: 17px;
   padding: 0 4px;
   border-radius: 999px;
-  background: var(--bronze);
-  color: var(--night);
+  background: var(--gold);
+  color: #ffffff;
   font-size: 10px;
   font-weight: 700;
   display: grid;
@@ -135,12 +136,12 @@
   align-items: flex-end;
   padding: 0 22px 16vh;
   background:
-    radial-gradient(120% 90% at 50% 0%, #241f33 0%, #0c0b10 62%);
+    radial-gradient(120% 90% at 50% 0%, #3a3228 0%, #1a1714 62%);
   text-align: center;
 }
 
 .pf-hero.has-photo {
-  background: var(--night) center top / cover no-repeat;
+  background: #1a1714 center top / cover no-repeat;
   text-align: left;
 }
 
@@ -149,7 +150,7 @@
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(to top, rgba(12, 11, 16, 0.92) 0%, rgba(12, 11, 16, 0.25) 45%, rgba(12, 11, 16, 0.5) 100%);
+    linear-gradient(to top, rgba(20, 17, 14, 0.9) 0%, rgba(20, 17, 14, 0.25) 45%, rgba(20, 17, 14, 0.5) 100%);
 }
 
 .pf-hero-text {
@@ -157,6 +158,7 @@
   z-index: 1;
   max-width: 560px;
   margin: 0 auto;
+  color: #ffffff;
 }
 
 .pf-hero.has-photo .pf-hero-text {
@@ -168,7 +170,7 @@
   font-size: 11px;
   letter-spacing: 0.28em;
   text-transform: uppercase;
-  color: var(--bronze-soft);
+  color: #e0c368;
 }
 
 .pf-hero-title {
@@ -183,8 +185,8 @@
 .pf-hero-btn {
   display: inline-block;
   padding: 15px 34px;
-  border: 1px solid var(--bronze);
-  color: var(--bronze-soft);
+  border: 1px solid #e0c368;
+  color: #e0c368;
   text-decoration: none;
   font-size: 11px;
   font-weight: 600;
@@ -194,8 +196,8 @@
 }
 
 .pf-hero-btn:hover {
-  background: var(--bronze);
-  color: var(--night);
+  background: #e0c368;
+  color: #1a1714;
 }
 
 /* ---------- Shop ---------- */
@@ -238,8 +240,9 @@
 }
 
 .pf-cat.active {
-  border-color: var(--bronze);
-  color: var(--bronze-soft);
+  border-color: var(--gold);
+  color: var(--gold-dark);
+  background: #ffffff;
 }
 
 .pf-bar {
@@ -266,13 +269,13 @@
   font-size: 11px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--white);
+  color: var(--ink);
   cursor: pointer;
 }
 
 .pf-sort select option {
-  background: var(--night-soft);
-  color: var(--white);
+  background: var(--soft);
+  color: var(--ink);
 }
 
 /* Two per row: bottles are small, people compare */
@@ -294,7 +297,8 @@
   position: relative;
   width: 100%;
   aspect-ratio: 3 / 4;
-  background: var(--card);
+  background: #ffffff;
+  border: 1px solid var(--line);
   overflow: hidden;
 }
 
@@ -335,11 +339,11 @@
   width: 5px;
   height: 5px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.35);
+  background: rgba(26, 23, 20, 0.22);
 }
 
 .pf-dot.on {
-  background: var(--bronze);
+  background: var(--gold);
 }
 
 .pf-card-info {
@@ -357,17 +361,18 @@
 
 .pf-price {
   margin: 0;
-  font-size: 13px;
-  letter-spacing: 0.06em;
-  color: var(--mist);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--ink);
 }
 
 .pf-tag {
   display: inline-block;
   margin-top: 8px;
   padding: 3px 10px;
-  border: 1px solid var(--line);
-  color: var(--bronze-soft);
+  border: 1px solid var(--gold);
+  color: var(--gold-dark);
   font-size: 9px;
   font-weight: 600;
   letter-spacing: 0.18em;
@@ -375,7 +380,8 @@
 }
 
 .pf-tag.sold {
-  color: #6f6a7c;
+  border-color: var(--line);
+  color: var(--mist);
 }
 
 .pf-empty {
@@ -385,7 +391,46 @@
 /* ---------- Product page ---------- */
 
 .pf-product {
-  padding-bottom: 72px;
+  padding-bottom: 110px;
+}
+
+/* Buy bar: stays at the bottom of the product page on phones */
+.pf-buybar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 16px calc(16px + env(safe-area-inset-bottom, 0px));
+  background: #ffffff;
+  border-top: 1px solid var(--line);
+}
+
+.pf-buybar-price {
+  flex-shrink: 0;
+  font-family: var(--serif);
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.pf-buybar-price small {
+  display: block;
+  font-family: var(--sans);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--mist);
+}
+
+.pf-buybar .pf-btn {
+  flex: 1;
+  margin: 0;
+  padding: 16px;
 }
 
 .pf-product > .pf-photo {
@@ -411,7 +456,7 @@
   margin: 0 0 30px;
   font-size: 19px;
   letter-spacing: 0.06em;
-  color: var(--bronze-soft);
+  color: var(--gold-dark);
 }
 
 .pf-options {
@@ -441,7 +486,7 @@
   padding: 14px 12px;
   border: 1px solid var(--line);
   background: transparent;
-  color: var(--white);
+  color: var(--ink);
   font-family: inherit;
   cursor: pointer;
   text-align: left;
@@ -449,8 +494,8 @@
 }
 
 .pf-size.active {
-  border-color: var(--bronze);
-  background: rgba(201, 162, 39, 0.08);
+  border-color: var(--gold);
+  background: #fbf4e0;
 }
 
 .pf-size-label {
@@ -465,7 +510,7 @@
 }
 
 .pf-size.active .pf-size-price {
-  color: var(--bronze-soft);
+  color: var(--gold-dark);
 }
 
 .pf-chips {
@@ -481,14 +526,14 @@
   font-family: inherit;
   font-size: 12px;
   letter-spacing: 0.06em;
-  color: var(--white);
+  color: var(--ink);
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .pf-chip.active {
-  border-color: var(--bronze);
-  color: var(--bronze-soft);
+  border-color: var(--gold);
+  color: var(--gold-dark);
 }
 
 .pf-btn {
@@ -496,9 +541,9 @@
   width: 100%;
   padding: 17px;
   margin-bottom: 11px;
-  border: 1px solid var(--bronze);
-  background: var(--bronze);
-  color: var(--night);
+  border: 1px solid var(--ink);
+  background: var(--ink);
+  color: #ffffff;
   font-family: inherit;
   font-size: 11px;
   font-weight: 700;
@@ -517,13 +562,13 @@
 
 .pf-btn.outline {
   background: transparent;
-  color: var(--bronze-soft);
+  color: var(--ink);
 }
 
 .pf-btn.wa {
   background: #25d366;
   border-color: #25d366;
-  color: var(--white);
+  color: #ffffff;
 }
 
 .pf-desc {
@@ -557,7 +602,7 @@
 .pf-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.65);
+  background: rgba(26, 23, 20, 0.5);
   z-index: 50;
 }
 
@@ -567,8 +612,8 @@
   top: 0;
   bottom: 0;
   width: min(86vw, 380px);
-  background: var(--night-soft);
-  color: var(--white);
+  background: #ffffff;
+  color: var(--ink);
   z-index: 60;
   padding: 24px 22px;
   overflow-y: auto;
@@ -599,7 +644,7 @@
   border: 0;
   font-size: 19px;
   cursor: pointer;
-  color: var(--white);
+  color: var(--ink);
   padding: 4px;
 }
 
@@ -618,7 +663,7 @@
   font-size: 18px;
   letter-spacing: 0.04em;
   text-align: left;
-  color: var(--white);
+  color: var(--ink);
   cursor: pointer;
 }
 
@@ -627,7 +672,7 @@
   margin-top: 26px;
   padding: 15px;
   background: #25d366;
-  color: var(--white);
+  color: #ffffff;
   text-align: center;
   text-decoration: none;
   font-size: 11px;
@@ -683,7 +728,7 @@
 .pf-bag-info .pf-price {
   margin: 6px 0 10px;
   font-size: 13px;
-  color: var(--white);
+  color: var(--ink);
 }
 
 .pf-qty {
@@ -699,7 +744,7 @@
   background: none;
   font-size: 15px;
   cursor: pointer;
-  color: var(--white);
+  color: var(--ink);
 }
 
 .pf-qty span {
@@ -717,7 +762,7 @@
   font-size: 10px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #6f6a7c;
+  color: #8c8578;
   cursor: pointer;
 }
 
@@ -737,7 +782,7 @@
 .pf-row strong {
   font-size: 18px;
   font-weight: 600;
-  color: var(--bronze-soft);
+  color: var(--gold-dark);
 }
 
 .pf-muted {
@@ -764,7 +809,7 @@
 
 .pf-box {
   border: 1px solid var(--line);
-  background: var(--night-soft);
+  background: #ffffff;
   padding: 20px;
   margin-bottom: 18px;
 }
@@ -782,7 +827,7 @@
   margin-top: 8px;
   padding-top: 14px;
   border-top: 1px solid var(--line);
-  color: var(--bronze-soft);
+  color: var(--gold-dark);
   font-size: 17px;
   font-weight: 600;
 }
@@ -808,10 +853,10 @@
   width: 100%;
   padding: 14px;
   border: 1px solid var(--line);
-  background: var(--night);
+  background: #ffffff;
   font-family: inherit;
   font-size: 16px;
-  color: var(--white);
+  color: var(--ink);
   border-radius: 0;
 }
 
@@ -820,22 +865,22 @@
 }
 
 .pf-field select option {
-  background: var(--night-soft);
-  color: var(--white);
+  background: var(--soft);
+  color: var(--ink);
 }
 
 .pf-field input:focus,
 .pf-field select:focus,
 .pf-field textarea:focus {
   outline: none;
-  border-color: var(--bronze);
+  border-color: var(--gold);
 }
 
 .pf-phone {
   display: flex;
   align-items: center;
   border: 1px solid var(--line);
-  background: var(--night);
+  background: #ffffff;
 }
 
 .pf-phone b {
@@ -865,7 +910,7 @@
   font-family: inherit;
   font-size: 15px;
   text-align: left;
-  color: var(--white);
+  color: var(--ink);
   cursor: pointer;
   transition: all 0.2s ease;
 }
@@ -878,16 +923,16 @@
 }
 
 .pf-choice.active {
-  border-color: var(--bronze);
-  background: rgba(201, 162, 39, 0.08);
+  border-color: var(--gold);
+  background: #fbf4e0;
 }
 
 .pf-error {
   margin: 12px 0;
   padding: 12px 14px;
-  border: 1px solid #5c2b2b;
-  background: rgba(179, 38, 30, 0.12);
-  color: #f0a8a3;
+  border: 1px solid #f0c4c0;
+  background: #fdf0ef;
+  color: #b3261e;
   font-size: 14px;
 }
 
@@ -910,8 +955,8 @@
   height: 58px;
   margin: 0 auto 18px;
   border-radius: 50%;
-  border: 1px solid var(--bronze);
-  color: var(--bronze-soft);
+  border: 1px solid var(--gold);
+  color: var(--gold-dark);
   font-size: 25px;
   display: grid;
   place-items: center;
@@ -925,7 +970,7 @@
   margin: 8px 0 16px;
   font-family: var(--serif);
   font-size: 30px;
-  color: var(--bronze-soft);
+  color: var(--gold-dark);
 }
 
 .pf-bank p {
@@ -944,20 +989,25 @@
 
 .pf-acct button {
   padding: 6px 12px;
-  border: 1px solid var(--bronze);
+  border: 1px solid var(--gold);
   background: transparent;
   font-family: inherit;
   font-size: 10px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--bronze-soft);
+  color: var(--gold-dark);
   cursor: pointer;
 }
 
 /* ---------- Footer ---------- */
 
 .pf-footer {
-  border-top: 1px solid var(--line);
+  --line: #2e2a24;
+  --mist: #b8b2a6;
+  --ink: #ffffff;
+  --gold: #e0c368;
+  background: #1a1714;
+  color: #ffffff;
   padding: 56px 22px 28px;
 }
 
@@ -996,7 +1046,7 @@
   font-weight: 600;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--bronze);
+  color: var(--gold);
 }
 
 .pf-footer-cols a,
@@ -1010,7 +1060,7 @@
 }
 
 .pf-footer-cols a:hover {
-  color: var(--white);
+  color: var(--ink);
 }
 
 .pf-footer-bottom {
@@ -1020,17 +1070,31 @@
   gap: 10px;
   padding-top: 22px;
   font-size: 12px;
-  color: #6f6a7c;
+  color: #8c8578;
 }
 
 .pf-footer-bottom a {
-  color: #6f6a7c;
+  color: #8c8578;
   text-decoration: none;
 }
 
 /* ---------- Bigger screens ---------- */
 
+@media (max-width: 719px) {
+  .pf-add-inline {
+    display: none;
+  }
+}
+
 @media (min-width: 720px) {
+  .pf-buybar {
+    display: none;
+  }
+
+  .pf-product {
+    padding-bottom: 32px;
+  }
+
   .pf-grid {
     grid-template-columns: repeat(3, 1fr);
     gap: 44px 22px;
