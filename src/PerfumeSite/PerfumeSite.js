@@ -381,7 +381,8 @@ export default function PerfumeSite({ basePath = "/preview/perfume", slug: slugP
   const [bagOpen, setBagOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
-  const isHome = location.pathname.replace(/\/$/, "") === basePath;
+  const trim = (s) => (s || "").replace(/\/+$/, "");
+  const isHome = trim(location.pathname) === trim(basePath);
 
   useEffect(() => {
     function onScroll() {

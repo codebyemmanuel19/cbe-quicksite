@@ -130,11 +130,11 @@
 
 .pf-hero {
   position: relative;
-  min-height: 100vh;
-  min-height: 100svh;
+  min-height: 74vh;
+  min-height: 74svh;
   display: flex;
   align-items: flex-end;
-  padding: 0 22px 16vh;
+  padding: 0 22px 9vh;
   background:
     radial-gradient(120% 90% at 50% 0%, #3a3228 0%, #1a1714 62%);
   text-align: center;
@@ -226,6 +226,9 @@
 
 .pf-cat {
   flex: 0 0 auto;
+  max-width: 190px;
+  overflow: hidden;
+  text-overflow: ellipsis;
   padding: 10px 20px;
   border: 1px solid var(--line);
   background: transparent;
@@ -262,11 +265,15 @@
   gap: 8px;
 }
 
-.pf-sort select {
+.pf .pf-sort select {
+  -webkit-appearance: none;
+  appearance: none;
   border: 0;
   background: none;
   font-family: inherit;
   font-size: 11px;
+  font-weight: 600;
+  padding: 4px 18px 4px 4px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--ink);
